@@ -1,0 +1,31 @@
+# Dependencias
+node_modules
+**/node_modules
+
+# Builds
+dist
+**/dist
+build
+**/build
+
+# Archivos de caché
+.pnpm
+.pnp.*
+.eslintcache
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+
+# IDEs
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Configs de sistema
+.env
+.env.*
+tsconfig.tsbuildinfo
