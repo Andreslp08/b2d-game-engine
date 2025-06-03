@@ -61,7 +61,7 @@ export class Sprite extends Component {
 					this.attachedElementTransform.size.y / 2
 				)
 			);
-			if (this.image.loaded) {
+			if (this.image && this.image.loaded) {
 				context.drawImage(
 					this.image.nativeElement,
 					this.imageTransform.position.x,

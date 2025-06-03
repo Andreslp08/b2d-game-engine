@@ -1,7 +1,7 @@
-import { Entity } from "../../../ecs/entity";
-import { System } from "../../../ecs/system";
-import { Collider } from "../../../physics/components/collider";
-import { RigidBody } from "../../../physics/components/rigid-body";
+import { Entity } from "../../ecs/entity";
+import { System } from "../../ecs/system";
+import { Collider } from "../components/collider";
+import { RigidBody } from "../components/rigid-body";
 
 export class CollisionSystem extends System {
 	update(deltaTime: number, entities: Set<Entity>): void {

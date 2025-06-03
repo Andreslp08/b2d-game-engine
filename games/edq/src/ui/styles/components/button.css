@@ -1,0 +1,15 @@
+@layer utilities {
+  .default-button {
+    @apply text-white relative px-8 py-5 lg:px-10 lg:py-8 text-[12px] md:text-base lg:text-lg xl:text-xl transition-all duration-300 transform;
+  }
+
+  .default-button .shape{
+    @apply absolute inset-0 flex w-full h-full pointer-events-none z-0 transform transition-all duration-300;
+  }
+  .default-button:hover {
+    @apply text-red-300 ;
+  }
+  .default-button:hover .shape{
+    @apply scale-x-[1.1];
+  }
+}

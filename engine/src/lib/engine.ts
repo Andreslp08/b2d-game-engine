@@ -8,14 +8,15 @@ let lastTime = 0;
 let accFrameMs = 0;
 const frameRate = 60;
 const frameMs = 1000 / frameRate;
+let requestAnimationFrame;
 
 export class Engine {
-	public static canvas: HTMLCanvasElement;
-	public static context: CanvasRenderingContext2D;
+	private static _canvas: HTMLCanvasElement;
+	private static _context: CanvasRenderingContext2D;
 	private scene: Scene;
-	public static pause: boolean = false;
-	public static camera: Camera;
-	public static GameRoot: HTMLDivElement;
+	private static _isRunning: boolean = false;
+	private static _isPaused: boolean = false;
+	private static _gameRoot: HTMLDivElement;
 
 	constructor() {
 		const gameRoot = document.getElementById("game-root") as HTMLDivElement;
@@ -30,7 +31,7 @@ export class Engine {
 		gameRoot.style.alignItems = "center";
 		gameRoot.style.backgroundColor = "#000";
 
-		Engine.GameRoot = gameRoot;
+		Engine._gameRoot = gameRoot;
 		const canvas: HTMLCanvasElement = document.createElement("canvas");
 		canvas.id = "game-canvas";
 		canvas.width = 0;
@@ -39,21 +40,73 @@ export class Engine {
 		gameRoot.appendChild(canvas);
 		KeyBoardManager.listen();
 		MouseManager.listen();
-		Engine.canvas = canvas;
-		Engine.context = Engine.canvas.getContext("2d");
+		Engine._canvas = canvas;
+		Engine._context = Engine._canvas.getContext("2d");
 		Screen.getInstance().setCanvasBackgroundColor("rgb(30 30 30)");
 		this.loop = this.loop.bind(this);
 	}
 
-	public init() {
-		window.requestAnimationFrame((time) => {
+	public start() {
+		Engine._isRunning = true;
+		Engine._isPaused = false;
+		requestAnimationFrame = window.requestAnimationFrame((time) => {
 			lastTime = time;
 			this.loop(time);
 		});
 	}
 
+	public stop() {
+		Engine._isRunning = false;
+		Engine._isPaused = false;
+		lastTime = 0;
+		if (requestAnimationFrame) {
+			window.cancelAnimationFrame(requestAnimationFrame);
+		}
+		this.clearCanvas();
+		this.setScene(null);
+	}
+
+	public pause() {
+		Engine._isPaused = true;
+	}
+
+	public resume() {
+		Engine._isPaused = false;
+	}
+
+	public static get isRunning(): boolean {
+		return Engine._isRunning;
+	}
+	public static get isPaused(): boolean {
+		return Engine._isPaused;
+	}
+
+	public static get canvas() {
+		return Engine._canvas;
+	}
+
+	public static get context() {
+		return Engine._context;
+	}
+
+
+
+	public static get gameRoot() {
+		return Engine._gameRoot;
+	}
+
 	public setScene(scene: Scene) {
 		this.scene = scene;
+	}
+
+	public getScene() {
+		return this.scene;
+	}
+
+	private clearCanvas() {
+		Engine._canvas
+			.getContext("2d")
+			.clearRect(0, 0, Engine._canvas.width, Engine._canvas.height);
 	}
 
 	private loop(currentTime: number = 0): void {
@@ -64,18 +117,18 @@ export class Engine {
 		while (accFrameMs > frameMs) {
 			//update logic
 			accFrameMs -= frameMs;
-			if (!Engine.pause) {
-				if(this.scene){
+			if (!Engine._isPaused) {
+				if (this.scene) {
 					this.scene.update(frameMs / 1000);
 				}
 				// Aquí es donde lo pasamos como segundos (dividir entre 1000)
 			}
 		}
-		Engine.canvas.getContext("2d").clearRect(0, 0, Engine.canvas.width, Engine.canvas.height);
+		this.clearCanvas();
 		// //render
 		if (this.scene && this.scene.camera) {
-			this.scene.camera.render(Engine.canvas, Engine.context);
+			this.scene.camera.render(Engine._canvas, Engine._context);
 		}
-		window.requestAnimationFrame(this.loop);
+		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }

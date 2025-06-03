@@ -1,11 +1,11 @@
-import { Entity } from "../../../ecs/entity";
-import { System } from "../../../ecs/system";
-import { Collider } from "../../../physics/components/collider";
-import { RigidBody } from "../../../physics/components/rigid-body";
-import { BodyType } from "../../../physics/enum/body-type";
-import { CollisionDirection } from "../../../physics/enum/collision-direction";
-import { getCollisionDirection } from "../../../physics/util/direction";
-import { BasicMovement } from "../components/basic-movement";
+import { Entity } from "../../ecs/entity";
+import { System } from "../../ecs/system";
+import { Collider } from "../components/collider";
+import { RigidBody } from "../components/rigid-body";
+import { BodyType } from "../enum/body-type";
+import { CollisionDirection } from "../enum/collision-direction";
+import { getCollisionDirection } from "../util/direction";
+import { BasicMovement } from "../../starter-kit/2d-scroll/components/basic-movement";
 
 export class CollisionResolutionSystem extends System {
 	update(deltaTime: number, entities: Set<Entity>): void {
@@ -36,7 +36,8 @@ export class CollisionResolutionSystem extends System {
 						let penetration = 0;
 						switch (collisionDirection) {
 							case CollisionDirection.BOTTOM: {
-								const bottomA = colliderA.getPosition().y + colliderA.getSize().y / 2;
+								const bottomA =
+									colliderA.getPosition().y + colliderA.getSize().y / 2;
 								const topB = colliderB.getPosition().y - colliderB.getSize().y / 2;
 
 								penetration = bottomA - topB;

@@ -1,13 +1,9 @@
-import { Component, ComponentClass } from "../../ecs/component";
 import { Entity } from "../../ecs/entity";
 import { Sprite } from "../../graphics/sprites/components/sprite";
-import { SpriteAnimation } from "../../graphics/sprites/components/sprite-animation";
-import { SpriteSequence } from "../../graphics/sprites/sprite-sequence";
 import { ITranform } from "../../input/interfaces/transform.interface";
 import Vector2 from "../../math/vector2";
 import { Collider } from "../../physics/components/collider";
 import { Transform } from "../components/transform";
-import { AssetsManager } from "../assets-manager/assets-manager";
 import { RigidBody } from "../../physics/components/rigid-body";
 import { BodyType } from "../../physics/enum/body-type";
 
@@ -29,7 +25,7 @@ export class GameObject extends Entity {
 			this.addComponent(
 				new Sprite(
 					"default-sprite",
-					AssetsManager.getImage("/assets/sprites/game-object.png"),
+					null,
 					{
 						position: new Vector2(0, 0),
 						rotation: transform.rotation,

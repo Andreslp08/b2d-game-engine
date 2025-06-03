@@ -1,34 +1,36 @@
-import  { GameObject } from "engine/common/entities/game-object";
+import { GameObject } from "engine/common/entities/game-object";
 import { Camera } from "engine/graphics/cameras/camera";
-import { Scene } from "engine/graphics/scenes/scene";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { SpriteSystem } from "engine/graphics/sprites/system/sprites-system";
-import  { MouseManager } from "engine/input/mouse-manager";
+import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
-import  { Collider } from "engine/physics/components/collider";
+import { Collider } from "engine/physics/components/collider";
 import { RigidBody } from "engine/physics/components/rigid-body";
 import { PhysicsSystem } from "engine/physics/system/physics-system";
 import { BasicMovement } from "engine/starter-kit/2d-scroll/components/basic-movement";
-import  { Character } from "engine/starter-kit/2d-scroll/entities/character";
-import { CollisionResolutionSystem } from "engine/starter-kit/2d-scroll/system/collision-resolution-system";
-import { CollisionSystem } from "engine/starter-kit/2d-scroll/system/collision-system";
+import { Character } from "engine/starter-kit/2d-scroll/entities/character";
+import { CollisionResolutionSystem } from "engine/physics/system/collision-resolution-system";
+import { CollisionSystem } from "engine/physics/system/collision-system";
 import { BasicMovementSystem } from "engine/starter-kit/2d-scroll/system/movement-system";
-import { PlayerIdle } from "./sprite-sequences";
+import { PlayerIdle } from "../sprite-sequences";
+import { GameScene } from "./game-scene";
+import { GameSceneLevel } from "../enum/scene";
 
-export class Level1 extends Scene {
+
+export class Level1 extends GameScene {
 	player: Character;
 	floor: GameObject;
 	wall: GameObject;
 
 	constructor() {
-		super();
+		super("Delivery 1",GameSceneLevel.EASY);
 		this.camera = new Camera(new Vector2(0, 0), this);
 
 		const floorId = this.addEntity(
 			new GameObject({
 				position: new Vector2(0, 2.6),
 				rotation: 0,
-				size: new Vector2(100, 0.3),
+				size: new Vector2(100, 5),
 			})
 		);
 		this.floor = this.getEntityById<GameObject>(floorId);
@@ -48,7 +50,7 @@ export class Level1 extends Scene {
 			new Character({
 				position: new Vector2(0, 0),
 				rotation: 0,
-				size: new Vector2(1.3, 1.8),
+				size: new Vector2(0.8, 1),
 			})
 		);
 		this.player = this.getEntityById<Character>(playerId);
@@ -91,7 +93,7 @@ export class Level1 extends Scene {
 	}
 	update(deltaTime: number): void {
 		super.update(deltaTime);
-		// this.camera.setPosition(this.player.transform.position);
+		this.camera.setPosition(this.player.transform.position);
 		this.testMouse();
 	}
 

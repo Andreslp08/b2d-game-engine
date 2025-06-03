@@ -1,0 +1,63 @@
+/* @import "tailwindcss";
+ */
+@import "tailwindcss";
+@import "./components/spinners.css";
+@import "./components/button.css";
+
+@layer base {
+  :root {
+    --font-body: "Anta", sans-serif;
+  }
+
+  button{
+    cursor: pointer;
+  }
+
+  .body-font,
+  html,
+  body {
+    font-family: var(--font-body);
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.2em;
+    font-weight: 400;
+  }
+}
+
+#game-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+}
+
+@layer utilities {
+  .bg-ui-gradient {
+    position: relative;
+    z-index: 0;
+    background-image: linear-gradient(to bottom, #0a0c0f 0%, #16151c 40%, #16151c 50%, #15090c 75%, #150000 100%);
+  }
+
+  .bg-ui-gradient::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/assets/ui/texture.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.3;
+    z-index: -1;
+  }
+
+}

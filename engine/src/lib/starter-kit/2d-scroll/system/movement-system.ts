@@ -22,7 +22,7 @@ export class BasicMovementSystem extends System {
 			}
 
 			// Salto
-			if (KeyBoardManager.keyDown(movement.inputKeys.up)) {
+		if (KeyBoardManager.keyDown(movement.inputKeys.up)) {
 				if (rb.isOnGround && !movement.isJumping) {
 					movement.isJumping = true;
 					movement.jumpStartY = y;
@@ -36,10 +36,19 @@ export class BasicMovementSystem extends System {
 				}
 			}
 
-			if (rb.isOnGround) {
+			// Si deja de presionar o empieza a caer, se considera que ya no está "saltando"
+			if (
+				movement.isJumping &&
+				(!KeyBoardManager.keyDown(movement.inputKeys.up) || rb.velocity.y > 0)
+			) {
 				movement.isJumping = false;
+			}
+
+			// Si está en el suelo, reseteamos el salto
+			if (rb.isOnGround) {
 				movement.jumpStartY = null;
 			}
+
 
 			// Suelo temporal: si tocamos el suelo, se resetea el salto
 			// if (y >= 200) {
