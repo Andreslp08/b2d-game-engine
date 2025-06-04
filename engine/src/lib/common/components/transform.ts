@@ -6,7 +6,6 @@ export class Transform extends Component implements ITranform {
 	position: Vector2;
 	size: Vector2;
 	rotation: number;
-	drawShape: boolean;
 
 	constructor(transform: ITranform) {
 		super();
@@ -17,7 +16,7 @@ export class Transform extends Component implements ITranform {
 
 	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
 		context.beginPath();
-		if (this.drawShape) {
+		if (this.debugMode) {
 			context.save();
 			context.strokeStyle = "#0f0";
 			context.lineWidth = 0.03;

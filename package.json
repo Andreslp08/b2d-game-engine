@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "private": true,
-
   "scripts": {
-    "dev": "pnpm --filter ** dev"
+"dev": "concurrently -k -n \"edq,engine\" -c \"cyan,magenta\" \"pnpm --filter edq dev\" \"pnpm --filter engine dev\""
+
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

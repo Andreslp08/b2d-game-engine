@@ -1,12 +1,17 @@
 import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { Renderable } from "../common/interfaces/renderable";
+import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
+import { Transform } from "../common/components/transform";
+import Vector2 from "../math/vector2";
 
-export class Entity implements Renderable {
+export abstract class Entity implements Renderable {
 	private static idIncrementator: number = 0;
 	readonly id: string;
-	private components: Set<Component>;
+	protected components: Set<Component>;
 	protected tags: Tags;
+	protected _renderLayer: RenderLayerTypes;
+	protected zIndex: number = 1;
 
 	constructor() {
 		this.id = `entity-${Entity.idIncrementator}`;
@@ -14,6 +19,18 @@ export class Entity implements Renderable {
 		this.components = new Set();
 		this.tags = new Tags();
 		this.addTag("entity");
+	}
+
+	get renderLayer(): RenderLayerTypes {
+		return this._renderLayer;
+	}
+
+	setZindex(zIndex: number): void {
+		this.zIndex = zIndex;
+	}
+
+	getZindex(): number {
+		return this.zIndex;
 	}
 
 	getComponent<T extends Component>(component: ComponentClass<T>): T | null {
@@ -39,6 +56,9 @@ export class Entity implements Renderable {
 	}
 
 	addComponent(component: Component) {
+		if(!component) {
+			throw new Error("Cannot add null component");
+		}
 		this.components.add(component);
 		component.setEntity(this);
 	}
@@ -75,11 +95,5 @@ export class Entity implements Renderable {
 		return this.tags.getall();
 	}
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		context.beginPath();
-		this.components.forEach((c) => {
-			c.render(canvas, context);
-		});
-		context.closePath();
-	}
+	abstract render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
 }

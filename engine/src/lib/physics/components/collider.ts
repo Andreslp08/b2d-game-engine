@@ -1,11 +1,11 @@
 import { Transform } from "../../common/components/transform";
 import { Component } from "../../ecs/component";
+import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
 import { CollisionDetectionStategy } from "../interfaces/collisions";
 
 export class Collider extends Component implements CollisionDetectionStategy {
 	collidable: boolean;
-	drawShape: boolean;
 	activated: boolean;
 	isColliding: boolean;
 	protected offsetPosition: Vector2;
@@ -14,8 +14,6 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	constructor(offsetPosition: Vector2, size: Vector2) {
 		super();
 		this.collidable = true;
-		this.drawShape = true;
-		this.activated = true;
 		this.isColliding = false;
 		this.offsetPosition = offsetPosition;
 		this.size = size;
@@ -79,7 +77,10 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
 		context.beginPath();
 		context.save();
-		if (this.drawShape) {
+		context.translate(this.getPosition().x, this.getPosition().y);
+		context.rotate(MathUtil.degToRad(this.entity.getComponent(Transform).rotation));
+		context.translate(-this.getPosition().x, -this.getPosition().y);
+		if (this.debugMode) {
 			context.strokeStyle = "#f00";
 			context.lineWidth = 0.02;
 			const position = this.getPosition();

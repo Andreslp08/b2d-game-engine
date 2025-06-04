@@ -1,0 +1,52 @@
+import { Transform } from "engine/common/components/transform";
+import { GameObject } from "engine/common/entities/game-object";
+import { AssetsManager } from "engine/common/index";
+import { Entity } from "engine/ecs/entity";
+import { Sprite } from "engine/graphics/sprites/components/sprite";
+import Vector2 from "engine/math/vector2";
+import { Collider } from "engine/physics/components/collider";
+import { RigidBody } from "engine/physics/components/rigid-body";
+import { BodyType } from "engine/physics/enum/body-type";
+import { ScriptComponent } from "engine/scripts/script-component";
+
+
+const BOX_SIZE = 0.5;
+
+export class BoxMessage extends ScriptComponent {
+	message: string = "";
+	speed:number = 1;
+	amplitude:number = 0.1;
+	time: number = 0;
+
+	constructor(entity: Entity, message: string) {
+		super(entity);
+		this.message = message;
+	}
+
+	onUpdate(deltaTime: number): void {
+		const transform = this.entity.getComponent(Transform);
+		this.time += deltaTime;
+		if (transform) {
+			transform.position.x =transform.position.x + Math.cos(this.time*this.speed * Math.PI) * this.amplitude;
+		}
+	}
+}
+
+export const createBox = (positon: Vector2): GameObject => {
+	const entity = new GameObject({
+		position: positon,
+		rotation: 0,
+		size: new Vector2(BOX_SIZE, BOX_SIZE),
+	});
+	entity.addTag("box");
+	const sprite = new Sprite("box", AssetsManager.getImage("/assets/textures/Box.png"), {
+		position: new Vector2(0, 0),
+		rotation: 0,
+		size: new Vector2(500, 500),
+	});
+	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(BOX_SIZE, BOX_SIZE)));
+	entity.addComponent(new RigidBody(entity, BodyType.Static));	
+	entity.addComponent(sprite);
+	// entity.addComponent(new BoxMessage(entity, "hello"));
+	return entity;
+};

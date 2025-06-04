@@ -1,2 +1,2 @@
 
-export const PIXELS_PER_METER = 100;
+export const PIXELS_PER_METER = 150;

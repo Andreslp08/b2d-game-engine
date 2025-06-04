@@ -1,5 +1,5 @@
 
-import { ITranform } from "../../input/interfaces/transform.interface";
+
 import { Sprite } from "./components/sprite";
 
 

@@ -2,46 +2,66 @@ import { Entity } from "../../ecs/entity";
 import { Sprite } from "../../graphics/sprites/components/sprite";
 import { ITranform } from "../../input/interfaces/transform.interface";
 import Vector2 from "../../math/vector2";
-import { Collider } from "../../physics/components/collider";
 import { Transform } from "../components/transform";
-import { RigidBody } from "../../physics/components/rigid-body";
-import { BodyType } from "../../physics/enum/body-type";
+import { Scene } from "../../graphics/scenes/scene";
+import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
+
 
 export class GameObject extends Entity {
-	sprite: Sprite;
+	protected _sprite: Sprite;
 	transform: Transform;
+	protected scene:Scene;
 
 	constructor(transform: ITranform, sprite?: Sprite) {
 		super();
+		this._renderLayer = RenderLayerTypes.World
 		this.addTag("game-object");
 		this.addComponent(new Transform(transform));
 		this.transform = this.getComponent(Transform);
-		this.addComponent(
-			new Collider( new Vector2(0, 0), this.transform.size.clone())
-		);
 		if (sprite) {
 			this.addComponent(sprite);
 		} else {
 			this.addComponent(
-				new Sprite(
-					"default-sprite",
-					null,
-					{
-						position: new Vector2(0, 0),
-						rotation: transform.rotation,
-						size: new Vector2(500, 500),
-					},
-					this.getComponent(Transform)
-				)
+				new Sprite("default-sprite", null, {
+					position: new Vector2(0, 0),
+					rotation: transform.rotation,
+					size: new Vector2(0, 0),
+				})
 			);
 		}
-		this.sprite = this.getComponent(Sprite);
-		this.getComponent(Transform).drawShape = true;
-		this.addComponent(new RigidBody(this));
-		this.getComponent(RigidBody).bodyType = BodyType.Static;
+	}
+
+	public getScene(){
+		return this.scene;
 	}
 
 	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		super.render(canvas, context);
+		if (!this.transform){
+			return;
+		}
+		const orderByZIndex = Array.from(this.components).sort((a, b) => a.getZindex() - b.getZindex());
+		// if(!this.scene) return;
+		context.beginPath();
+		// if (this.transform) {
+		orderByZIndex.forEach((c) => {
+			// const isInsideViewport = this.transform.position.x + this.transform.size.x / 2 >= -2 ;
+			// if (isInsideViewport) {
+			c.render(canvas, context);
+			// }
+		});
+		// }
+
+		context.closePath();
+	}
+
+	setSprite(sprite: Sprite) {
+		if (!sprite) return;
+		if (!this.hasComponent(Sprite)) {
+			this.addComponent(sprite);
+		}
+		this._sprite = Array.from(this.components).find((c) => c instanceof Sprite);
+	}
+	public get sprite() {
+		return this.getComponent(Sprite);
 	}
 }

@@ -33,7 +33,6 @@ function App() {
 			showGeneralLayer(true);
 			showInGameLayer(false);
 		}
-		console.log("is running", runningGame);
 	}, [runningGame]);
 
 	return (

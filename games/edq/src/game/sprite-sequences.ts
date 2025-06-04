@@ -15,7 +15,6 @@ RightRunningSequence.addSprite(
 			rotation: 0,
 			size: new Vector2(397, 651),
 		},
-		null
 	)
 )
 	.addSprite(
@@ -27,7 +26,6 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -39,7 +37,6 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -51,7 +48,6 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -63,7 +59,6 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -75,7 +70,6 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -87,14 +81,15 @@ RightRunningSequence.addSprite(
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	);
+
+export const LeftRunningSequence = new SpriteSequence("left-running");
+LeftRunningSequence.sprites = RightRunningSequence.sprites.map((sprite) => new Sprite(sprite.id, sprite.image, sprite.imageClipTransform));
 const idleImage = AssetsManager.getImage("/assets/textures/PlayerRight.png");
 
 export const PlayerIdle = new SpriteSequence("player-idle");
-PlayerIdle.addSprite(
-	new Sprite(
+const x = 	new Sprite(
 		"run-1",
 		idleImage,
 		{
@@ -102,13 +97,15 @@ PlayerIdle.addSprite(
 			rotation: 0,
 			size: new Vector2(397, 651),
 		},
-		null
 	)
-);
+	PlayerIdle.addSprite(
+		x
+	);
+
 
 const JumpImage = AssetsManager.getImage("/assets/textures/PlayerJumpRight.png");
 
-export const PlayerJumpSequence = new SpriteSequence("player-idle");
+export const PlayerJumpSequence = new SpriteSequence("player-jumping");
 PlayerJumpSequence
 // .addSprite(
 // 	new Sprite(
@@ -131,7 +128,6 @@ PlayerJumpSequence
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	.addSprite(
@@ -143,7 +139,6 @@ PlayerJumpSequence
 				rotation: 0,
 				size: new Vector2(397, 651),
 			},
-			null
 		)
 	)
 	// .addSprite(

@@ -16,7 +16,7 @@ export class RigidBody extends Component {
 	isOnGround:boolean = false;
 	isMoving:boolean = false;
 
-	constructor(object: GameObject) {
+	constructor(object: GameObject, bodyType: BodyType) {
 		super();
 		this.acceleration = new Vector2(0, 0);
 		this.velocity = new Vector2(0, 0);
@@ -26,6 +26,7 @@ export class RigidBody extends Component {
 		this.friction = 300;
 		this.dragScale = 100;
 		this.gameObject = object;
+		if (bodyType) this.bodyType = bodyType;
 	}
 
 	addForce(force: Vector2): void {

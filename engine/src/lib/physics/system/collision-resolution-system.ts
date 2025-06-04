@@ -5,7 +5,6 @@ import { RigidBody } from "../components/rigid-body";
 import { BodyType } from "../enum/body-type";
 import { CollisionDirection } from "../enum/collision-direction";
 import { getCollisionDirection } from "../util/direction";
-import { BasicMovement } from "../../starter-kit/2d-scroll/components/basic-movement";
 
 export class CollisionResolutionSystem extends System {
 	update(deltaTime: number, entities: Set<Entity>): void {
@@ -51,6 +50,16 @@ export class CollisionResolutionSystem extends System {
 								break;
 							}
 							case CollisionDirection.TOP: {
+								const topA = colliderA.getPosition().y - colliderA.getSize().y / 2;
+								const bottomB =
+									colliderB.getPosition().y + colliderB.getSize().y / 2;
+								penetration = bottomB - topA;
+
+								if (penetration > 0) {
+									gameObjectA.transform.position.y += penetration;
+									rigidBodyA.velocity.y = 0;
+									rigidBodyA.acceleration.y = 0;
+								}
 								break;
 							}
 							case CollisionDirection.LEFT: {

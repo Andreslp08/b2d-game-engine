@@ -34,7 +34,7 @@ export class Screen {
 		this.aspectRatio = aspectRatio;
 
 		if (!Engine.gameRoot) return;
-		if (!Engine._canvas) return;
+		if (!Engine.canvas) return;
 		if (!Engine.context) return;
 
 		const gameRoot = Engine.gameRoot;
@@ -54,11 +54,11 @@ export class Screen {
 			canvasDimension.y = gameRoot.offsetWidth / aspectRatio;
 		}
 
-		const canvas = Engine._canvas;
+		const canvas = Engine.canvas;
 		canvas.style.width = `${canvasDimension.x}px`;
 		canvas.style.height = `${canvasDimension.y}px`;
-		canvas.width = canvasDimension.x;
-		canvas.height = canvasDimension.y;
+		canvas.width = (devicePixelRatio || 1) * canvasDimension.x;
+		canvas.height = (devicePixelRatio || 1) *canvasDimension.y;
 
 		const scale = Math.min(
 			canvasDimension.x / Screen._baseResolution.x,
@@ -79,12 +79,12 @@ export class Screen {
 		return Screen._baseResolution;
 	}
 	public getCanvasElement(): HTMLCanvasElement {
-		return Engine._canvas;
+		return Engine.canvas;
 	}
 
 	public setCanvasBackgroundColor(color: string) {
-		if (Engine._canvas) {
-			Engine._canvas.style.backgroundColor = color;
+		if (Engine.canvas) {
+			Engine.canvas.style.backgroundColor = color;
 		}
 	}
 }

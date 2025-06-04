@@ -4,6 +4,7 @@ import { Button } from "../shared/components/button";
 import { Logo } from "../shared/components/logo";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
+import { GAME_VERSION } from "../../game/config/constants";
 
 export const MainMenu = () => {
 	const sectionRef = useRef(null);
@@ -60,7 +61,7 @@ export const MainMenu = () => {
 							className="flex flex-col items-center main-menu-footer my-5"
 						>
 							<p className="text-red-400 uppercase text-[10px] md:text-[12px] lg:text-[14px]">
-								v1.0.0
+								{GAME_VERSION}
 							</p>
 							<p className="text-red-400 uppercase text-[10px] md:text-[12px] lg:text-[14px]">
 								powered by b2D game engine
@@ -112,7 +113,7 @@ export const MainMenu = () => {
 
 			<div
 				key="characters-view"
-				className="absolute w-full h-[70%] bg left-0 bottom-0 pointer-events-none flex justify-between items-end"
+				className="absolute w-full h-[70%] bg left-0 bottom-0 pointer-events-none flex justify-between items-end z-[-1]"
 			>
 				<AnimatePresence mode="wait">
 					{!close && (
@@ -155,7 +156,7 @@ export const MainMenu = () => {
 								}}
 								src="/assets/ui/soldier.png"
 								loading="lazy"
-								className="w-[30%] pointer-events-none"
+								className="w-[30%]  max-w-[800px] bottom-[-10%] translate-y-[10%] pointer-events-none"
 							/>
 						</>
 					)}

@@ -21,7 +21,7 @@ export class SpriteAnimation extends Component {
 		this.speed = speed ?? 1;
 		this.spriteSequence = spriteSequence;
 		this.spriteSequence.sprites.forEach(
-			(sprite) => (sprite.attachedElementTransform = gameObject.transform)
+			(sprite) => (sprite.entityTransform = gameObject.transform)
 		);
 		this.currentFrame = 0;
 		this.currentTime = 0;

@@ -4,15 +4,13 @@ import { Component, ComponentClass } from "./component";
 import { Entity } from "./entity";
 import { System } from "./system";
 
-export class ECS implements Updatable, Renderable {
+export class ECS implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected systems: Set<System> = new Set();
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		this.entities.forEach((entity) => entity.render(canvas, context));
-	}
 	update(deltaTime: number): void {
 		this.systems.forEach((system) => system.update(deltaTime, this.entities));
+		
 	}
 
 	addEntity(entity: Entity): string {
@@ -70,5 +68,9 @@ export class ECS implements Updatable, Renderable {
 
 	getEntitiesWithComponent<T extends Component>(componentClass: ComponentClass<T>): Entity[] {
 		return Array.from(this.entities).filter((e) => e.hasComponent(componentClass));
+	}
+
+	getEntitiesAsArray(): Entity[] {
+		return Array.from(this.entities);
 	}
 }
