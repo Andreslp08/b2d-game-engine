@@ -25,6 +25,10 @@ export abstract class Entity implements Renderable {
 		return this._renderLayer;
 	}
 
+	set renderLayer(renderLayer: RenderLayerTypes) {
+		this._renderLayer = renderLayer;
+	}
+
 	setZindex(zIndex: number): void {
 		this.zIndex = zIndex;
 	}
