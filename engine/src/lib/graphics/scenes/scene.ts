@@ -10,22 +10,32 @@ import { Updatable } from "../../common/interfaces/updatable";
 import { System } from "../../ecs/system";
 import { Component, ComponentClass } from "../../ecs/component";
 import { Entity } from "../../ecs/entity";
+import { RenderSystem } from "../render/render-system";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected systems: Set<System> = new Set();
+	protected _renderer: RenderSystem;
 
 	constructor() {
-		this.addSystem(new ZIndexSortingSystem(this));
-		this.addSystem(new SpriteSystem(this));
-		this.addSystem(new PhysicsSystem(this));
-		this.addSystem(new CollisionSystem(this));
-		this.addSystem(new ScriptSystem(this));
-		this.addSystem(new DebugSystem(this));
+		this.addSystem(new PhysicsSystem(this)); // 1. Mueve entidades según velocidad/aceleración
+		this.addSystem(new CollisionSystem(this)); // 2. Detecta y resuelve colisiones
+		this.addSystem(new ScriptSystem(this)); // 3. Ejecuta scripts que pueden reaccionar a colisiones
+		this.addSystem(new ZIndexSortingSystem(this)); // 4. Ordena entidades visualmente
+		this.addSystem(new SpriteSystem(this)); // 5. Actualiza animaciones/sprites si es necesario
+		this.addSystem(new RenderSystem(this)); // 6. Renderiza todo en pantalla
+		this.addSystem(new DebugSystem(this)); // 7. Dibuja colisiones, info, etc. encima
+		this._renderer = Array.from(this.systems).find(
+			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
+		) as RenderSystem;
 	}
 
 	update(deltaTime: number): void {
-		this.systems.forEach((system) => system.update(deltaTime, this.entities));
+		this.systems.forEach((system) => system.update(deltaTime));
+	}
+
+	get renderer() {
+		return this._renderer;
 	}
 
 	addEntity(entity: Entity): string {
