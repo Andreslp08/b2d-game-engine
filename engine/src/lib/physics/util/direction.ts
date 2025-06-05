@@ -1,11 +1,12 @@
 import { GameObject } from "../../common/entities/game-object";
 import { Collider } from "../components/collider";
+import { CollisionDirection } from "../enum/collision-direction";
 
 export const getCollisionDirection = (
 	a: GameObject,
 	b: GameObject
-): "left" | "top" | "bottom" | "right" | "" => {
-	if (!a.hasComponent(Collider) || !b.hasComponent(Collider)) return "";
+): CollisionDirection => {
+	if (!a.hasComponent(Collider) || !b.hasComponent(Collider)) return CollisionDirection.UNKNOWN;
 
 	const colliderA = a.getComponent(Collider);
 	const positionA = colliderA.getPosition();
@@ -30,11 +31,11 @@ export const getCollisionDirection = (
 
 	if (overlapX > 0 && overlapY > 0) {
 		if (overlapX < overlapY) {
-			return deltaX > 0 ? "left" : "right";
+			return deltaX > 0 ? CollisionDirection.LEFT : CollisionDirection.RIGHT;
 		} else {
-			return deltaY > 0 ? "top" : "bottom";
+			return deltaY > 0 ? CollisionDirection.TOP : CollisionDirection.BOTTOM;
 		}
 	}
 
-	return "";
+	return CollisionDirection.UNKNOWN;
 };

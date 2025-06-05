@@ -12,9 +12,10 @@ export class RigidBody extends Component {
 	friction: number;
 	dragScale: number;
 	gameObject: GameObject;
-	bodyType: BodyType = BodyType.Static; 
-	isOnGround:boolean = false;
-	isMoving:boolean = false;
+	bodyType: BodyType = BodyType.Static;
+	isOnGround: boolean = false;
+	isMoving: boolean = false;
+	movement: Vector2 = new Vector2(0, 0);
 
 	constructor(object: GameObject, bodyType: BodyType) {
 		super();

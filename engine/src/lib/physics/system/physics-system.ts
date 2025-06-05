@@ -4,16 +4,13 @@ import Vector2 from "../../math/vector2";
 import { RigidBody } from "../components/rigid-body";
 import { BodyType } from "../enum/body-type";
 
-
-
 export class PhysicsSystem extends System {
 	dynamic(deltaTime: number, rigidBody: RigidBody) {
 		// Reset acceleration
 		rigidBody.acceleration.set(0, 0);
 		// Aplicar gravedad
-	
-			rigidBody.applyGravity(rigidBody.gravity);
-		
+
+		rigidBody.applyGravity(rigidBody.gravity);
 
 		// Fricción por contacto (sólo eje X)
 		const friction = rigidBody.velocity.x * -rigidBody.friction;
@@ -34,7 +31,7 @@ export class PhysicsSystem extends System {
 		rigidBody.velocity.y += rigidBody.acceleration.y * deltaTime;
 
 		// Se aplica epsilon para evitar problemas de redondeo debido a residuos de fuerzas que no permiten que la velocidad sea 0 y la aceleración 0 ( fuerzas residuales: fricción, drag, gravedad )
-		const epsilon = 0.05;
+		const epsilon = 0.01;
 
 		if (Math.abs(rigidBody.velocity.x) < epsilon) {
 			rigidBody.velocity.x = 0;
@@ -42,10 +39,14 @@ export class PhysicsSystem extends System {
 		if (Math.abs(rigidBody.velocity.y) < epsilon) {
 			rigidBody.velocity.y = 0;
 		}
-		// Actualizar posición
-		rigidBody.gameObject.transform.position.x += rigidBody.velocity.x * deltaTime;
-		rigidBody.gameObject.transform.position.y += rigidBody.velocity.y * deltaTime;
-
+		// Actualizar posición ( SE ACTUALIZA EN EL SISTEMA DE RESOLUCIÓN DE COLISIONES )
+		// rigidBody.gameObject.transform.position.x += rigidBody.velocity.x * deltaTime;
+		// rigidBody.gameObject.transform.position.y += rigidBody.velocity.y * deltaTime;
+		// guardar movimiento pendiente
+		rigidBody.movement = new Vector2(
+			rigidBody.velocity.x * deltaTime,
+			rigidBody.velocity.y * deltaTime
+		);
 		// Limpiar fuerzas
 		rigidBody.forces = [];
 	}
