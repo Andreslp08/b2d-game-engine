@@ -1,15 +1,10 @@
 import { Renderable } from "../../common/interfaces/renderable";
 import { Updatable } from "../../common/interfaces/updatable";
+import { Camera } from "../cameras/camera";
+import { CameraManager, BackgroundCameras, WorldCameras, EffectsCameras, UICameras, DebugCameras } from "../cameras/camera-managers";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
-import { Camera } from "./camera";
-import {
-	BackgroundCameras,
-	CameraManager,
-	DebugCameras,
-	EffectsCameras,
-	UICameras,
-	WorldCameras,
-} from "./camera-managers";
+
+
 
 export class RenderLayer implements Renderable, Updatable {
 	protected renderLayer: RenderLayerTypes;

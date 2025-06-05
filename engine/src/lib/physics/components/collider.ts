@@ -8,6 +8,7 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	collidable: boolean;
 	activated: boolean;
 	isColliding: boolean;
+	ignoreZIndex: boolean = false;
 	protected offsetPosition: Vector2;
 	protected size: Vector2;
 

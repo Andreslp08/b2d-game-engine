@@ -3,10 +3,11 @@ import { System } from "../../../ecs/system";
 import { SpriteAnimation } from "../components/sprite-animation";
 import { Sprite } from "../components/sprite";
 import { GameObject } from "../../../common/entities/game-object";
+import { Scene } from "../../scenes/scene";
 
 export class SpriteSystem extends System {
-	constructor() {
-		super();
+	constructor(scene: Scene) {
+		super(scene);
 		this.setName("SpriteSystem");
 	}
 	update(deltaTime: number, entities: Set<Entity>): void {
@@ -42,7 +43,7 @@ export class SpriteSystem extends System {
 			const nextFrameSprite = anim.spriteSequence.sprites[anim.currentFrame];
 			sprite.image = nextFrameSprite.image;
 			sprite.imageClipTransform.position =
-			nextFrameSprite.imageClipTransform.position.clone();
+				nextFrameSprite.imageClipTransform.position.clone();
 			sprite.imageClipTransform.size = nextFrameSprite.imageClipTransform.size.clone();
 			gameObject.setSprite(nextFrameSprite);
 		}

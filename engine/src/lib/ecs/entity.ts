@@ -2,8 +2,6 @@ import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { Renderable } from "../common/interfaces/renderable";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
-import { Transform } from "../common/components/transform";
-import Vector2 from "../math/vector2";
 
 export abstract class Entity implements Renderable {
 	private static idIncrementator: number = 0;
@@ -60,15 +58,19 @@ export abstract class Entity implements Renderable {
 	}
 
 	addComponent(component: Component) {
-		if(!component) {
+		if (!component) {
 			throw new Error("Cannot add null component");
 		}
 		this.components.add(component);
 		component.setEntity(this);
 	}
 
-	getComponents<T extends Component>(): ComponentClass<T> {
-		return this.components as unknown as ComponentClass<T>;
+	getComponents<T extends Component>(componentClass: ComponentClass<T>): T[] {
+		return Array.from(this.components).filter((c): c is T => c instanceof componentClass);
+	}
+
+	getAllComponents(): Component[] {
+		return Array.from(this.components);
 	}
 
 	deleteAllComponent(): void {

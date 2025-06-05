@@ -1,24 +1,98 @@
 import { WorldCamera } from "../cameras/camera";
-import { ECS } from "../../ecs/ecs";
 import { WorldCameras } from "../cameras/camera-managers";
 import { SpriteSystem } from "../sprites/system/sprites-system";
 import { PhysicsSystem } from "../../physics/system/physics-system";
 import { CollisionSystem } from "../../physics/system/collision-system";
-import { CollisionResolutionSystem } from "../../physics/system/collision-resolution-system";
 import { ScriptSystem } from "../../scripts/script-system";
 import { DebugSystem } from "../../debug/debug-system";
+import { ZIndexSortingSystem } from "../render/render-sorting-system";
+import { Updatable } from "../../common/interfaces/updatable";
+import { System } from "../../ecs/system";
+import { Component, ComponentClass } from "../../ecs/component";
+import { Entity } from "../../ecs/entity";
 
-export class Scene extends ECS {
+export class Scene implements Updatable {
+	protected entities: Set<Entity> = new Set();
+	protected systems: Set<System> = new Set();
+
 	constructor() {
-		super();
-		this.addSystem(new SpriteSystem());
-		this.addSystem(new PhysicsSystem());
-		this.addSystem(new CollisionSystem());
-		this.addSystem(new CollisionResolutionSystem());
-		this.addSystem(new ScriptSystem());
-		this.addSystem(new DebugSystem());
+		this.addSystem(new ZIndexSortingSystem(this));
+		this.addSystem(new SpriteSystem(this));
+		this.addSystem(new PhysicsSystem(this));
+		this.addSystem(new CollisionSystem(this));
+		this.addSystem(new ScriptSystem(this));
+		this.addSystem(new DebugSystem(this));
 	}
 
+	update(deltaTime: number): void {
+		this.systems.forEach((system) => system.update(deltaTime, this.entities));
+	}
+
+	addEntity(entity: Entity): string {
+		this.entities.add(entity);
+		return entity.id;
+	}
+
+	getEntityById<T>(id: string): T | null {
+		for (const entity of this.entities) {
+			if (entity.id === id) {
+				return entity as T;
+			}
+		}
+		return null;
+	}
+
+	getEntityByTag<T>(tag: string): T | null {
+		for (const entity of this.entities) {
+			if (entity.hasTag(tag)) {
+				return entity as T;
+			}
+		}
+		return null;
+	}
+
+	destroyEntity(entity: Entity): void {
+		this.entities.delete(entity);
+	}
+
+	destroyEntityById(id: string): void {
+		this.entities.delete(this.getEntityById(id) as Entity);
+	}
+
+	addSystem(system: System): string {
+		this.systems.add(system);
+		return system.getName();
+	}
+
+	getSystemByName(name: string): System | null {
+		for (const system of this.systems) {
+			if (system.getName() === name) {
+				return system;
+			}
+		}
+		return null;
+	}
+
+	destroySystemByName(name: string): void {
+		this.systems.delete(this.getSystemByName(name) as System);
+	}
+
+	destroySystem(system: System): void {
+		this.systems.delete(system);
+	}
+
+	getEntitiesWithComponent<T extends Component>(componentClass: ComponentClass<T>): Entity[] {
+		return Array.from(this.entities).filter((e) => e.hasComponent(componentClass));
+	}
+
+	getEntitiesAsArray(): Entity[] {
+		return Array.from(this.entities);
+	}
+
+	sortEntitiesByZIndex(): void {
+		const entities = Array.from(this.entities).sort((a, b) => a.getZindex() - b.getZindex());
+		this.entities = new Set(entities);
+	}
 	get camera(): WorldCamera {
 		return WorldCameras.currentCamera as WorldCamera;
 	}

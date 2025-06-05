@@ -3,14 +3,12 @@ import { Sprite } from "../../graphics/sprites/components/sprite";
 import { ITranform } from "../../input/interfaces/transform.interface";
 import Vector2 from "../../math/vector2";
 import { Transform } from "../components/transform";
-import { Scene } from "../../graphics/scenes/scene";
 import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
 
 
 export class GameObject extends Entity {
 	protected _sprite: Sprite;
 	transform: Transform;
-	protected scene:Scene;
 
 	constructor(transform: ITranform, sprite?: Sprite) {
 		super();
@@ -31,26 +29,16 @@ export class GameObject extends Entity {
 		}
 	}
 
-	public getScene(){
-		return this.scene;
-	}
 
 	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
 		if (!this.transform){
 			return;
 		}
-		const orderByZIndex = Array.from(this.components).sort((a, b) => a.getZindex() - b.getZindex());
-		// if(!this.scene) return;
 		context.beginPath();
-		// if (this.transform) {
-		orderByZIndex.forEach((c) => {
-			// const isInsideViewport = this.transform.position.x + this.transform.size.x / 2 >= -2 ;
-			// if (isInsideViewport) {
-			c.render(canvas, context);
-			// }
-		});
-		// }
+		this.components.forEach((c) => {
 
+			c.render(canvas, context);
+		});
 		context.closePath();
 	}
 

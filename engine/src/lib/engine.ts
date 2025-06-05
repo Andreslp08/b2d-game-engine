@@ -2,7 +2,7 @@ import { Scene } from "./graphics/scenes/scene";
 import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
-import { GameLayersRenderer, RenderLayers } from "./graphics/cameras/renderer";
+import { GameLayersRenderer, RenderLayers } from "./graphics/render/renderer";
 
 let lastTime = 0;
 let accFrameMs = 0;

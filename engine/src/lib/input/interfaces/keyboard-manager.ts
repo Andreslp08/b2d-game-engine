@@ -1,13 +1,13 @@
 export class KeyBoardManager {
-	private static keys: object = {};
+	private static _keys: object = {};
 
 	static listen(): void {
 		const onKeyDown = (e: KeyboardEvent) => {
-			KeyBoardManager.keys[e?.key?.toLowerCase()] = "keydown";
+			KeyBoardManager._keys[e?.key?.toLowerCase()] = "keydown";
 		};
 
 		const onKeyUp = (e: KeyboardEvent) => {
-			KeyBoardManager.keys[e?.key?.toLowerCase()] = "keyup";
+			KeyBoardManager._keys[e?.key?.toLowerCase()] = "keyup";
 		};
 
 		window.removeEventListener("keydown", onKeyDown);
@@ -17,9 +17,13 @@ export class KeyBoardManager {
 	}
 
 	static keyDown(key: string): boolean {
-		return KeyBoardManager.keys?.[key?.toLowerCase()] === "keydown" ? true : false;
+		return KeyBoardManager._keys?.[key?.toLowerCase()] === "keydown" ? true : false;
 	}
 	static keyUp(key: string): boolean {
-		return KeyBoardManager.keys?.[key?.toLowerCase()] === "keyup" ? true : false;
+		return KeyBoardManager._keys?.[key?.toLowerCase()] === "keyup" ? true : false;
+	}
+
+	static get keys() {
+		return KeyBoardManager._keys;
 	}
 }
