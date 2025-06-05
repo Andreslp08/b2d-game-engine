@@ -2,7 +2,6 @@ import { Scene } from "./graphics/scenes/scene";
 import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
-import { GameLayersRenderer, RenderLayers } from "./graphics/render/renderer";
 
 let lastTime = 0;
 let accFrameMs = 0;
@@ -17,7 +16,6 @@ export class Engine {
 	private static _isRunning: boolean = false;
 	private static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
-	private renderer: GameLayersRenderer;
 
 	constructor() {
 		const gameRoot = document.getElementById("game-root") as HTMLDivElement;
@@ -45,8 +43,6 @@ export class Engine {
 		Engine._context = Engine._canvas.getContext("2d");
 		Screen.getInstance().setCanvasBackgroundColor("rgb(30 30 30)");
 		this.loop = this.loop.bind(this);
-		const renderLayers = new RenderLayers();
-		this.renderer = new GameLayersRenderer(renderLayers);
 	}
 
 
@@ -127,8 +123,10 @@ export class Engine {
 			}
 		}
 		this.clearCanvas();
+		if(this.scene.renderer){
+			this.scene.renderer.render(Engine._canvas, Engine._context);
+		}
 		// //render
-		this.renderer.render(Engine._canvas, Engine._context);
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }
