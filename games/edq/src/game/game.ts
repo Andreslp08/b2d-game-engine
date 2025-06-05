@@ -1,5 +1,5 @@
 import { Engine } from "engine";
-import { AssetsPreloader } from "engine/common/index";
+import { AssetsPreloader } from "engine/common/assets-manager/assets-manager";
 import Vector2 from "engine/math/vector2";
 import { PRELOAD_IMAGES_PATHS } from "./preloaded-assets";
 import { Screen } from "engine/graphics/screen/screen";

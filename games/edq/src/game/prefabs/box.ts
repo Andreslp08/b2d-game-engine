@@ -1,6 +1,6 @@
 import { Transform } from "engine/common/components/transform";
 import { GameObject } from "engine/common/entities/game-object";
-import { AssetsManager } from "engine/common/index";
+import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { Entity } from "engine/ecs/entity";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import Vector2 from "engine/math/vector2";

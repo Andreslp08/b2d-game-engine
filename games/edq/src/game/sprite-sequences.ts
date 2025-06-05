@@ -1,4 +1,5 @@
-import { AssetsManager } from "engine/common/index";
+
+import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import  { SpriteSequence } from "engine/graphics/sprites/sprite-sequence";
 import Vector2 from "engine/math/vector2";

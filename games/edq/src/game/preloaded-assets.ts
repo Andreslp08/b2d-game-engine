@@ -1,4 +1,4 @@
-import { type AssetToPreload, GameAssetsTypes } from "engine/common/index";
+import { GameAssetsTypes, type AssetToPreload } from "engine/common/assets-manager/assets-manager";
 
 
 export const PRELOAD_IMAGES_PATHS: AssetToPreload[] = [
