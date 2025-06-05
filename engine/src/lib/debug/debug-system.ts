@@ -1,5 +1,4 @@
 import { Transform } from "../common/components/transform";
-import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
 import { Collider } from "../physics/components/collider";
 import { DebugMode } from "./debug";
@@ -7,7 +6,8 @@ import { DebugMode } from "./debug";
 
 
 export class DebugSystem extends System{
-    update(deltaTime: number, entities: Set<Entity>): void {
+    update(deltaTime: number): void {
+        const entities = this.getScene().getEntitiesAsArray();
         if(DebugMode.enabled === false) return
         entities.forEach((entity) => {
             if(DebugMode.currentMode === 'all' || DebugMode.currentMode === 'transforms'){
@@ -37,4 +37,6 @@ export class DebugSystem extends System{
               
         });
     }
+
+    render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }

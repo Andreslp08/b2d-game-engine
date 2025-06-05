@@ -1,8 +1,8 @@
 import { Scene } from "../graphics/scenes/scene";
-import { SystemUpdatable } from "./interfaces/system-updatable";
-import { Entity } from "./entity";
+import { Renderable } from "../common/interfaces/renderable";
+import { Updatable } from "../common/interfaces/updatable";
 
-export abstract class System implements SystemUpdatable {
+export abstract class System implements Updatable, Renderable {
 	private name: string = "System";
 	private scene: Scene;
 	constructor(scene: Scene) {
@@ -25,5 +25,7 @@ export abstract class System implements SystemUpdatable {
 		this.scene = world;
 	}
 
-	abstract update(deltaTime: number, entities: Set<Entity>): void;
+	abstract update(deltaTime: number): void;
+
+	abstract render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
 }

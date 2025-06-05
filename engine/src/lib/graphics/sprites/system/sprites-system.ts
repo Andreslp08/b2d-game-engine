@@ -1,4 +1,3 @@
-import { Entity } from "../../../ecs/entity";
 import { System } from "../../../ecs/system";
 import { SpriteAnimation } from "../components/sprite-animation";
 import { Sprite } from "../components/sprite";
@@ -10,7 +9,8 @@ export class SpriteSystem extends System {
 		super(scene);
 		this.setName("SpriteSystem");
 	}
-	update(deltaTime: number, entities: Set<Entity>): void {
+	update(deltaTime: number): void {
+		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
 			const gameObject = entity as GameObject;
 			if (!gameObject.hasComponent(SpriteAnimation)) continue;
@@ -48,4 +48,6 @@ export class SpriteSystem extends System {
 			gameObject.setSprite(nextFrameSprite);
 		}
 	}
+
+	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }

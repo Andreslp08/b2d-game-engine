@@ -1,4 +1,3 @@
-import { Entity } from "../../ecs/entity";
 import { System } from "../../ecs/system";
 import Vector2 from "../../math/vector2";
 import { RigidBody } from "../components/rigid-body";
@@ -50,7 +49,8 @@ export class PhysicsSystem extends System {
 		// Limpiar fuerzas
 		rigidBody.forces = [];
 	}
-	update(deltaTime: number, entities: Set<Entity>): void {
+	update(deltaTime: number): void {
+		const entities = this.getScene().getEntitiesAsArray();
 		const entitiesArr = Array.from(entities);
 		const rigidBodies = entitiesArr.filter((e) => e.hasComponent(RigidBody));
 
@@ -73,4 +73,6 @@ export class PhysicsSystem extends System {
 			// }
 		});
 	}
+
+	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }

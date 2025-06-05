@@ -1,4 +1,3 @@
-
 import { System } from "../../ecs/system";
 import { ScriptComponent } from "../../scripts/script-component";
 import { Collider } from "../components/collider";
@@ -7,7 +6,38 @@ import { BodyType } from "../enum/body-type";
 import { Entity } from "../../ecs/entity";
 
 export class CollisionSystem extends System {
-	update(deltaTime: number, entities: Set<Entity>): void {
+
+	
+	getHorizontalPenetration(a: Collider, b: Collider): number {
+		const leftA = a.getPosition().x - a.getSize().x / 2;
+		const rightA = a.getPosition().x + a.getSize().x / 2;
+		const leftB = b.getPosition().x - b.getSize().x / 2;
+		const rightB = b.getPosition().x + b.getSize().x / 2;
+
+		if (rightA <= leftB || leftA >= rightB) return 0;
+
+		const overlapLeft = rightA - leftB;
+		const overlapRight = rightB - leftA;
+
+		return overlapLeft < overlapRight ? overlapLeft : -overlapRight;
+	}
+
+	getVerticalPenetration(a: Collider, b: Collider): number {
+		const topA = a.getPosition().y - a.getSize().y / 2;
+		const bottomA = a.getPosition().y + a.getSize().y / 2;
+		const topB = b.getPosition().y - b.getSize().y / 2;
+		const bottomB = b.getPosition().y + b.getSize().y / 2;
+
+		if (bottomA <= topB || topA >= bottomB) return 0;
+
+		const overlapTop = bottomA - topB;
+		const overlapBottom = bottomB - topA;
+
+		return overlapTop < overlapBottom ? overlapTop : -overlapBottom;
+	}
+
+	update(deltaTime: number): void {
+		const entities = this.getScene().getEntitiesAsArray();
 		const entityList = Array.from(entities);
 
 		for (const entity of entityList) {
@@ -104,31 +134,5 @@ export class CollisionSystem extends System {
 		}
 	}
 
-	getHorizontalPenetration(a: Collider, b: Collider): number {
-		const leftA = a.getPosition().x - a.getSize().x / 2;
-		const rightA = a.getPosition().x + a.getSize().x / 2;
-		const leftB = b.getPosition().x - b.getSize().x / 2;
-		const rightB = b.getPosition().x + b.getSize().x / 2;
-
-		if (rightA <= leftB || leftA >= rightB) return 0;
-
-		const overlapLeft = rightA - leftB;
-		const overlapRight = rightB - leftA;
-
-		return overlapLeft < overlapRight ? overlapLeft : -overlapRight;
-	}
-
-	getVerticalPenetration(a: Collider, b: Collider): number {
-		const topA = a.getPosition().y - a.getSize().y / 2;
-		const bottomA = a.getPosition().y + a.getSize().y / 2;
-		const topB = b.getPosition().y - b.getSize().y / 2;
-		const bottomB = b.getPosition().y + b.getSize().y / 2;
-
-		if (bottomA <= topB || topA >= bottomB) return 0;
-
-		const overlapTop = bottomA - topB;
-		const overlapBottom = bottomB - topA;
-
-		return overlapTop < overlapBottom ? overlapTop : -overlapBottom;
-	}
+	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }
