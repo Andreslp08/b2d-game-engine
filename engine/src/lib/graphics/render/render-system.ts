@@ -11,13 +11,13 @@ import {
 	BackgroundCameras,
 	DebugCameras,
 	EffectsCameras,
+	ForegroundCameras,
 	UICameras,
 	WorldCameras,
 } from "../cameras/camera-managers";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 
 export class RenderSystem extends System {
-
 	constructor(scene: Scene) {
 		super(scene);
 		this.setName("RenderSystem");
@@ -70,28 +70,46 @@ export class RenderSystem extends System {
 			BackgroundCameras.currentCamera.render(canvas, context);
 			renderLayerEntities(RenderLayerTypes.Background);
 		}
+		context.restore();
+		context.save();
+		this.applyMeterScaling(context);
 		//WORLD
 		if (WorldCameras.currentCamera) {
 			WorldCameras.currentCamera.render(canvas, context);
 			renderLayerEntities(RenderLayerTypes.World);
 		}
+		context.restore();
+		context.save();
+		this.applyMeterScaling(context);
+
+		//FOREGROUND
+		if (ForegroundCameras.currentCamera) {
+			ForegroundCameras.currentCamera.render(canvas, context);
+			renderLayerEntities(RenderLayerTypes.Foreground);
+		}
+		context.restore();
+		context.save();
+		this.applyMeterScaling(context);
 		//EFFECTS
 		if (EffectsCameras.currentCamera) {
 			EffectsCameras.currentCamera.render(canvas, context);
 			renderLayerEntities(RenderLayerTypes.Effects);
 		}
+		context.restore();
+
+		context.save();
+		//UI
+		if (UICameras.currentCamera) {
+			UICameras.currentCamera.render(canvas, context);
+			renderLayerEntities(RenderLayerTypes.UI);
+		}
+		context.restore();
+		context.save();
 		//DEBUG
 		if (DebugCameras.currentCamera) {
 			DebugCameras.currentCamera.render(canvas, context);
 			renderLayerEntities(RenderLayerTypes.Debug);
 		}
 		context.restore();
-        context.save();
-		//UI
-		if (UICameras.currentCamera) {
-			UICameras.currentCamera.render(canvas, context);
-			renderLayerEntities(RenderLayerTypes.UI);
-		}
-        context.restore();
 	}
 }

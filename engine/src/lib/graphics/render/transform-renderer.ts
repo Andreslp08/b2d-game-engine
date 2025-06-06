@@ -1,6 +1,5 @@
 import { Transform } from "../../common/components/transform";
-import { MathUtil } from "../../math/math-util";
-import { Sprite } from "../sprites/components/sprite";
+import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Renderer } from "./render";
 
 export class TransformRenderer extends Renderer {
@@ -14,7 +13,7 @@ export class TransformRenderer extends Renderer {
 			context.beginPath();
 			context.save();
 			context.strokeStyle = "#0f0";
-			context.lineWidth = 0.03;
+			context.lineWidth = entity.renderLayer === RenderLayerTypes.Debug || entity.renderLayer === RenderLayerTypes.UI ? 3: 0.03;
 			context.strokeRect(
 				transform.position.x - transform.size.x / 2,
 				transform.position.y - transform.size.y / 2,

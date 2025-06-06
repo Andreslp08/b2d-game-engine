@@ -1,5 +1,17 @@
-import { WorldCamera } from "../cameras/camera";
-import { WorldCameras } from "../cameras/camera-managers";
+import { UICamera } from "../cameras/ui-camera";
+import { BackgroundCamera } from "../cameras/background-camera";
+import { ForegroundCamera } from "../cameras/foreground-camera";
+import { DebugCamera } from "../cameras/debug-camera";
+import { EffectCamera } from "../cameras/effect-camera";
+import { WorldCamera } from "../cameras/world-camera";
+import {
+	BackgroundCameras,
+	DebugCameras,
+	EffectsCameras,
+	ForegroundCameras,
+	UICameras,
+	WorldCameras,
+} from "../cameras/camera-managers";
 import { SpriteSystem } from "../sprites/system/sprites-system";
 import { PhysicsSystem } from "../../physics/system/physics-system";
 import { CollisionSystem } from "../../physics/system/collision-system";
@@ -11,6 +23,7 @@ import { System } from "../../ecs/system";
 import { Component, ComponentClass } from "../../ecs/component";
 import { Entity } from "../../ecs/entity";
 import { RenderSystem } from "../render/render-system";
+import Vector2 from "../../math/vector2";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
@@ -28,6 +41,30 @@ export class Scene implements Updatable {
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
 		) as RenderSystem;
+		BackgroundCameras.removeAllCameras();
+		WorldCameras.removeAllCameras();
+		ForegroundCameras.removeAllCameras();
+		EffectsCameras.removeAllCameras();
+		UICameras.removeAllCameras();
+		DebugCameras.removeAllCameras();
+		const backgroundCamera = new BackgroundCamera(this);
+		BackgroundCameras.addCamera(backgroundCamera);
+		BackgroundCameras.setCurrentCamera(backgroundCamera);
+		const worldCamera = new WorldCamera(new Vector2(0, 0), this);
+		WorldCameras.addCamera(worldCamera);
+		WorldCameras.setCurrentCamera(worldCamera);
+		const foregroundCamera = new ForegroundCamera(this);
+		ForegroundCameras.addCamera(foregroundCamera);
+		ForegroundCameras.setCurrentCamera(foregroundCamera);
+		const effectCamera = new EffectCamera(this);
+		EffectsCameras.addCamera(effectCamera);
+		EffectsCameras.setCurrentCamera(effectCamera);
+		const uiCamera = new UICamera(this);
+		UICameras.addCamera(uiCamera);
+		UICameras.setCurrentCamera(uiCamera);
+		const debugCamera = new DebugCamera(this);
+		DebugCameras.addCamera(debugCamera);
+		DebugCameras.setCurrentCamera(debugCamera);
 	}
 
 	update(deltaTime: number): void {

@@ -81,8 +81,15 @@ export class BackgroundCamerasManager extends CameraManager {
 	}
 }
 
+export class ForegroundCamerasManager extends CameraManager {
+	constructor() {
+		super(RenderLayerTypes.Foreground);
+	}
+}
+
 export const BackgroundCameras = new BackgroundCamerasManager();
 export const WorldCameras = new WorldCamerasManager();
 export const UICameras = new UICamerasManager();
+export const ForegroundCameras = new ForegroundCamerasManager();
 export const EffectsCameras = new EffectsCamerasManager();
 export const DebugCameras = new DebugCamerasManager();
