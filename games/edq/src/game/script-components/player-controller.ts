@@ -4,39 +4,35 @@ import { RigidBody } from "engine/physics/components/rigid-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BasicMovement } from "./basic-movement";
 import Vector2 from "engine/math/vector2";
-import { Transform } from "engine/common/components/transform";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { PlayerIdle, PlayerJumpSequence, RightRunningSequence } from "../sprite-sequences";
+import { Collider } from "engine/physics/components/collider";
+import { CollisionDirection } from "engine/physics/enum/collision-direction";
 
 let isClimbKeyPressed = false;
-let isUpKeyPressed = false;
 
 export class PlayerController extends ScriptComponent {
 	constructor(entity: Entity) {
 		super(entity);
 	}
 
-	onCollisionEnter(entity: Entity): void {
-		console.log("collision", this.entity.getTags(), entity.getTags());
+	onUpdate(_deltaTime: number): void {
+		const entity = this.entity;
+		if (!entity.hasComponent(BasicMovement)) return;
+		this.climbController();
+		this.horizontalController();
+		this.jumpController();
+		this.spriteAnimationsController();
 	}
 
-	onUpdate(deltaTime: number): void {
+	private climbController() {
 		const entity = this.entity;
-		const transform = entity.getComponent(Transform);
-
 		const rb = entity.getComponent(RigidBody);
 		const gameObject = rb.gameObject;
-		const movement = gameObject.getComponent(BasicMovement);
-		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
-		const y = gameObject.transform.position.y;
-
 		if (!entity.hasComponent(BasicMovement)) return;
 		const shift = KeyBoardManager.keyDown("shift");
-		const up = KeyBoardManager.keyDown(movement.inputKeys.up);
-
-		// Actualiza los flags
 		isClimbKeyPressed = shift;
-		isUpKeyPressed = up;
+	
 
 		// Cambia el zIndex si ambos están activos
 		if (isClimbKeyPressed) {
@@ -44,21 +40,25 @@ export class PlayerController extends ScriptComponent {
 		} else {
 			gameObject.setZindex(1);
 		}
+	}
 
-		// Movimiento horizontal
-		const moveLeft = KeyBoardManager.keyDown(movement.inputKeys.left);
-		const moveRight = KeyBoardManager.keyDown(movement.inputKeys.right);
-
-		if (moveRight) rb.addForce(new Vector2(movement.forceX, 0));
-		else if (moveLeft) rb.addForce(new Vector2(-movement.forceX, 0));
-
+	private jumpController() {
+		const entity = this.entity;
+		const rb = entity.getComponent(RigidBody);
+		const gameObject = rb.gameObject;
+		const movement = gameObject.getComponent(BasicMovement);
+		const collider = entity.getComponent(Collider);
+		console.log('collision direction', collider.collisionDirection)
+		if (!entity.hasComponent(BasicMovement)) return;
+		const y = gameObject.transform.position.y;
 		// Salto
 		if (KeyBoardManager.keyDown(movement.inputKeys.up)) {
+			// console.log('xd', deltaTime)
 			if (rb.isOnGround && !movement.isJumping) {
 				movement.isJumping = true;
 				movement.jumpStartY = y;
 			}
-			if (movement.jumpStartY !== null && movement.jumpStartY - y < movement.maxJumpHeight) {
+			if (movement.jumpStartY !== null && movement.jumpStartY - y <  movement.maxJumpHeight && movement.isJumping &&  (collider.collisionDirection.y !== CollisionDirection.TOP)) {
 				rb.addForce(new Vector2(0, -movement.forceY));
 			}
 		}
@@ -68,10 +68,31 @@ export class PlayerController extends ScriptComponent {
 		) {
 			movement.isJumping = false;
 		}
-		if (rb.isOnGround) {
-			movement.jumpStartY = null;
-		}
+	}
 
+	private horizontalController() {
+		const entity = this.entity;
+		const rb = entity.getComponent(RigidBody);
+		const gameObject = rb.gameObject;
+		const movement = gameObject.getComponent(BasicMovement);
+
+		if (!entity.hasComponent(BasicMovement)) return;
+		// Movimiento horizontal
+		const moveLeft = KeyBoardManager.keyDown(movement.inputKeys.left);
+		const moveRight = KeyBoardManager.keyDown(movement.inputKeys.right);
+
+		if (moveRight) rb.addForce(new Vector2(movement.forceX, 0));
+		else if (moveLeft) rb.addForce(new Vector2(-movement.forceX, 0));
+	}
+
+	private spriteAnimationsController() {
+		const entity = this.entity;
+		const rb = entity.getComponent(RigidBody);
+		const gameObject = rb.gameObject;
+		const movement = gameObject.getComponent(BasicMovement);
+		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
+
+		if (!entity.hasComponent(BasicMovement)) return;
 		// Dirección (solo si velocidad supera un umbral)
 		if (Math.abs(rb.velocity.x) > 0.01) {
 			movement.direction.x = rb.velocity.x > 0 ? 1 : -1;
@@ -82,17 +103,16 @@ export class PlayerController extends ScriptComponent {
 
 		// Animación según estado
 		if (spriteAnimation) {
-            gameObject.sprite.direction.x = movement.direction.x > 0 ? 1 : -1;
+			gameObject.sprite.direction.x = movement.direction.x > 0 ? 1 : -1;
 			if (!rb.isOnGround) {
-                spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
+				spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
 			} else {
-                if (Math.abs(rb.velocity.x) > 0.01) {
+				if (Math.abs(rb.velocity.x) > 0.01) {
 					spriteAnimation.setAnimation(RightRunningSequence, true, 0.08);
 				} else {
 					spriteAnimation.setAnimation(PlayerIdle, true, 0.08);
 				}
 			}
-		
 		}
 	}
 }

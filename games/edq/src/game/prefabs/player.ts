@@ -25,10 +25,12 @@ export const createPlayer = (position: Vector2): GameObject => {
 	const playerMovement = entity.getComponent(BasicMovement);
 	collider.setSize(new Vector2(0.5, entity.transform.size.y));
 	collider.setOffsetPosition(new Vector2(0, 0));
+	playerBody.gravity = 75;
 	playerBody.mass = 80;
-	playerBody.friction = 500;
+	playerBody.friction = 2000;
 	playerBody.dragScale = 50;
-	playerMovement.forceX = 4000;
-	playerMovement.forceY = 120000;
+	playerMovement.forceX = 12000;
+	playerMovement.forceY = 15000;
+	playerMovement.maxJumpHeight = 1.25;
 	return entity;
 };
