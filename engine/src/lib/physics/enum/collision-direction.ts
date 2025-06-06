@@ -5,3 +5,4 @@ export enum CollisionDirection {
 	LEFT = "left",
 	UNKNOWN = "unknown",
 }
+

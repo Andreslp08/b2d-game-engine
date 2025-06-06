@@ -7,6 +7,7 @@ import { Entity } from "../../ecs/entity";
 import { MathUtil } from "../../math/math-util";
 import { Transform } from "../../common/components/transform";
 import { DebugMode } from "../../debug/debug";
+import { CollisionDirection } from "../enum/collision-direction";
 
 export class CollisionSystem extends System {
 	getHorizontalPenetration(a: Collider, b: Collider): number {
@@ -44,22 +45,22 @@ export class CollisionSystem extends System {
 		for (const entity of entityList) {
 			if (!entity.hasComponent(RigidBody) || !entity.hasComponent(Collider)) continue;
 
-			const rigidBody = entity.getComponent(RigidBody);
+			const rigidBodyA = entity.getComponent(RigidBody);
 			const colliderA = entity.getComponent(Collider);
-			const gameObjectA = rigidBody.gameObject;
+			const gameObjectA = rigidBodyA.gameObject;
 			if (colliderA.collidable === false) continue;
 
-			if (rigidBody.bodyType !== BodyType.Dynamic) continue;
+			if (rigidBodyA.bodyType !== BodyType.Dynamic) continue;
 
-			rigidBody.isOnGround = false;
+			rigidBodyA.isOnGround = false;
 			colliderA.isColliding = false;
 			const collisions: { a: Entity; b: Entity }[] = [];
 
 			// MOVER EN EJE X Y RESOLVER
-			gameObjectA.transform.position.x += rigidBody.movement.x;
+			gameObjectA.transform.position.x += rigidBodyA.movement.x;
 			for (const other of entityList) {
 				if (other === entity || !other.hasComponent(Collider)) continue;
-
+				
 				const gameObjectB = other.getComponent(Collider).getEntity();
 				const colliderB = other.getComponent(Collider);
 				if (gameObjectA.renderLayer !== gameObjectB.renderLayer) continue;
@@ -68,22 +69,30 @@ export class CollisionSystem extends System {
 					colliderA.ignoreZIndex === false &&
 					colliderB.ignoreZIndex === false
 				)
-					continue;
+				continue;
 				if (gameObjectA === gameObjectB) continue;
 				if (colliderA.collidable !== colliderB.collidable) continue;
+				colliderA.collisionDirection.x = CollisionDirection.UNKNOWN;
 				if (!colliderA.intersects(colliderB)) continue;
 				colliderA.isColliding = true;
 				collisions.push({ a: entity, b: other });
 				const penetrationX = this.getHorizontalPenetration(colliderA, colliderB);
 				if (penetrationX !== 0) {
 					gameObjectA.transform.position.x -= penetrationX;
-					rigidBody.velocity.x = 0;
-					rigidBody.acceleration.x = 0;
+					rigidBodyA.velocity.x = 0;
+					rigidBodyA.acceleration.x = 0;
+				}
+				if(penetrationX < 0 ){
+						colliderA.collisionDirection.x = CollisionDirection.LEFT;
+				}
+				else{
+					
+					colliderA.collisionDirection.x = CollisionDirection.RIGHT;
 				}
 			}
 
 			// MOVER EN EJE Y Y RESOLVER
-			gameObjectA.transform.position.y += rigidBody.movement.y;
+			gameObjectA.transform.position.y += rigidBodyA.movement.y;
 			for (const other of entityList) {
 				if (other === entity || !other.hasComponent(Collider)) continue;
 
@@ -104,10 +113,13 @@ export class CollisionSystem extends System {
 				const penetrationY = this.getVerticalPenetration(colliderA, colliderB);
 				if (penetrationY !== 0) {
 					gameObjectA.transform.position.y -= penetrationY;
-					rigidBody.velocity.y = 0;
-					rigidBody.acceleration.y = 0;
+					rigidBodyA.velocity.y = 0;
+					rigidBodyA.acceleration.y = 0;
 					if (penetrationY > 0) {
-						rigidBody.isOnGround = true;
+						colliderA.collisionDirection.y = CollisionDirection.BOTTOM;
+						rigidBodyA.isOnGround = true;
+					}else{
+						colliderA.collisionDirection.y = CollisionDirection.TOP;
 					}
 				}
 			}

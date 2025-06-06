@@ -65,11 +65,11 @@ export class RenderSystem extends System {
 
 		renderingContext.save();
 		this.applyMeterScaling(renderingContext);
-			// filter with grayscale an blur
-			renderingContext.filter = "grayscale(1) blur(20px)";	
-			renderingContext.globalAlpha = 0.2;
-			// set blend to multiply 
-			renderingContext.globalCompositeOperation = "multiply";
+			// // filter with grayscale an blur
+			// renderingContext.filter = "grayscale(1) blur(20px)";	
+			// renderingContext.globalAlpha = 0.2;
+			// // set blend to multiply 
+			// renderingContext.globalCompositeOperation = "multiply";
 		// BACKGROUND
 		if (BackgroundCameras.currentCamera) {
 			BackgroundCameras.currentCamera.render(renderingContext);

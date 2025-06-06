@@ -2,12 +2,17 @@ import { Transform } from "../../common/components/transform";
 import { Component } from "../../ecs/component";
 import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
+import { CollisionDirection } from "../enum/collision-direction";
 import { CollisionDetectionStategy } from "../interfaces/collisions";
 
 export class Collider extends Component implements CollisionDetectionStategy {
 	collidable: boolean;
 	activated: boolean;
 	isColliding: boolean;
+	collisionDirection: {
+		x: CollisionDirection.LEFT | CollisionDirection.RIGHT | CollisionDirection.UNKNOWN;
+		y: CollisionDirection.TOP | CollisionDirection.BOTTOM | CollisionDirection.UNKNOWN;
+	} = { x: CollisionDirection.UNKNOWN, y: CollisionDirection.UNKNOWN };
 	ignoreZIndex: boolean = false;
 	protected offsetPosition: Vector2;
 	protected size: Vector2;
