@@ -12,7 +12,7 @@ export class UICamera extends Camera {
 		super(new Vector2(0, 0), scene);
 		this.renderLayer = RenderLayerTypes.UI;
 	}
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+	render(renderingContext: CanvasRenderingContext2D): void {
 		const screen = Screen.getInstance();
 		const baseRes = screen.baseResolution;
 		const canvasRes = screen.getResolution();
@@ -20,7 +20,7 @@ export class UICamera extends Camera {
 		const scaleY = canvasRes.y / baseRes.y;
 
 		const uniformScale = Math.min(scaleX, scaleY);
-		context.scale(uniformScale, uniformScale);
+		renderingContext.scale(uniformScale, uniformScale);
 
 		// context.fillStyle = "red";
 		// context.fillRect(0, 0, 200, 200);

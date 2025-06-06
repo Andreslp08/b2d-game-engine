@@ -22,7 +22,7 @@ export class ParallaxCamera extends Camera {
         this.generalParallax = 0.05;
     }
 
-    render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+    render(renderingContext: CanvasRenderingContext2D): void {
         this.position = WorldCameras.currentCamera.getPosition();
         const screen = Screen.getInstance();
         const baseRes = screen.baseResolution;
@@ -33,12 +33,12 @@ export class ParallaxCamera extends Camera {
         const uniformScale = Math.min(scaleX, scaleY);
 
         const totalScale = PIXELS_PER_METER * uniformScale;
-        const halfWidth = context.canvas.width / totalScale / 2;
-        const halfHeight = context.canvas.height / totalScale / 2;
+        const halfWidth = renderingContext.canvas.width / totalScale / 2;
+        const halfHeight = renderingContext.canvas.height / totalScale / 2;
 
         const cameraX = this.position.x * this.generalParallax - halfWidth;
         const cameraY = this.position.y * this.generalParallax - halfHeight;
-        context.translate(-cameraX, -cameraY);
+        renderingContext.translate(-cameraX, -cameraY);
         // context.fillStyle = "#0f0";
         // context.fillRect(-3, -3, 50, 50);
     }

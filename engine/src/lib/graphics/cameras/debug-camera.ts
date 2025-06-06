@@ -9,7 +9,7 @@ export class DebugCamera extends Camera {
 		super(new Vector2(0, 0), scene);
 		this.renderLayer = RenderLayerTypes.Debug;
 	}
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+	render(renderingContext: CanvasRenderingContext2D): void {
 		const screen = Screen.getInstance();
 		const baseRes = screen.baseResolution;
 		const canvasRes = screen.getResolution();
@@ -17,7 +17,7 @@ export class DebugCamera extends Camera {
 		const scaleY = canvasRes.y / baseRes.y;
 
 		const uniformScale = Math.min(scaleX, scaleY);
-		context.scale(uniformScale, uniformScale);
+		renderingContext.scale(uniformScale, uniformScale);
 		// context.fillStyle = "#f0f";
 		// context.fillRect(0, 0, 100, 100);
 	}

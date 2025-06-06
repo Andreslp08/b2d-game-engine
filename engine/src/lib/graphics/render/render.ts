@@ -7,5 +7,5 @@ export abstract class Renderer implements Renderable {
 		this.entity = entity;
 	}
 
-	abstract render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
+	abstract render(renderingContext: CanvasRenderingContext2D): void;
 }

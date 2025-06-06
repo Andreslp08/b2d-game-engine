@@ -39,7 +39,7 @@ export class RenderSystem extends System {
 		context.imageSmoothingEnabled = false;
 	}
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+	render(renderingContext: CanvasRenderingContext2D): void {
 		const entities = this.getScene().getEntitiesAsArray();
 
 		const renderLayerEntities = (layer: RenderLayerTypes) => {
@@ -50,71 +50,71 @@ export class RenderSystem extends System {
 				const transformComponents = entity.getComponents(Transform);
 				spriteComponents.forEach((_) => {
 					const render = new SpriteRenderer(entity);
-					render.render(canvas, context);
+					render.render(renderingContext);
 				});
 				transformComponents.forEach((_) => {
 					const render = new TransformRenderer(entity);
-					render.render(canvas, context);
+					render.render(renderingContext);
 				});
 				colliderComponents.forEach((_) => {
 					const render = new ColliderRenderer(entity);
-					render.render(canvas, context);
+					render.render(renderingContext);
 				});
 			}
 		};
 
-		context.save();
-		this.applyMeterScaling(context);
+		renderingContext.save();
+		this.applyMeterScaling(renderingContext);
 			// filter with grayscale an blur
-			context.filter = "grayscale(1) blur(20px)";	
-			context.globalAlpha = 0.2;
+			renderingContext.filter = "grayscale(1) blur(20px)";	
+			renderingContext.globalAlpha = 0.2;
 			// set blend to multiply 
-			context.globalCompositeOperation = "multiply";
+			renderingContext.globalCompositeOperation = "multiply";
 		// BACKGROUND
 		if (BackgroundCameras.currentCamera) {
-			BackgroundCameras.currentCamera.render(canvas, context);
+			BackgroundCameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.Background);
 		}
-		context.restore();
-		context.save();
-		this.applyMeterScaling(context);
+		renderingContext.restore();
+		renderingContext.save();
+		this.applyMeterScaling(renderingContext);
 		//WORLD
 		if (WorldCameras.currentCamera) {
-			WorldCameras.currentCamera.render(canvas, context);
+			WorldCameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.World);
 		}
-		context.restore();
-		context.save();
-		this.applyMeterScaling(context);
+		renderingContext.restore();
+		renderingContext.save();
+		this.applyMeterScaling(renderingContext);
 
 		//FOREGROUND
 		if (ForegroundCameras.currentCamera) {
-			ForegroundCameras.currentCamera.render(canvas, context);
+			ForegroundCameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.Foreground);
 		}
-		context.restore();
-		context.save();
-		this.applyMeterScaling(context);
+		renderingContext.restore();
+		renderingContext.save();
+		this.applyMeterScaling(renderingContext);
 		//EFFECTS
 		if (EffectsCameras.currentCamera) {
-			EffectsCameras.currentCamera.render(canvas, context);
+			EffectsCameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.Effects);
 		}
-		context.restore();
+		renderingContext.restore();
 
-		context.save();
+		renderingContext.save();
 		//UI
 		if (UICameras.currentCamera) {
-			UICameras.currentCamera.render(canvas, context);
+			UICameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.UI);
 		}
-		context.restore();
-		context.save();
+		renderingContext.restore();
+		renderingContext.save();
 		//DEBUG
 		if (DebugCameras.currentCamera) {
-			DebugCameras.currentCamera.render(canvas, context);
+			DebugCameras.currentCamera.render(renderingContext);
 			renderLayerEntities(RenderLayerTypes.Debug);
 		}
-		context.restore();
+		renderingContext.restore();
 	}
 }

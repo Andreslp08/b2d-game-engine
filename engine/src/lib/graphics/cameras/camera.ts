@@ -21,6 +21,6 @@ export class Camera implements Renderable, Updatable {
 	public getPosition(): Vector2 {
 		return this.position;
 	}
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
+	render(context: CanvasRenderingContext2D): void {}
 	update(deltaTime: number): void {}
 }

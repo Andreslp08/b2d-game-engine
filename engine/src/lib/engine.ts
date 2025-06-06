@@ -124,7 +124,7 @@ export class Engine {
 		}
 		this.clearCanvas();
 		if(this.scene.renderer){
-			this.scene.renderer.render(Engine._canvas, Engine._context);
+			this.scene.renderer.render(Engine._context);
 		}
 		// //render
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);

@@ -1,3 +1,3 @@
 export interface Renderable {
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
+	render(context: CanvasRenderingContext2D): void;
 }

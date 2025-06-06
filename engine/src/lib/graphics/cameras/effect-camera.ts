@@ -19,7 +19,7 @@ export class EffectCamera extends Camera {
 		this.scene = scene;
 	}
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+	render(renderingContext: CanvasRenderingContext2D): void {
 		this.position = WorldCameras.currentCamera.getPosition();
 		const screen = Screen.getInstance();
 		const baseRes = screen.baseResolution;
@@ -30,12 +30,12 @@ export class EffectCamera extends Camera {
 		const uniformScale = Math.min(scaleX, scaleY);
 
 		const totalScale = PIXELS_PER_METER * uniformScale;
-		const halfWidth = context.canvas.width / totalScale / 2;
-		const halfHeight = context.canvas.height / totalScale / 2;
+		const halfWidth = renderingContext.canvas.width / totalScale / 2;
+		const halfHeight = renderingContext.canvas.height / totalScale / 2;
 
 		const cameraX = this.position.x - halfWidth;
 		const cameraY = this.position.y - halfHeight;
-		context.translate(-cameraX, -cameraY);
+		renderingContext.translate(-cameraX, -cameraY);
 		// context.fillStyle = "#d0d";
 		// context.fillRect(-1, -2, 5, 5);
 	}
