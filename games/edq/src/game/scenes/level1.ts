@@ -3,7 +3,7 @@ import { UICamera, WorldCamera } from "engine/graphics/cameras/camera";
 import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
 
-import { Character } from "engine/starter-kit/2d-scroll/entities/character";
+
 import { GameScene } from "./game-scene";
 import { GameSceneLevel } from "../enum/scene";
 // import { Box } from "../`scripts/box";
@@ -17,12 +17,13 @@ import { RigidBody } from "engine/physics/components/rigid-body";
 import { BodyType } from "engine/physics/enum/body-type";
 
 export class Level1 extends GameScene {
-	player: Character;
+	player: GameObject;
 	floor: GameObject;
 	wall: GameObject;
 
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
+		DebugMode.enabled = true;
 		// DebugMode.enabled = true;
 		this.setCamera(new WorldCamera(new Vector2(0, 0), this));
 
@@ -37,20 +38,23 @@ export class Level1 extends GameScene {
 		this.floor.addComponent(new RigidBody(this.floor, BodyType.Static));
 		this.floor.addComponent(new Collider(new Vector2(0, 0), new Vector2(100, 5)));
 		this.floor.addTag("floor");
-		this.addEntity(createBox(new Vector2(0, 0.5)));
-		this.addEntity(createBox(new Vector2(2, -1.4)));
-		this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
+		this.floor.getComponent(Collider).ignoreZIndex = true;
+		// this.addEntity(createBox(new Vector2(0, 0.5)));
+		// this.addEntity(createBox(new Vector2(2, -1.4)));
+		// this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
 
-		const playerId = this.addEntity(
-			createPlayer(new Vector2(0, 0.5))
-		);
+		for (let i = 0; i < 10; i++) {
+			this.addEntity(createBox(new Vector2(0.5 * i - 0.02, -1)));
+		}
+
+		const playerId = this.addEntity(createPlayer(new Vector2(0, -5)));
 		this.player = this.getEntityById<GameObject>(playerId);
 		this.loadUI();
 	}
 
 	loadUI() {
 		UICameras.addCamera(new UICamera(this));
-		// UICameras.setCurrentCamera(UICameras.cameras[0]);
+		UICameras.setCurrentCamera(UICameras.cameras[0]);
 		this.addEntity(
 			new UIObject({ position: new Vector2(3, 3), rotation: 0, size: new Vector2(100, 100) })
 		);
@@ -82,5 +86,4 @@ export class Level1 extends GameScene {
 		);
 		this.testMouse();
 	}
-
 }

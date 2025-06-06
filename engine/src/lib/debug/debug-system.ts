@@ -38,5 +38,8 @@ export class DebugSystem extends System{
         });
     }
 
-    render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
+
+    render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+       
+    }
 }

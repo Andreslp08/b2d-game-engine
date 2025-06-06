@@ -1,4 +1,4 @@
-import type { Entity } from "engine/ecs/entity";
+import { Entity } from "engine/ecs/entity";
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 import { RigidBody } from "engine/physics/components/rigid-body";
 import { ScriptComponent } from "engine/scripts/script-component";
@@ -8,21 +8,42 @@ import { Transform } from "engine/common/components/transform";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { PlayerIdle, PlayerJumpSequence, RightRunningSequence } from "../sprite-sequences";
 
+let isClimbKeyPressed = false;
+let isUpKeyPressed = false;
+
 export class PlayerController extends ScriptComponent {
 	constructor(entity: Entity) {
 		super(entity);
 	}
 
+	onCollisionEnter(entity: Entity): void {
+		console.log("collision", this.entity.getTags(), entity.getTags());
+	}
+
 	onUpdate(deltaTime: number): void {
 		const entity = this.entity;
 		const transform = entity.getComponent(Transform);
-		if (!entity.hasComponent(BasicMovement)) return;
 
 		const rb = entity.getComponent(RigidBody);
 		const gameObject = rb.gameObject;
 		const movement = gameObject.getComponent(BasicMovement);
 		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
 		const y = gameObject.transform.position.y;
+
+		if (!entity.hasComponent(BasicMovement)) return;
+		const shift = KeyBoardManager.keyDown("shift");
+		const up = KeyBoardManager.keyDown(movement.inputKeys.up);
+
+		// Actualiza los flags
+		isClimbKeyPressed = shift;
+		isUpKeyPressed = up;
+
+		// Cambia el zIndex si ambos están activos
+		if (isClimbKeyPressed) {
+			gameObject.setZindex(1000);
+		} else {
+			gameObject.setZindex(1);
+		}
 
 		// Movimiento horizontal
 		const moveLeft = KeyBoardManager.keyDown(movement.inputKeys.left);

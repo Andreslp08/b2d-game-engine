@@ -10,8 +10,4 @@ export class BasicMovement extends Component {
 	jumpStartY: number | null = null;
 	maxJumpHeight: number = 150;
 	hasAppliedJumpForce: boolean = false;
-
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
-
-	}
 }

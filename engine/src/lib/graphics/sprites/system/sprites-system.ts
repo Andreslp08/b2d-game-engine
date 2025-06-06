@@ -3,6 +3,8 @@ import { SpriteAnimation } from "../components/sprite-animation";
 import { Sprite } from "../components/sprite";
 import { GameObject } from "../../../common/entities/game-object";
 import { Scene } from "../../scenes/scene";
+import { Transform } from "../../../common/components/transform";
+import { MathUtil } from "../../../math/math-util";
 
 export class SpriteSystem extends System {
 	constructor(scene: Scene) {
@@ -49,5 +51,8 @@ export class SpriteSystem extends System {
 		}
 	}
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
+	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+		const entities = this.getScene().getEntitiesAsArray();
+		
+	}
 }

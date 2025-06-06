@@ -15,7 +15,7 @@ import { RenderSystem } from "../render/render-system";
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected systems: Set<System> = new Set();
-	protected _renderer: RenderSystem;
+	private _renderer: RenderSystem;
 
 	constructor() {
 		this.addSystem(new PhysicsSystem(this)); // 1. Mueve entidades según velocidad/aceleración

@@ -36,5 +36,4 @@ export class SpriteAnimation extends Component {
 		this.currentFrame = 0;
 		this.currentTime = 0;
 	}
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }

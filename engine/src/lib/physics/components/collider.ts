@@ -75,21 +75,5 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	// 	return new Vector2(parentSize.x + this.size.x, parentSize.y + this.size.y);
 	// }
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		context.beginPath();
-		context.save();
-		context.translate(this.getPosition().x, this.getPosition().y);
-		context.rotate(MathUtil.degToRad(this.entity.getComponent(Transform).rotation));
-		context.translate(-this.getPosition().x, -this.getPosition().y);
-		if (this.debugMode) {
-			context.strokeStyle = "#f00";
-			context.lineWidth = 0.02;
-			const position = this.getPosition();
-			const size = this.size;
-			context.strokeRect(position.x - size.x / 2, position.y - size.y / 2, size.x, size.y);
-		}
-		context.restore();
-		context.closePath();
-	}
 	onCollisionDetected(): void {}
 }

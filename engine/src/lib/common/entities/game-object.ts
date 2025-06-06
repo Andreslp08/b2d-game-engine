@@ -30,17 +30,17 @@ export class GameObject extends Entity {
 	}
 
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		if (!this.transform){
-			return;
-		}
-		context.beginPath();
-		this.components.forEach((c) => {
+	// render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+	// 	if (!this.transform){
+	// 		return;
+	// 	}
+	// 	context.beginPath();
+	// 	this.components.forEach((c) => {
 
-			c.render(canvas, context);
-		});
-		context.closePath();
-	}
+	// 		c.render(canvas, context);
+	// 	});
+	// 	context.closePath();
+	// }
 
 	setSprite(sprite: Sprite) {
 		if (!sprite) return;

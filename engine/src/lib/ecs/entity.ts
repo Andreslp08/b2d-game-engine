@@ -1,9 +1,8 @@
 import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
-import { Renderable } from "../common/interfaces/renderable";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
 
-export abstract class Entity implements Renderable {
+export class Entity {
 	private static idIncrementator: number = 0;
 	readonly id: string;
 	protected components: Set<Component>;
@@ -100,6 +99,4 @@ export abstract class Entity implements Renderable {
 	getTags(): string[] {
 		return this.tags.getall();
 	}
-
-	abstract render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
 }

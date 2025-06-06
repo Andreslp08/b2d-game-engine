@@ -1,3 +1,4 @@
+import { Transform } from "../../common/components/transform";
 import { System } from "../../ecs/system";
 import Vector2 from "../../math/vector2";
 import { RigidBody } from "../components/rigid-body";
@@ -74,5 +75,26 @@ export class PhysicsSystem extends System {
 		});
 	}
 
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
+	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
+		const entities = this.getScene().getEntitiesAsArray();
+		for (const entity of entities) {
+			const transform = entity.getComponent(Transform);
+			if (!transform) continue;
+			if (transform.debugMode === false) continue;
+			if (transform) {
+				context.beginPath();
+				context.save();
+				context.strokeStyle = "#0f0";
+				context.lineWidth = 0.03;
+				context.strokeRect(
+					transform.position.x - transform.size.x / 2,
+					transform.position.y - transform.size.y / 2,
+					transform.size.x,
+					transform.size.y
+				);
+				context.restore();
+			}
+			context.closePath();
+		}
+	}
 }

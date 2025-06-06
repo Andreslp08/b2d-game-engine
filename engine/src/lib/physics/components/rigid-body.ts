@@ -38,6 +38,4 @@ export class RigidBody extends Component {
 		const gravityForce = new Vector2(0, gravity * this.mass);
 		this.addForce(gravityForce);
 	}
-
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }
