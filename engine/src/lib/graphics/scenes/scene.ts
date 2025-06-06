@@ -33,11 +33,11 @@ export class Scene implements Updatable {
 	constructor() {
 		this.addSystem(new PhysicsSystem(this)); // 1. Mueve entidades según velocidad/aceleración
 		this.addSystem(new CollisionSystem(this)); // 2. Detecta y resuelve colisiones
-		this.addSystem(new ScriptSystem(this)); // 3. Ejecuta scripts que pueden reaccionar a colisiones
 		this.addSystem(new ZIndexSortingSystem(this)); // 4. Ordena entidades visualmente
 		this.addSystem(new SpriteSystem(this)); // 5. Actualiza animaciones/sprites si es necesario
 		this.addSystem(new RenderSystem(this)); // 6. Renderiza todo en pantalla
 		this.addSystem(new DebugSystem(this)); // 7. Dibuja colisiones, info, etc. encima
+		this.addSystem(new ScriptSystem(this)); // 3. Ejecuta scripts que pueden reaccionar a colisiones
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
 		) as RenderSystem;

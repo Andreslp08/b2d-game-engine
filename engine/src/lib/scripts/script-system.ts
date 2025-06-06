@@ -8,7 +8,4 @@ export class ScriptSystem extends System{
        const scripts = Array.from(entities).filter((entity) => entity.hasComponent(ScriptComponent));
        scripts.forEach((entity) => entity.getComponent(ScriptComponent).onUpdate(deltaTime));
     }
-
-    render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
-    
 }

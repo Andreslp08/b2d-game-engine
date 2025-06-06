@@ -8,6 +8,4 @@ export class ZIndexSortingSystem extends System {
 			world.sortEntitiesByZIndex();
 		}
 	}
-
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {}
 }

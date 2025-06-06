@@ -134,30 +134,4 @@ export class CollisionSystem extends System {
 			}
 		}
 	}
-
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		const entities = this.getScene().getEntitiesAsArray();
-
-		for (const entity of entities) {
-			if (!entity.hasComponent(Collider) || !entity.hasComponent(Transform)) continue;
-			const collider = entity.getComponent(Collider);
-			if (collider.debugMode === false) continue;
-			context.beginPath();
-			context.save();
-			context.translate(collider.getPosition().x, collider.getPosition().y);
-			context.rotate(
-				MathUtil.degToRad(collider.getEntity().getComponent(Transform).rotation)
-			);
-			context.translate(-collider.getPosition().x, -collider.getPosition().y);
-
-			context.strokeStyle = "#f00";
-			context.lineWidth = 0.02;
-			const position = collider.getPosition();
-			const size = collider.getSize();
-			context.strokeRect(position.x - size.x / 2, position.y - size.y / 2, size.x, size.y);
-
-			context.restore();
-			context.closePath();
-		}
-	}
 }

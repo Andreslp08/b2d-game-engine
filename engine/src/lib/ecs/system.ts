@@ -2,7 +2,7 @@ import { Scene } from "../graphics/scenes/scene";
 import { Renderable } from "../common/interfaces/renderable";
 import { Updatable } from "../common/interfaces/updatable";
 
-export abstract class System implements Updatable, Renderable {
+export abstract class System implements Updatable {
 	private name: string = "System";
 	private scene: Scene;
 	constructor(scene: Scene) {
@@ -26,6 +26,4 @@ export abstract class System implements Updatable, Renderable {
 	}
 
 	abstract update(deltaTime: number): void;
-
-	abstract render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void;
 }

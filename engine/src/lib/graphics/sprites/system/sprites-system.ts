@@ -50,9 +50,4 @@ export class SpriteSystem extends System {
 			gameObject.setSprite(nextFrameSprite);
 		}
 	}
-
-	render(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): void {
-		const entities = this.getScene().getEntitiesAsArray();
-		
-	}
 }
