@@ -1,4 +1,8 @@
-import { PIXELS_PER_METER } from "../../common/constants";
+import {
+	PIXELS_PER_METER,
+	VIEWPORT_HEIGHT_IN_METERS,
+	VIEWPORT_WIDTH_IN_METERS,
+} from "../../common/constants";
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Scene } from "../scenes/scene";
@@ -19,22 +23,37 @@ export class WorldCamera extends Camera {
 	}
 
 	render(renderingContext: CanvasRenderingContext2D): void {
-		const screen = Screen.getInstance();
-		const baseRes = screen.baseResolution;
-		const canvasRes = screen.getResolution();
+		const canvas = renderingContext.canvas;
+		const PPM = PIXELS_PER_METER;
+		const canvasWidth = canvas.width;
+		const canvasHeight = canvas.height;
 
-		const scaleX = canvasRes.x / baseRes.x;
-		const scaleY = canvasRes.y / baseRes.y;
+		// 1. Escala basada en aspect ratio y tamaño lógico del viewport
+		const scaleX = canvasWidth / (VIEWPORT_WIDTH_IN_METERS * PPM);
+		const scaleY = canvasHeight / (VIEWPORT_HEIGHT_IN_METERS * PPM);
 		const uniformScale = Math.min(scaleX, scaleY);
+		const baseScale = PPM * uniformScale;
 
-		const totalScale = PIXELS_PER_METER * uniformScale;
-		const halfWidth = renderingContext.canvas.width / totalScale / 2;
-		const halfHeight = renderingContext.canvas.height / totalScale / 2;
+		// 2. Aplica zoom personalizado de cámara
+		const totalScaleX = baseScale * this.zoomX;
+		const totalScaleY = baseScale * this.zoomY;
 
-		const cameraX = this.position.x - halfWidth;
-		const cameraY = this.position.y - halfHeight;
+		// 3. Calcular tamaño real del área renderizada con zoom aplicado
+		const renderWidth = VIEWPORT_WIDTH_IN_METERS * totalScaleX;
+		const renderHeight = VIEWPORT_HEIGHT_IN_METERS * totalScaleY;
 
-		renderingContext.translate(-cameraX, -cameraY);
+		// 4. Compensar con offset para centrar (barras negras si es necesario)
+		const offsetX = (canvasWidth - renderWidth) / 2;
+		const offsetY = (canvasHeight - renderHeight) / 2;
+
+		// 5. Calcular centro de cámara
+		const cameraX = this.position.x - VIEWPORT_WIDTH_IN_METERS / 2;
+		const cameraY = this.position.y - VIEWPORT_HEIGHT_IN_METERS / 2;
+
+		// 6. Aplicar transformaciones en orden correcto
+		renderingContext.translate(offsetX, offsetY); // Centrar en canvas
+		renderingContext.scale(totalScaleX, totalScaleY); // Escalar con zoom
+		renderingContext.translate(-cameraX, -cameraY); // Mover cámara
 	}
 
 	update(deltaTime: number): void {

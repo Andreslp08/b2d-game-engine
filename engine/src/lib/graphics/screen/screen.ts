@@ -6,12 +6,12 @@ export class Screen {
 	protected static _baseResolution: Vector2 = new Vector2(800, 800);
 	protected clientResolution: Vector2;
 	protected static _instance: Screen = null;
-	protected _offset: Vector2;
+	protected _scale: Vector2;
 	public aspectRatio: ScreenAspectRatio;
 
 	constructor(size: Vector2) {
 		this.clientResolution = size;
-		this._offset = new Vector2(
+		this._scale = new Vector2(
 			this.clientResolution.x / Screen._baseResolution.x,
 			this.clientResolution.y / Screen._baseResolution.y
 		);
@@ -64,15 +64,15 @@ export class Screen {
 			canvasDimension.x / Screen._baseResolution.x,
 			canvasDimension.y / Screen._baseResolution.y
 		);
-		this._offset = new Vector2(scale, scale);
+		this._scale = new Vector2(scale, scale);
 	}
 
 	public getResolution(): Vector2 {
 		return this.clientResolution;
 	}
 
-	public get offset(): Vector2 {
-		return this._offset;
+	public get scale(): Vector2 {
+		return this._scale;
 	}
 
 	public get baseResolution(): Vector2 {

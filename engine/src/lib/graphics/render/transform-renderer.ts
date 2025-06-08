@@ -13,16 +13,29 @@ export class TransformRenderer extends Renderer {
 			renderingContext.beginPath();
 			renderingContext.save();
 			renderingContext.strokeStyle = "#0f0";
-			renderingContext.lineWidth = entity.renderLayer === RenderLayerTypes.Debug || entity.renderLayer === RenderLayerTypes.UI ? 3: 0.03;
+			renderingContext.lineWidth =
+				entity.renderLayer === RenderLayerTypes.Debug ||
+				entity.renderLayer === RenderLayerTypes.UI
+					? 3
+					: 0.03;
 			renderingContext.strokeRect(
 				transform.position.x - transform.size.x / 2,
 				transform.position.y - transform.size.y / 2,
 				transform.size.x,
 				transform.size.y
 			);
-			const size = entity.renderLayer === RenderLayerTypes.Debug || entity.renderLayer === RenderLayerTypes.UI ? 5: 0.03;
+			const size =
+				entity.renderLayer === RenderLayerTypes.Debug ||
+				entity.renderLayer === RenderLayerTypes.UI
+					? 5
+					: 0.03;
 			renderingContext.fillStyle = "#0f0";
-			renderingContext.fillRect(transform.position.x - size/ 2, transform.position.y - size / 2, size, size);
+			renderingContext.fillRect(
+				transform.position.x - size / 2,
+				transform.position.y - size / 2,
+				size,
+				size
+			);
 			renderingContext.restore();
 		}
 		renderingContext.closePath();

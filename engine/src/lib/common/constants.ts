@@ -1,2 +1,3 @@
-
 export const PIXELS_PER_METER = 100;
+export const VIEWPORT_WIDTH_IN_METERS = 16;
+export const VIEWPORT_HEIGHT_IN_METERS = 9;

@@ -5,8 +5,6 @@ import { Sprite } from "../sprites/components/sprite";
 import { SpriteRenderer } from "./sprite-renderer";
 import { TransformRenderer } from "./transform-renderer";
 import { ColliderRenderer } from "./collider-renderer";
-import { Screen } from "../screen/screen";
-import { PIXELS_PER_METER } from "../../common/constants";
 import {
 	BackgroundCameras,
 	DebugCameras,
@@ -16,6 +14,8 @@ import {
 	WorldCameras,
 } from "../cameras/camera-managers";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
+import { Camera } from "../cameras/camera";
+import { Entity } from "../../ecs/entity";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -24,97 +24,98 @@ export class RenderSystem extends System {
 	}
 	update(deltaTime: number): void {}
 
-	applyMeterScaling(context: CanvasRenderingContext2D) {
-		const screen = Screen.getInstance();
-		const baseRes = screen.baseResolution;
-		const canvasRes = screen.getResolution();
-
-		const scaleX = canvasRes.x / baseRes.x;
-		const scaleY = canvasRes.y / baseRes.y;
-		const uniformScale = Math.min(scaleX, scaleY);
-
-		const totalScale = PIXELS_PER_METER * uniformScale;
-
-		context.scale(totalScale, totalScale);
-		context.imageSmoothingEnabled = false;
+	fadeCameraHandler(context: CanvasRenderingContext2D, camera: Camera) {
+		const fade = camera.isFade;
+		const alpha = camera.fadeAlpha;
+		const color = camera.fadeColor;
+		if (!fade) return;
+		context.save();
+		context.globalAlpha = alpha;
+		context.fillStyle = color;
+		const sizeX = context.canvas.width;
+		const sizeY = context.canvas.height;
+		const position = camera.getPosition();
+		context.fillRect(position.x - sizeX / 2, position.y - sizeY / 2, sizeX, sizeY);
+		context.globalAlpha = 1;
+		context.restore();
 	}
+
+	renderLayerEntities = (
+		renderingContext: CanvasRenderingContext2D,
+		entities: Entity[],
+		layer: RenderLayerTypes
+	) => {
+		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
+		for (const entity of worldEntities) {
+			const spriteComponents = entity.getComponents(Sprite);
+			const colliderComponents = entity.getComponents(Transform);
+			const transformComponents = entity.getComponents(Transform);
+			spriteComponents.forEach((_) => {
+				const render = new SpriteRenderer(entity);
+				render.render(renderingContext);
+			});
+			transformComponents.forEach((_) => {
+				const render = new TransformRenderer(entity);
+				render.render(renderingContext);
+			});
+			colliderComponents.forEach((_) => {
+				const render = new ColliderRenderer(entity);
+				render.render(renderingContext);
+			});
+		}
+	};
 
 	render(renderingContext: CanvasRenderingContext2D): void {
 		const entities = this.getScene().getEntitiesAsArray();
 
-		const renderLayerEntities = (layer: RenderLayerTypes) => {
-			const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
-			for (const entity of worldEntities) {
-				const spriteComponents = entity.getComponents(Sprite);
-				const colliderComponents = entity.getComponents(Transform);
-				const transformComponents = entity.getComponents(Transform);
-				spriteComponents.forEach((_) => {
-					const render = new SpriteRenderer(entity);
-					render.render(renderingContext);
-				});
-				transformComponents.forEach((_) => {
-					const render = new TransformRenderer(entity);
-					render.render(renderingContext);
-				});
-				colliderComponents.forEach((_) => {
-					const render = new ColliderRenderer(entity);
-					render.render(renderingContext);
-				});
-			}
-		};
-
-		renderingContext.save();
-		this.applyMeterScaling(renderingContext);
-			// // filter with grayscale an blur
-			// renderingContext.filter = "grayscale(1) blur(20px)";	
-			// renderingContext.globalAlpha = 0.2;
-			// // set blend to multiply 
-			// renderingContext.globalCompositeOperation = "multiply";
 		// BACKGROUND
 		if (BackgroundCameras.currentCamera) {
+			renderingContext.save();
 			BackgroundCameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.Background);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Background);
+			this.fadeCameraHandler(renderingContext, BackgroundCameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
-		renderingContext.save();
-		this.applyMeterScaling(renderingContext);
 		//WORLD
 		if (WorldCameras.currentCamera) {
+			renderingContext.save();
 			WorldCameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.World);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.World);
+			this.fadeCameraHandler(renderingContext, WorldCameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
-		renderingContext.save();
-		this.applyMeterScaling(renderingContext);
-
 		//FOREGROUND
 		if (ForegroundCameras.currentCamera) {
+			renderingContext.save();
 			ForegroundCameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.Foreground);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Foreground);
+			this.fadeCameraHandler(renderingContext, ForegroundCameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
-		renderingContext.save();
-		this.applyMeterScaling(renderingContext);
-		//EFFECTS
+		// //EFFECTS
 		if (EffectsCameras.currentCamera) {
+			renderingContext.save();
 			EffectsCameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.Effects);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Effects);
+			this.fadeCameraHandler(renderingContext, EffectsCameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
 
-		renderingContext.save();
 		//UI
 		if (UICameras.currentCamera) {
+			renderingContext.save();
 			UICameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.UI);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.UI);	
+			this.fadeCameraHandler(renderingContext, UICameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
-		renderingContext.save();
 		//DEBUG
 		if (DebugCameras.currentCamera) {
+			renderingContext.save();
 			DebugCameras.currentCamera.render(renderingContext);
-			renderLayerEntities(RenderLayerTypes.Debug);
+			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Debug);
+			this.fadeCameraHandler(renderingContext, DebugCameras.currentCamera);
+			renderingContext.restore();
 		}
-		renderingContext.restore();
 	}
 }

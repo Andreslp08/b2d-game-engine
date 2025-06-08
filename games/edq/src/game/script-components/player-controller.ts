@@ -48,7 +48,6 @@ export class PlayerController extends ScriptComponent {
 		const gameObject = rb.gameObject;
 		const movement = gameObject.getComponent(BasicMovement);
 		const collider = entity.getComponent(Collider);
-		console.log('collision direction', collider.collisionDirection)
 		if (!entity.hasComponent(BasicMovement)) return;
 		const y = gameObject.transform.position.y;
 		// Salto

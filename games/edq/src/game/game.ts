@@ -8,9 +8,13 @@ import { GameSceneLoader } from "./scene-loader";
 // import { GameSceneLoader } from "./scene-loader";
 
 const setLoadingGame = useGameStore.getState().setLoadingGame;
-const aspectRatio = 16 / 9;
+const aspectRatio = 16/9;
 export const currentGameInstance = new Engine();
 Screen.getInstance().setResolution(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
+	Screen.getInstance().setResolution(
+		new Vector2(window.innerWidth, window.innerHeight),
+		aspectRatio
+	);
 addEventListener("resize", () => {
 	console.log("updating resolution");
 	Screen.getInstance().setResolution(
