@@ -6,12 +6,9 @@ import {
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Scene } from "../scenes/scene";
-import { Screen } from "../screen/screen";
 import { Camera } from "./camera";
 
 export class WorldCamera extends Camera {
-	zoomX: number;
-	zoomY: number;
 
 	constructor(initialPosition: Vector2, scene: Scene) {
 		super(initialPosition, scene);
@@ -56,31 +53,4 @@ export class WorldCamera extends Camera {
 		renderingContext.translate(-cameraX, -cameraY); // Mover cámara
 	}
 
-	update(deltaTime: number): void {
-		this.scene.update(deltaTime);
-	}
-
-	setZoomX(zoomX: number): void {
-		const previousZoomX = this.zoomX;
-		this.zoomX = zoomX;
-		const deltaZoomX = this.zoomX - previousZoomX;
-		const deltaCameraX = (deltaZoomX * this.position.x) / this.zoomX;
-		this.position.x -= deltaCameraX;
-	}
-
-	getZoomX(): number {
-		return this.zoomX;
-	}
-
-	setZoomY(zoomY: number): void {
-		const previousZoomY = this.zoomY;
-		this.zoomY = zoomY;
-		const deltaZoomY = this.zoomY - previousZoomY;
-		const deltaCameraY = (deltaZoomY * this.position.y) / this.zoomY;
-		this.position.y -= deltaCameraY;
-	}
-
-	getZoomY(): number {
-		return this.zoomY;
-	}
 }

@@ -4,7 +4,9 @@ import Vector2 from "../../math/vector2";
 import { Renderable } from "../../common/interfaces/renderable";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 
-export class Camera implements Renderable, Updatable {
+export class Camera implements Renderable {
+	zoomX: number;
+	zoomY: number;
 	renderLayer: RenderLayerTypes;
 	protected position: Vector2;
 	scene: Scene;
@@ -41,7 +43,30 @@ export class Camera implements Renderable, Updatable {
 		return this._fadeColor;
 	}
 
+		setZoomX(zoomX: number): void {
+		const previousZoomX = this.zoomX;
+		this.zoomX = zoomX;
+		const deltaZoomX = this.zoomX - previousZoomX;
+		const deltaCameraX = (deltaZoomX * this.position.x) / this.zoomX;
+		this.position.x -= deltaCameraX;
+	}
+
+	getZoomX(): number {
+		return this.zoomX;
+	}
+
+	setZoomY(zoomY: number): void {
+		const previousZoomY = this.zoomY;
+		this.zoomY = zoomY;
+		const deltaZoomY = this.zoomY - previousZoomY;
+		const deltaCameraY = (deltaZoomY * this.position.y) / this.zoomY;
+		this.position.y -= deltaCameraY;
+	}
+
+	getZoomY(): number {
+		return this.zoomY;
+	}
+
 
 	render(context: CanvasRenderingContext2D): void {}
-	update(deltaTime: number): void {}
 }
