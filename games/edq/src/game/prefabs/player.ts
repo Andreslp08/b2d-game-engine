@@ -9,6 +9,8 @@ import { BasicMovement } from "../script-components/basic-movement";
 import { PlayerController } from "../script-components/player-controller";
 import { HealthComponent } from "../script-components/health-component";
 import { FallDamage } from "../script-components/fall-damage";
+import { PlayerHud } from "../hud/hud";
+import { ShieldComponent } from "../script-components/shield-component";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -23,7 +25,9 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new BasicMovement());
 	entity.addComponent(new PlayerController(entity));
 	entity.addComponent(new HealthComponent(entity, 100, 100, true));
+	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
+	entity.addComponent( new PlayerHud(entity));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(RigidBody);
 	const playerMovement = entity.getComponent(BasicMovement);
@@ -37,9 +41,5 @@ export const createPlayer = (position: Vector2): GameObject => {
 	playerMovement.forceX = 12000;
 	playerMovement.forceY = 15000;
 	playerMovement.maxJumpHeight = 1.25;
-	// const health = entity.getComponent(HealthComponent);
-	// setInterval(() => {
-	// 	health.health -= 1;
-	// }, 10);
 	return entity;
 };
