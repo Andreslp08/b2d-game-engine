@@ -49,7 +49,7 @@ export class PlayerController extends ScriptComponent {
 		}
 		const newCameraPos = new Vector2(
 			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
-			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 0.3)
+			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * _deltaTime)
 		);
 		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
 		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);

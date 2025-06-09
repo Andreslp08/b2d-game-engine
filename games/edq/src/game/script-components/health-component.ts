@@ -22,6 +22,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 		private maxHealth: number = 100
 	) {
 		super(transform);
+		this.displayedHealth = this.health;
 	}
 
 	setVisible(visible: boolean) {
@@ -80,7 +81,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 		this.displayedHealth = MathUtil.lerp(
 			this.displayedHealth,
 			this.health,
-			0.01 * delta
+			5 * delta
 		);
 	}
 }
@@ -152,7 +153,11 @@ export class HealthComponent extends ScriptComponent {
 		return this.health;
 	}
 
-	onUpdate(deltaTime: number): void {}
+	onUpdate(deltaTime: number): void {
+		// if(this.health <= 0) {
+		// 	Time.timeScale = 0.1;
+		// }
+	}
 
 	onLateUpdate(deltaTime: number): void {
 		const scene = this.entity.getScene();

@@ -5,9 +5,9 @@ import { MouseManager } from "./input/mouse-manager";
 import { Time } from "./common/interfaces/time";
 
 let lastTime = 0;
-let accFrameMs = 0;
-const frameRate = 60;
-const frameMs = 1000 / frameRate;
+// let accFrameMs = 0;
+// const frameRate = 60;
+// const frameMs = 1000 / frameRate;
 let requestAnimationFrame;
 
 export class Engine {
@@ -15,7 +15,7 @@ export class Engine {
 	private static _context: CanvasRenderingContext2D;
 	private scene: Scene;
 	private static _isRunning: boolean = false;
-	 static _isPaused: boolean = false;
+	static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
 	private static _sleeping: boolean = false;
 
@@ -125,27 +125,23 @@ export class Engine {
 	}
 
 	private loop(currentTime: number = 0): void {
-		const dt = currentTime - lastTime; // en milisegundos
-		lastTime += dt;
-		accFrameMs += dt;
-		
-		while (accFrameMs > frameMs) {
-			Time._update(frameMs);
-			accFrameMs -= frameMs;
-			if (!Engine._isPaused && !Engine._sleeping) {
-				if (this.scene) {
-					this.scene.update(frameMs / 1000);
-					console.log(frameMs / 1000);
-				}
+		const dt = (currentTime - lastTime) / 1000; // en segundos
+		lastTime = currentTime;
+
+		if (!Engine._isPaused && !Engine._sleeping) {
+			// Actualizar el tiempo global con escala de tiempo
+			Time._update(dt);
+
+			if (this.scene) {
+				this.scene.update(Time.deltaTime); // La lógica usa dt real
 			}
 		}
+
 		this.clearCanvas();
 		if (this.scene.renderer && !Engine._sleeping) {
 			this.scene.renderer.render(Engine._context);
-		} else {
-			this.clearCanvas();
 		}
-		// /if(/render
+
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }
