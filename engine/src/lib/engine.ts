@@ -14,8 +14,9 @@ export class Engine {
 	private static _context: CanvasRenderingContext2D;
 	private scene: Scene;
 	private static _isRunning: boolean = false;
-	private static _isPaused: boolean = false;
+	 static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
+	private static _sleeping: boolean = false;
 
 	constructor() {
 		const gameRoot = document.getElementById("game-root") as HTMLDivElement;
@@ -37,14 +38,27 @@ export class Engine {
 		canvas.height = 0;
 		gameRoot.innerHTML = "";
 		gameRoot.appendChild(canvas);
-		KeyBoardManager.listen();
-		MouseManager.listen();
+		const keyBoardManager = KeyBoardManager.listen();
+		const mouseManager = MouseManager.listen();
 		Engine._canvas = canvas;
 		Engine._context = Engine._canvas.getContext("2d");
 		Screen.getInstance().setCanvasBackgroundColor("rgb(30 30 30)");
 		this.loop = this.loop.bind(this);
+		// on pause tab event
+		window.addEventListener("visibilitychange", () => {
+			if (document.hidden) {
+				mouseManager.unlisten();
+				keyBoardManager.unlisten();
+				Engine._sleeping = true;
+			} else {
+				setTimeout(() => {
+					Engine._sleeping = false;
+					MouseManager.listen();
+					KeyBoardManager.listen();
+				}, 500);
+			}
+		});
 	}
-
 
 	public start() {
 		Engine._isRunning = true;
@@ -102,9 +116,11 @@ export class Engine {
 	}
 
 	private clearCanvas() {
-		Engine._canvas
-			.getContext("2d")
-			.clearRect(0, 0, Engine._canvas.width, Engine._canvas.height);
+		const ctx = Engine._canvas.getContext("2d");
+		ctx.save(); // por si hay transformaciones activas
+		ctx.setTransform(1, 0, 0, 1, 0, 0); // resetea todo: escala, rotación, traslación
+		ctx.clearRect(0, 0, Engine._canvas.width, Engine._canvas.height);
+		ctx.restore();
 	}
 
 	private loop(currentTime: number = 0): void {
@@ -115,7 +131,7 @@ export class Engine {
 		while (accFrameMs > frameMs) {
 			//update logic
 			accFrameMs -= frameMs;
-			if (!Engine._isPaused) {
+			if (!Engine._isPaused && !Engine._sleeping) {
 				if (this.scene) {
 					this.scene.update(frameMs / 1000);
 				}
@@ -123,10 +139,12 @@ export class Engine {
 			}
 		}
 		this.clearCanvas();
-		if(this.scene.renderer){
+		if (this.scene.renderer && !Engine._sleeping) {
 			this.scene.renderer.render(Engine._context);
+		} else {
+			this.clearCanvas();
 		}
-		// //render
+		// /if(/render
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }

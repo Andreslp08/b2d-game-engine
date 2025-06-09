@@ -57,6 +57,9 @@ export class SpriteRenderer extends Renderer {
 					sprite.entityTransform.size.y
 				);
 			} else {
+				if (!sprite.showBlankSprite) {
+					return;
+				}
 				renderingContext.beginPath();
 				renderingContext.fillStyle = "#fff";
 				renderingContext.fillRect(

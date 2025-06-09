@@ -7,6 +7,7 @@ import { Collider } from "engine/physics/components/collider";
 import { BodyType } from "engine/physics/enum/body-type";
 import { BasicMovement } from "../script-components/basic-movement";
 import { PlayerController } from "../script-components/player-controller";
+import { HealthComponent } from "../script-components/health-component";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -20,9 +21,11 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
     entity.addComponent(new PlayerController(entity));
+	entity.addComponent(new HealthComponent(entity, 50, 100, true ));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(RigidBody);
 	const playerMovement = entity.getComponent(BasicMovement);
+	playerMovement.direction.x = 1;
 	collider.setSize(new Vector2(0.5, entity.transform.size.y));
 	collider.setOffsetPosition(new Vector2(0, 0));
 	playerBody.gravity = 75;
@@ -32,5 +35,9 @@ export const createPlayer = (position: Vector2): GameObject => {
 	playerMovement.forceX = 12000;
 	playerMovement.forceY = 15000;
 	playerMovement.maxJumpHeight = 1.25;
+	// const health = entity.getComponent(HealthComponent);
+	// setInterval(() => {
+	// 	health.health -= 1;
+	// }, 10);
 	return entity;
 };

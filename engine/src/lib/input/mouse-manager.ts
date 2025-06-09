@@ -15,7 +15,7 @@ export class MouseManager {
 	private static cursorVisible: boolean = true;
 	private static clicksDown: object = {};
 
-	static listen(): void {
+	static listen() {
 		window.addEventListener("contextmenu", (e: Event) => {
 			e.preventDefault();
 		});
@@ -47,6 +47,15 @@ export class MouseManager {
 		window.addEventListener("mousedown", onMouseDown);
 		window.removeEventListener("mouseup", onMouseUp);
 		window.addEventListener("mouseup", onMouseUp);
+
+		return {
+			unlisten: () => {
+				MouseManager.clicksDown = {};
+				window.removeEventListener("mousemove", onMouseMove);
+				window.removeEventListener("mousedown", onMouseDown);
+				window.removeEventListener("mouseup", onMouseUp);
+			}
+		}
 	}
 
 	public static onWheel(wheelEventListener: WheelEventListener): void {

@@ -1,26 +1,20 @@
-import { BasicMovement } from './../script-components/basic-movement';
 import { GameObject } from "engine/common/entities/game-object";
 import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
 
 import { GameScene } from "./game-scene";
 import { GameSceneLevel } from "../enum/scene";
-// import { Box } from "../`scripts/box";
-import { UIObject } from "engine/ui/entities/ui-object";
 import { createBox } from "../prefabs/box";
 import { createPlayer } from "../prefabs/player";
-import { DebugMode } from "engine/debug/debug";
 import { Collider } from "engine/physics/components/collider";
 import { RigidBody } from "engine/physics/components/rigid-body";
 import { BodyType } from "engine/physics/enum/body-type";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { PlayerController } from "../script-components/player-controller";
-import { MathUtil } from 'engine/math/math-util';
+import { DebugMode } from "engine/debug/debug";
+import { createVerticalBounds } from "../prefabs/vertical-bounds";
 
-
-let time = 0;
 export class Level1 extends GameScene {
 	player: GameObject;
 	floor: GameObject;
@@ -28,12 +22,12 @@ export class Level1 extends GameScene {
 
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
-		DebugMode.enabled = true;
+		// DebugMode.enabled = true;
 		this.loadBackground();
 		this.loadWorld();
 		// this.loadForeground();
 		// this.loadEffects();
-		// this.loadUI();
+		this.loadUI();
 		// this.loadDebug();
 	}
 
@@ -49,9 +43,21 @@ export class Level1 extends GameScene {
 	}
 
 	loadWorld() {
+		const leftWallId = this.addEntity(
+			createVerticalBounds({position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0}, "left"),
+		)
+		const leftWall = this.getEntityById<GameObject>(leftWallId);
+
+		const rightWallId = this.addEntity(
+			createVerticalBounds({position: new Vector2(2000, 0), size: new Vector2(3, 1000), rotation: 0}, "right"),
+		)
+		const rightWall = this.getEntityById<GameObject>(rightWallId);
+
+	
+
 		const floorId = this.addEntity(
 			new GameObject({
-				position: new Vector2(0, 2.6),
+				position: new Vector2(0, 3),
 				rotation: 0,
 				size: new Vector2(1000, 5),
 			})
@@ -65,23 +71,16 @@ export class Level1 extends GameScene {
 		// this.addEntity(createBox(new Vector2(2, -1.4)));
 		// this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
 
-		for (let i = 0; i < 10; i++) {
-			if(i > 3){
-				this.addEntity(createBox(new Vector2((i+i*1) , -1.5)));
-			}else{
-				this.addEntity(createBox(new Vector2((0.5*i) , -1.5)));
+		for(let i = 0; i < 50; i++) {
+			for(let j = 0; j < 5; j++) {
+				this.addEntity(createBox(new Vector2((j+10)*0.5+i*2, i * -2)));
 			}
 		}
+	
 
 
-		const playerId = this.addEntity(createPlayer(new Vector2(0, -5)));
+		const playerId = this.addEntity(createPlayer(new Vector2(0, 0)));
 		this.player = this.getEntityById<GameObject>(playerId);
-		const boxid = this.addEntity(createPlayer(new Vector2(-1, -5)));
-		const box =this.getEntityById<GameObject>(boxid);
-		const movement = box.getComponent(BasicMovement);
-		movement.inputKeys.right = "ArrowRight";
-		movement.inputKeys.left = "ArrowLeft";
-		movement.inputKeys.up = "ArrowUp";
 	}
 
 	loadForeground() {
@@ -110,16 +109,14 @@ export class Level1 extends GameScene {
 	}
 
 	loadUI() {
-		this.addEntity(
-			new UIObject({ position: new Vector2(0, 0), rotation: 0, size: new Vector2(500, 500) })
-		);
+	
 	}
 
 	loadBackground() {
 		const w = 8;
 		const h = 8;
 		const x = -4;
-		const y = 1;
+		const y =1;
 
 		for (let i = 0; i < 10; i++) {
 			const bg = new GameObject(
@@ -159,19 +156,5 @@ export class Level1 extends GameScene {
 			console.log("oki");
 		}
 	}
-	update(deltaTime: number): void {
-		super.update(deltaTime);
-		this.camera.setPosition(
-			this.player.transform.position.clone().substract(new Vector2(0, 1))
-		);
-		time += deltaTime;
-		const t =  Math.abs(Math.cos(time * Math.PI/2));
-		// if(t > 1 || t < 0) t = 0;
-		// cos(rad) fade
-		
 
-		const alpha = MathUtil.lerp(0, 1,t);
-		this.camera.fadeCamera(false, alpha, "#000");
-		this.testMouse();
-	}
 }

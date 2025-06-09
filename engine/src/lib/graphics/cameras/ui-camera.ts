@@ -21,8 +21,6 @@ export class UICamera extends Camera {
 
 		const uniformScale = Math.min(scaleX, scaleY);
 		renderingContext.scale(uniformScale, uniformScale);
-		// context.fillStyle = "red";
-		// context.fillRect(0, 0, 200, 200);
 	}
 
 	update(deltaTime: number): void {}

@@ -16,6 +16,8 @@ import {
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Camera } from "../cameras/camera";
 import { Entity } from "../../ecs/entity";
+import { Collider } from "../../physics/components/collider";
+import { UIRenderer } from "./ui-renderer";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -48,7 +50,7 @@ export class RenderSystem extends System {
 		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
 		for (const entity of worldEntities) {
 			const spriteComponents = entity.getComponents(Sprite);
-			const colliderComponents = entity.getComponents(Transform);
+			const colliderComponents = entity.getComponents(Collider);
 			const transformComponents = entity.getComponents(Transform);
 			spriteComponents.forEach((_) => {
 				const render = new SpriteRenderer(entity);
@@ -62,6 +64,8 @@ export class RenderSystem extends System {
 				const render = new ColliderRenderer(entity);
 				render.render(renderingContext);
 			});
+			const uiRenderer = new UIRenderer(entity);
+			uiRenderer.render(renderingContext);
 		}
 	};
 

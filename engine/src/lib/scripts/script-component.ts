@@ -19,5 +19,7 @@ export class ScriptComponent extends Component {
 
 	onStart(): void {}
 	onUpdate(deltaTime: number): void {}
+	onFixedUpdate(deltaTime: number): void {}
+	onLateUpdate(deltaTime: number): void {}
 	onDestroy(): void {}
 }

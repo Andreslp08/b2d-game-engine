@@ -11,6 +11,7 @@ export class Sprite extends Component {
 	id: string;
 	visible: boolean;
 	direction: { x: 1 | -1; y: 1 | -1 } = { x: 1, y: 1 };
+	showBlankSprite: boolean = true;
 
 	/**
 	 * Constructor for a Sprite component.

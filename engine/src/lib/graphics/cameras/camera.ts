@@ -27,6 +27,18 @@ export class Camera implements Renderable {
 		return this.position;
 	}
 
+	public getRawPosition(): Vector2 {
+		return this.position;
+	}
+
+	public setXPosition(x: number): void {
+		this.position.x = x;
+	}
+
+	public setYPosition(y: number): void {
+		this.position.y = y;
+	}
+
 	public fadeCamera(fade: boolean, alpha: number, color?: string): void {
 		this._fade = fade;
 		this._fadeAlpha = alpha;

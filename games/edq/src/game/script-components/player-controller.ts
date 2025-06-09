@@ -8,6 +8,10 @@ import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-anima
 import { PlayerIdle, PlayerJumpSequence, RightRunningSequence } from "../sprite-sequences";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
+import { WorldCameras } from "engine/graphics/cameras/camera-managers";
+import { Transform } from "engine/common/components/transform";
+import { MathUtil } from "engine/math/math-util";
+import { GameObject } from "engine/common/entities/game-object";
 
 let isClimbKeyPressed = false;
 
@@ -17,9 +21,48 @@ export class PlayerController extends ScriptComponent {
 	}
 
 	onUpdate(_deltaTime: number): void {
+		const camera = WorldCameras.currentCamera;
+
+		const scene = this.entity.getScene();
+		const leftBound = scene.getEntityByTag<GameObject>("main-left-bound");
+		const rightBound = scene.getEntityByTag<GameObject>("main-right-bound");
+
+
+		
+		const targetGameObject = (this.entity as GameObject);
+		const thresholdX = 0;
+		const thresholdY = targetGameObject.transform.size.y;
+		const targetPos = targetGameObject.transform.position.clone();
+		const cameraPos = camera.getPosition().clone();
+
+		const dx = targetPos.x - cameraPos.x;
+		const dy = targetPos.y - cameraPos.y;
+
+		// Solo mover en X si sale del umbral
+		if (Math.abs(dx) > thresholdX ) {
+			cameraPos.x = targetPos.x - Math.sign(dx) * thresholdX;
+		}
+
+		// Solo mover en Y si sale del umbral
+		if (Math.abs(dy) > thresholdY) {
+			cameraPos.y = targetPos.y - Math.sign(dy) * thresholdY;
+		}
+		const newCameraPos = new Vector2(
+			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
+			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 0.3)
+		);
+		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
+		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
+
+		if(leftDistance > 6.8 && rightDistance > 6.8) {
+			camera.setPosition(newCameraPos);
+		}else{
+			camera.setYPosition(newCameraPos.y);
+		}
+
+		// === MOVIMIENTO Y CONTROLES ===
 		const entity = this.entity;
 		if (!entity.hasComponent(BasicMovement)) return;
-		this.climbController();
 		this.horizontalController();
 		this.jumpController();
 		this.spriteAnimationsController();
@@ -32,7 +75,6 @@ export class PlayerController extends ScriptComponent {
 		if (!entity.hasComponent(BasicMovement)) return;
 		const shift = KeyBoardManager.keyDown("shift");
 		isClimbKeyPressed = shift;
-	
 
 		// Cambia el zIndex si ambos están activos
 		if (isClimbKeyPressed) {
@@ -57,7 +99,12 @@ export class PlayerController extends ScriptComponent {
 				movement.isJumping = true;
 				movement.jumpStartY = y;
 			}
-			if (movement.jumpStartY !== null && movement.jumpStartY - y <  movement.maxJumpHeight && movement.isJumping &&  (collider.collisionDirection.y !== CollisionDirection.TOP)) {
+			if (
+				movement.jumpStartY !== null &&
+				movement.jumpStartY - y < movement.maxJumpHeight &&
+				movement.isJumping &&
+				collider.collisionDirection.y !== CollisionDirection.TOP
+			) {
 				rb.addForce(new Vector2(0, -movement.forceY));
 			}
 		}

@@ -1,6 +1,7 @@
 import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
+import { Scene } from "../graphics/scenes/scene";
 
 export class Entity {
 	private static idIncrementator: number = 0;
@@ -9,6 +10,7 @@ export class Entity {
 	protected tags: Tags;
 	protected _renderLayer: RenderLayerTypes;
 	protected zIndex: number = 1;
+	protected scene: Scene;
 
 	constructor() {
 		this.id = `entity-${Entity.idIncrementator}`;
@@ -98,5 +100,13 @@ export class Entity {
 
 	getTags(): string[] {
 		return this.tags.getall();
+	}
+
+	setScene(scene: Scene): void {
+		this.scene = scene;
+	}
+
+	getScene(): Scene {
+		return this.scene;
 	}
 }

@@ -1,11 +1,45 @@
 import { System } from "../ecs/system";
 import { ScriptComponent } from "./script-component";
 
-export class ScriptSystem extends System{
-    
-    update(deltaTime: number): void {
-        const entities = this.getScene().getEntitiesAsArray();
-       const scripts = Array.from(entities).filter((entity) => entity.hasComponent(ScriptComponent));
-       scripts.forEach((entity) => entity.getComponent(ScriptComponent).onUpdate(deltaTime));
+export class ScriptSystem extends System {
+  private accumulatedTime: number = 0;
+  private fixedDeltaTime: number = 1 / 50; // 50 veces por segundo (como Unity)
+
+  update(deltaTime: number): void {
+    const entities = this.getScene().getEntitiesAsArray();
+
+    // 🔁 Llamar FixedUpdate según el tiempo acumulado
+    this.accumulatedTime += deltaTime;
+    while (this.accumulatedTime >= this.fixedDeltaTime) {
+      for (const entity of entities) {
+        const scripts = entity.getComponents(ScriptComponent);
+        scripts.forEach((script) => {
+          if (typeof script.onFixedUpdate === "function") {
+            script.onFixedUpdate(this.fixedDeltaTime);
+          }
+        });
+      }
+      this.accumulatedTime -= this.fixedDeltaTime;
     }
+
+    // ⏱️ Llamar Update
+    for (const entity of entities) {
+      const scripts = entity.getComponents(ScriptComponent);
+      scripts.forEach((script) => {
+        if (typeof script.onUpdate === "function") {
+          script.onUpdate(deltaTime);
+        }
+      });
+    }
+
+    // 🕓 Llamar LateUpdate
+    for (const entity of entities) {
+      const scripts = entity.getComponents(ScriptComponent);
+      scripts.forEach((script) => {
+        if (typeof script.onLateUpdate === "function") {
+          script.onLateUpdate(deltaTime);
+        }
+      });
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import { Transform } from "../../common/components/transform";
 import { MathUtil } from "../../math/math-util";
 import { Collider } from "../../physics/components/collider";
-import { Sprite } from "../sprites/components/sprite";
 import { Renderer } from "./render";
 
 export class ColliderRenderer extends Renderer {
