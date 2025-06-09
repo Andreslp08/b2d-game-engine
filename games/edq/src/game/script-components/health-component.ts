@@ -131,8 +131,8 @@ export class HealthComponent extends ScriptComponent {
 	constructor(
 		entity: Entity,
 		private health: number = 100,
-		public maxHealth: number = 100,
-		public showHealthBar: boolean = true
+		private maxHealth: number = 100,
+		private showHealthBar: boolean = true
 	) {
 		super(entity);
 		this.health = health;
@@ -153,10 +153,26 @@ export class HealthComponent extends ScriptComponent {
 		return this.health;
 	}
 
+	public getMaxHealth(): number {
+		return this.maxHealth;
+	}
+
+	public setMaxHealth(maxHealth: number) {
+		this.maxHealth = maxHealth;
+	}
+
 	onUpdate(deltaTime: number): void {
 		// if(this.health <= 0) {
 		// 	Time.timeScale = 0.1;
 		// }
+	}
+
+	setHealthBarVisible(show: boolean) {
+		this.showHealthBar = show;
+	}
+
+	isHealthBarVisible(): boolean {
+		return this.showHealthBar;
 	}
 
 	onLateUpdate(deltaTime: number): void {
