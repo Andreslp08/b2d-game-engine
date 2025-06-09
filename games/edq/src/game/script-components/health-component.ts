@@ -1,17 +1,21 @@
 import { PIXELS_PER_METER } from "engine/common/constants";
 import type { GameObject } from "engine/common/entities/game-object";
+import { Time } from "engine/common/interfaces/time";
+import type { Updatable } from "engine/common/interfaces/updatable";
 import type { Entity } from "engine/ecs/entity";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
 import type { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import type { ITranform } from "engine/input/interfaces/transform.interface";
+import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { UIComponent } from "engine/ui/components/ui-component";
 import { UIObject } from "engine/ui/entities/ui-object";
 
-export class HealthBarComponent extends UIComponent {
+export class HealthBarComponent extends UIComponent implements Updatable {
 	private visible = true;
+	private displayedHealth = 0;
 	constructor(
 		public transform: ITranform,
 		private health: number = 100,
@@ -62,7 +66,7 @@ export class HealthBarComponent extends UIComponent {
 		context.fill();
 
 		// Dibujar barra roja proporcional
-		const percentage = this.health / this.maxHealth;
+		const percentage = this.displayedHealth / this.maxHealth;
 		if (percentage > 0) {
 			context.beginPath();
 			context.roundRect(position.x, position.y, size.x * percentage, size.y, r);
@@ -70,6 +74,14 @@ export class HealthBarComponent extends UIComponent {
 			context.fill();
 		}
 		context.restore();
+	}
+
+	update(delta: number): void {
+		this.displayedHealth = MathUtil.lerp(
+			this.displayedHealth,
+			this.health,
+			0.01 * delta
+		);
 	}
 }
 
@@ -97,6 +109,7 @@ export class HealthUI extends UIObject {
 
 	setHealth(health: number) {
 		this._healthBar.setHealth(health);
+		this._healthBar.update(Time.deltaTime);
 	}
 
 	showHealthBar(show: boolean) {
@@ -116,13 +129,27 @@ export class HealthComponent extends ScriptComponent {
 	protected healthUI: HealthUI;
 	constructor(
 		entity: Entity,
-		public health: number = 100,
+		private health: number = 100,
 		public maxHealth: number = 100,
 		public showHealthBar: boolean = true
 	) {
 		super(entity);
 		this.health = health;
 		this.healthUI = new HealthUI();
+	}
+
+	public setHealth(health: number) {
+		if (health < 0.1) {
+			health = 0;
+		}
+		if (health > this.maxHealth) {
+			health = this.maxHealth;
+		}
+		this.health = health;
+	}
+
+	public getHealth(): number {
+		return this.health;
 	}
 
 	onUpdate(deltaTime: number): void {}

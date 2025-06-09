@@ -8,6 +8,7 @@ import { BodyType } from "engine/physics/enum/body-type";
 import { BasicMovement } from "../script-components/basic-movement";
 import { PlayerController } from "../script-components/player-controller";
 import { HealthComponent } from "../script-components/health-component";
+import { FallDamage } from "../script-components/fall-damage";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -20,8 +21,9 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new RigidBody(entity, BodyType.Dynamic));
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
-    entity.addComponent(new PlayerController(entity));
-	entity.addComponent(new HealthComponent(entity, 50, 100, true ));
+	entity.addComponent(new PlayerController(entity));
+	entity.addComponent(new HealthComponent(entity, 100, 100, true));
+	entity.addComponent(new FallDamage(entity));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(RigidBody);
 	const playerMovement = entity.getComponent(BasicMovement);

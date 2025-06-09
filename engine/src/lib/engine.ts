@@ -2,6 +2,7 @@ import { Scene } from "./graphics/scenes/scene";
 import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
+import { Time } from "./common/interfaces/time";
 
 let lastTime = 0;
 let accFrameMs = 0;
@@ -55,7 +56,7 @@ export class Engine {
 					Engine._sleeping = false;
 					MouseManager.listen();
 					KeyBoardManager.listen();
-				}, 500);
+				}, 250);
 			}
 		});
 	}
@@ -127,15 +128,15 @@ export class Engine {
 		const dt = currentTime - lastTime; // en milisegundos
 		lastTime += dt;
 		accFrameMs += dt;
-
+		
 		while (accFrameMs > frameMs) {
-			//update logic
+			Time._update(frameMs);
 			accFrameMs -= frameMs;
 			if (!Engine._isPaused && !Engine._sleeping) {
 				if (this.scene) {
 					this.scene.update(frameMs / 1000);
+					console.log(frameMs / 1000);
 				}
-				// Aquí es donde lo pasamos como segundos (dividir entre 1000)
 			}
 		}
 		this.clearCanvas();
