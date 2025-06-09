@@ -49,6 +49,9 @@ export const PRELOAD_IMAGES_PATHS: AssetToPreload[] = [
 			"/assets/textures/WorkBoss.jpg",
 			"/assets/textures/city.png",
 			"/assets/textures/crosshair.png",
+			"/assets/ui/segment-bar-container.png",
+			"/assets/ui/health-icon.png",
+			"/assets/ui/shield-icon.png",
 		],
 	},
 ];
