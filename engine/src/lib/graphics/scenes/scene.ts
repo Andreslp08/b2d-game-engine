@@ -31,12 +31,12 @@ export class Scene implements Updatable {
 	private _renderer: RenderSystem;
 
 	constructor() {
+		this.addSystem(new ScriptSystem(this)); 
 		this.addSystem(new PhysicsSystem(this));
 		this.addSystem(new CollisionSystem(this)); 
 		this.addSystem(new ZIndexSortingSystem(this));
 		this.addSystem(new SpriteSystem(this)); 
 		this.addSystem(new DebugSystem(this)); 
-		this.addSystem(new ScriptSystem(this)); 
 		this.addSystem(new RenderSystem(this)); 
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"

@@ -9,7 +9,6 @@ import { PlayerIdle, PlayerJumpSequence, RightRunningSequence } from "../sprite-
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import { Transform } from "engine/common/components/transform";
 import { MathUtil } from "engine/math/math-util";
 import { GameObject } from "engine/common/entities/game-object";
 

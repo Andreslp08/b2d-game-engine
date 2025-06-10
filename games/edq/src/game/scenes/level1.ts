@@ -12,8 +12,13 @@ import { BodyType } from "engine/physics/enum/body-type";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { DebugMode } from "engine/debug/debug";
 import { createVerticalBounds } from "../prefabs/vertical-bounds";
+import { createWeapon } from "../prefabs/weapon";
+import { WeaponHolder } from "../script-components/weapon";
+import { Engine } from "engine";
+import { PlayerController } from "../script-components/player-controller";
+import { createBullet } from "../prefabs/bullet";
+import { DebugMode } from "engine/debug/debug";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -22,6 +27,7 @@ export class Level1 extends GameScene {
 
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
+		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
 		this.loadBackground();
 		this.loadWorld();
@@ -57,7 +63,7 @@ export class Level1 extends GameScene {
 
 		const floorId = this.addEntity(
 			new GameObject({
-				position: new Vector2(0, 3),
+				position: new Vector2(0, 3.2),
 				rotation: 0,
 				size: new Vector2(1000, 5),
 			})
@@ -81,6 +87,15 @@ export class Level1 extends GameScene {
 
 		const playerId = this.addEntity(createPlayer(new Vector2(0, 0)));
 		this.player = this.getEntityById<GameObject>(playerId);
+		
+		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
+		const weapon = this.getEntityById<GameObject>(weaponId);
+		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
+
+		// player 2 
+		const player2 = createPlayer(new Vector2( 10, 0));
+		player2.deleteComponent(PlayerController)
+		this.addEntity(player2);
 	}
 
 	loadForeground() {
@@ -156,5 +171,6 @@ export class Level1 extends GameScene {
 			console.log("oki");
 		}
 	}
+	
 
 }

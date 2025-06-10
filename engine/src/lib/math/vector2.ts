@@ -84,17 +84,17 @@ export default class Vector2 {
 	}
 
 	public normalize(): Vector2 {
-		if (this.getMagnitude() > 0) {
-			const m = this.getMagnitude();
-			this.x = this.x / m;
-			this.y = this.y / m;
+		const m = this.getMagnitude();
+		if (m > 0) {
+			this.x /= m;
+			this.y /= m;
 		}
 		return this;
 	}
 
 	public rotate(radians: number): Vector2 {
 		const rx = Math.cos(radians) * this.x - Math.sin(radians) * this.y;
-		const ry = Math.sin(radians) * this.x - Math.cos(radians) * this.y;
+		const ry = Math.sin(radians) * this.x + Math.cos(radians) * this.y;
 		this.x = rx;
 		this.y = ry;
 		return this;
@@ -116,7 +116,7 @@ export default class Vector2 {
 		return this;
 	}
 
-	public set (x: number, y: number) {
+	public set(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 		return this;

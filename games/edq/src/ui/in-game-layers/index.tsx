@@ -12,7 +12,7 @@ export const InGameLayer = ()=>{
 			// transition={{ duration: 0.3 }}
 			className="w-full h-full flex items-center justify-center"
 		>
-			<div>In-game Layer</div>
+			{/* <div>In-game Layer</div> */}
 			
 		</motion.div>
     )

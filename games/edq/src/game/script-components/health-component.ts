@@ -78,11 +78,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 	}
 
 	update(delta: number): void {
-		this.displayedHealth = MathUtil.lerp(
-			this.displayedHealth,
-			this.health,
-			5 * delta
-		);
+		this.displayedHealth = MathUtil.lerp(this.displayedHealth, this.health, 5 * delta);
 	}
 }
 
@@ -137,6 +133,10 @@ export class HealthComponent extends ScriptComponent {
 		super(entity);
 		this.health = health;
 		this.healthUI = new HealthUI();
+	}
+
+	public setDamage(damage: number) {
+		this.setHealth(this.health - damage);
 	}
 
 	public setHealth(health: number) {

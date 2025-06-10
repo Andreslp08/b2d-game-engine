@@ -1,6 +1,6 @@
 import { Transform } from "../../common/components/transform";
 import { Component } from "../../ecs/component";
-import { MathUtil } from "../../math/math-util";
+import { Entity } from "../../ecs/entity";
 import Vector2 from "../../math/vector2";
 import { CollisionDirection } from "../enum/collision-direction";
 import { CollisionDetectionStategy } from "../interfaces/collisions";
@@ -14,6 +14,7 @@ export class Collider extends Component implements CollisionDetectionStategy {
 		y: CollisionDirection.TOP | CollisionDirection.BOTTOM | CollisionDirection.UNKNOWN;
 	} = { x: CollisionDirection.UNKNOWN, y: CollisionDirection.UNKNOWN };
 	ignoreZIndex: boolean = false;
+	protected _ignoreEntities: Entity[] = [];
 	protected offsetPosition: Vector2;
 	protected size: Vector2;
 
@@ -40,6 +41,32 @@ export class Collider extends Component implements CollisionDetectionStategy {
 		}
 		return isIntersecting;
 	}
+
+	ignoreEntity(entity: Entity) {
+		this._ignoreEntities.push(entity);
+	}
+
+	unignoreEntity(entity: Entity) {
+		this._ignoreEntities = this._ignoreEntities.filter((e) => e.id !== entity.id);
+	}
+
+	getIgnoreEntities() {
+		return this._ignoreEntities;
+	}
+
+	setIgnoreEntities(entities: Entity[]) {
+		this._ignoreEntities = entities;
+	}
+
+	isIgnoringEntity(entity: Entity): boolean {
+		const _entity =this._ignoreEntities.find((e) => e.id === entity.id);
+		return _entity !== undefined;
+	}
+
+	clearIgnoreEntities() {
+		this._ignoreEntities = [];
+	}
+
 
 	setOffsetPosition(position: Vector2) {
 		this.offsetPosition = position;

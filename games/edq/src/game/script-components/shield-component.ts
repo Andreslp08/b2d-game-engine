@@ -21,6 +21,11 @@ export class ShieldComponent extends ScriptComponent {
 		this.shield = shield;
 	}
 
+
+	public setDamage(damage: number) {
+		this.setShield(this.shield - damage);
+	}
+	
 	public getShield(): number {
 		return this.shield;
 	}

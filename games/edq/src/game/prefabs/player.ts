@@ -11,6 +11,7 @@ import { HealthComponent } from "../script-components/health-component";
 import { FallDamage } from "../script-components/fall-damage";
 import { PlayerHud } from "../hud/hud";
 import { ShieldComponent } from "../script-components/shield-component";
+import { WeaponHolder } from "../script-components/weapon";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -28,6 +29,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
 	entity.addComponent( new PlayerHud(entity));
+	entity.addComponent( new WeaponHolder(entity));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(RigidBody);
 	const playerMovement = entity.getComponent(BasicMovement);

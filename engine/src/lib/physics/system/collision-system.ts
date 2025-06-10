@@ -48,7 +48,6 @@ export class CollisionSystem extends System {
 			const rigidBodyA = entity.getComponent(RigidBody);
 			const colliderA = entity.getComponent(Collider);
 			const gameObjectA = rigidBodyA.gameObject;
-			if (colliderA.collidable === false) continue;
 
 			if (rigidBodyA.bodyType !== BodyType.Dynamic) continue;
 
@@ -71,6 +70,7 @@ export class CollisionSystem extends System {
 				)
 				continue;
 				if (gameObjectA === gameObjectB) continue;
+				if(colliderA.isIgnoringEntity(gameObjectB)) continue;
 				if (colliderA.collidable !== colliderB.collidable) continue;
 				colliderA.collisionDirection.x = CollisionDirection.UNKNOWN;
 				if (!colliderA.intersects(colliderB)) continue;
@@ -106,6 +106,7 @@ export class CollisionSystem extends System {
 				)
 					continue;
 				if (gameObjectA === gameObjectB) continue;
+				if(colliderA.isIgnoringEntity(gameObjectB)) continue;
 				if (colliderA.collidable !== colliderB.collidable) continue;
 				if (!colliderA.intersects(colliderB)) continue;
 				colliderA.isColliding = true;
@@ -126,8 +127,11 @@ export class CollisionSystem extends System {
 
 			// 	DETECT OVERLAP
 			for (const collision of collisions) {
-				const gameObjectA = collision.a.getComponent(Collider).getEntity();
-				const gameObjectB = collision.b.getComponent(Collider).getEntity();
+				const colliderA = collision.a.getComponent(Collider);
+				const colliderB = collision.b.getComponent(Collider);
+				if (!colliderA || !colliderB) continue;
+				const gameObjectA = colliderA.getEntity();
+				const gameObjectB = colliderB.getEntity();
 
 				const scriptComponentsA: ScriptComponent[] =
 					gameObjectA.getComponents<ScriptComponent>(
