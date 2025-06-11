@@ -10,7 +10,7 @@ import { KinematicBody } from "../components/kinematic-body";
 import { StaticBody } from "../components/static-body";
 import { BodyType } from "../enum/body-type";
 import { CollisionDirection } from "../enum/collision-direction";
-import { CollisionUtil } from "../util/direction";
+import { CollisionUtil } from "../util/collision-util";
 
 export class PhysicsSystem extends System {
 	constructor(scene: Scene) {
