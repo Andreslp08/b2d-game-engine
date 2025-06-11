@@ -38,6 +38,8 @@ const getCollisionDirection = (a: GameObject, b: GameObject): CollisionDirection
 };
 
 const getHorizontalCollisionPenetration = (a: Collider, b: Collider): number => {
+	if(!a || !b) return 0;
+	if(!a.getPosition() || !a.getSize() || !b.getPosition() || !b.getSize()) return 0;
 	const leftA = a.getPosition().x - a.getSize().x / 2;
 	const rightA = a.getPosition().x + a.getSize().x / 2;
 	const leftB = b.getPosition().x - b.getSize().x / 2;
@@ -52,6 +54,8 @@ const getHorizontalCollisionPenetration = (a: Collider, b: Collider): number => 
 };
 
 const getVerticalCollisionPenetration = (a: Collider, b: Collider): number => {
+	if(!a || !b) return 0;
+	if(!a.getPosition() || !a.getSize() || !b.getPosition() || !b.getSize()) return 0;
 	const topA = a.getPosition().y - a.getSize().y / 2;
 	const bottomA = a.getPosition().y + a.getSize().y / 2;
 	const topB = b.getPosition().y - b.getSize().y / 2;
