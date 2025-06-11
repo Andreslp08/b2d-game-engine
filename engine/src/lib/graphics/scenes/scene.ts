@@ -23,6 +23,7 @@ import { Component, ComponentClass } from "../../ecs/component";
 import { Entity } from "../../ecs/entity";
 import { RenderSystem } from "../render/render-system";
 import Vector2 from "../../math/vector2";
+import { ScriptComponent } from "../../scripts/script-component";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
@@ -102,13 +103,14 @@ export class Scene implements Updatable {
 	}
 
 	destroyEntity(entity: Entity): void {
-		entity.setScene(null);
+		entity.getComponents(ScriptComponent).forEach((script) => script.onDestroy());
 		entity.deleteAllComponent();
 		this.entities.delete(entity);
+		entity.setScene(null);
 	}
 
 	destroyEntityById(id: string): void {
-		this.entities.delete(this.getEntityById(id) as Entity);
+		this.destroyEntity(this.getEntityById(id) as Entity);
 	}
 
 	addSystem(system: System): string {
