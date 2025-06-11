@@ -25,6 +25,11 @@ export class WeaponHolder extends ScriptComponent {
 	onStart(): void {}
 
 	onUpdate(deltaTime: number): void {}
+
+	onDestroy(): void {
+		const scene = this.entity.getScene();
+		if (scene) scene.destroyEntity(this.weapon);
+	}
 }
 
 export class WeaponController extends ScriptComponent {
@@ -50,7 +55,6 @@ export class WeaponController extends ScriptComponent {
 
 	shot() {
 		if (this.shooting) return;
-		console.log("shooting");
 		const directionX = this.weaponHolder?.getComponent(Sprite)?.direction.x ?? 1;
 		const rotatedOffset = this.attachmentOffset.clone().rotate(this.currentAimAngle);
 		const spawnPosition = this.weaponPosition

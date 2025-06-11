@@ -207,4 +207,11 @@ export class HealthComponent extends ScriptComponent {
 			}
 		}
 	}
+
+	onDestroy(): void {
+		const scene = this.entity.getScene();
+		if (scene) {
+			scene.destroyEntity(this.healthUI);
+		}
+	}
 }
