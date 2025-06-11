@@ -38,4 +38,8 @@ export class DebugSystem extends System{
         });
     }
 
+    fixedUpdate(deltaTime: number): void {
+        
+    }
+
 }

@@ -1,4 +1,3 @@
-import { Updatable } from "../../common/interfaces/updatable";
 import { Scene } from "../scenes/scene";
 import Vector2 from "../../math/vector2";
 import { Renderable } from "../../common/interfaces/renderable";

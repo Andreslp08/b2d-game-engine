@@ -1,20 +1,15 @@
-import { Engine } from "engine";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { Transform } from "engine/common/components/transform";
 import { GameObject } from "engine/common/entities/game-object";
-import { Time } from "engine/common/interfaces/time";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { MouseManager } from "engine/input/mouse-manager";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { RigidBody } from "engine/physics/components/rigid-body";
-import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BulletController, createBullet } from "../prefabs/bullet";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
 import type { WorldCamera } from "engine/graphics/cameras/world-camera";
-import { m } from "framer-motion";
+import { DynamicBody } from "engine/physics/components/dynamic-body";
 
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
@@ -76,16 +71,16 @@ export class WeaponController extends ScriptComponent {
 		const scene = this.entity.getScene();
 		if (scene) {
 			this.entity.getScene()?.addEntity(obj);
-			const rb = obj.getComponent(RigidBody);
-			rb.gravity = 0.5;
-			rb.mass = 7;
-			rb.friction = 0.1;
-			rb.dragScale = 0;
+			const dynamicBody = obj.getComponent(DynamicBody);
+			dynamicBody.gravity = 0.5;
+			dynamicBody.mass = 7;
+			dynamicBody.friction = 0.1;
+			dynamicBody.dragScale = 0;
 			const force = new Vector2(1, 0)
 				.rotate(this.currentAimAngle)
 				.multiply(new Vector2(directionX, 1))
-				.multiplyBy(18000);
-			rb.addForce(force);
+				.multiplyBy(8000);
+			dynamicBody.addForce(force);
 			if (bulletController) {
 				bulletController.setShooted(true);
 			}
@@ -137,13 +132,15 @@ export class WeaponController extends ScriptComponent {
 		weaponTransform.rotation = angleDeg;
 		this.weaponPosition = weaponTransform.position.clone();
 		this.currentAimAngle = angleRad;
-		const fireRate = 0.4;
+
+	}
+
+	onFixedUpdate(deltaTime: number): void {
+		const fireRate = 0.3;
 		this.fireCooldown -= deltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
 			this.shot();
 			this.fireCooldown = fireRate;
 		}
 	}
-
-	onFixedUpdate(deltaTime: number): void {}
 }

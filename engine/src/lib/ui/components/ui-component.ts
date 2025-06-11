@@ -1,5 +1,4 @@
 import { Renderable } from "../../common/interfaces/renderable";
-import { Updatable } from "../../common/interfaces/updatable";
 import { Component } from "../../ecs/component";
 import { ITranform } from "../../input/interfaces/transform.interface";
 import Vector2 from "../../math/vector2";

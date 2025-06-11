@@ -2,10 +2,7 @@ import { GameObject } from "../../common/entities/game-object";
 import { Collider } from "../components/collider";
 import { CollisionDirection } from "../enum/collision-direction";
 
-export const getCollisionDirection = (
-	a: GameObject,
-	b: GameObject
-): CollisionDirection => {
+const getCollisionDirection = (a: GameObject, b: GameObject): CollisionDirection => {
 	if (!a.hasComponent(Collider) || !b.hasComponent(Collider)) return CollisionDirection.UNKNOWN;
 
 	const colliderA = a.getComponent(Collider);
@@ -38,4 +35,38 @@ export const getCollisionDirection = (
 	}
 
 	return CollisionDirection.UNKNOWN;
+};
+
+const getHorizontalCollisionPenetration = (a: Collider, b: Collider): number => {
+	const leftA = a.getPosition().x - a.getSize().x / 2;
+	const rightA = a.getPosition().x + a.getSize().x / 2;
+	const leftB = b.getPosition().x - b.getSize().x / 2;
+	const rightB = b.getPosition().x + b.getSize().x / 2;
+
+	if (rightA <= leftB || leftA >= rightB) return 0;
+
+	const overlapLeft = rightA - leftB;
+	const overlapRight = rightB - leftA;
+
+	return overlapLeft < overlapRight ? overlapLeft : -overlapRight;
+};
+
+const getVerticalCollisionPenetration = (a: Collider, b: Collider): number => {
+	const topA = a.getPosition().y - a.getSize().y / 2;
+	const bottomA = a.getPosition().y + a.getSize().y / 2;
+	const topB = b.getPosition().y - b.getSize().y / 2;
+	const bottomB = b.getPosition().y + b.getSize().y / 2;
+
+	if (bottomA <= topB || topA >= bottomB) return 0;
+
+	const overlapTop = bottomA - topB;
+	const overlapBottom = bottomB - topA;
+
+	return overlapTop < overlapBottom ? overlapTop : -overlapBottom;
+};
+
+export const CollisionUtil = {
+	getCollisionDirection,
+	getHorizontalCollisionPenetration,
+	getVerticalCollisionPenetration,
 };

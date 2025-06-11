@@ -25,6 +25,7 @@ export class RenderSystem extends System {
 		this.setName("RenderSystem");
 	}
 	update(deltaTime: number): void {}
+	fixedUpdate(deltaTime: number): void {}
 
 	fadeCameraHandler(context: CanvasRenderingContext2D, camera: Camera) {
 		const fade = camera.isFade;

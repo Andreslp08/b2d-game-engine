@@ -4,11 +4,11 @@ import type { Entity } from "engine/ecs/entity";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { RigidBody } from "engine/physics/components/rigid-body";
 import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "../script-components/health-component";
 import { ShieldComponent } from "../script-components/shield-component";
+import { DynamicBody } from "engine/physics/components/dynamic-body";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
@@ -74,6 +74,7 @@ export const createBullet = (position: Vector2) => {
     obj.addTag("bullet");
 	obj.addComponent(new BulletController(obj));
 	obj.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.2, 0.2)));
-	obj.addComponent(new RigidBody(obj, BodyType.Dynamic));
+	obj.addComponent(new DynamicBody(obj));
+	obj.getComponent(DynamicBody).bounciness = new Vector2(0.6, 0.6);
 	return obj;
 };

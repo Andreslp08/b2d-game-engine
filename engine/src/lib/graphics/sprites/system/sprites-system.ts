@@ -3,13 +3,16 @@ import { SpriteAnimation } from "../components/sprite-animation";
 import { Sprite } from "../components/sprite";
 import { GameObject } from "../../../common/entities/game-object";
 import { Scene } from "../../scenes/scene";
-import { Transform } from "../../../common/components/transform";
-import { MathUtil } from "../../../math/math-util";
 
 export class SpriteSystem extends System {
 	constructor(scene: Scene) {
 		super(scene);
 		this.setName("SpriteSystem");
+	}
+
+
+	fixedUpdate(deltaTime: number): void {
+		
 	}
 	update(deltaTime: number): void {
 		const entities = this.getScene().getEntitiesAsArray();

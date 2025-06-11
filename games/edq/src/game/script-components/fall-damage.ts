@@ -1,7 +1,7 @@
 import { GameObject } from "engine/common/entities/game-object";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "./health-component";
-import { RigidBody } from "engine/physics/components/rigid-body";
+import { DynamicBody } from "engine/physics/components/dynamic-body";
 
 export class FallDamage extends ScriptComponent {
 	private wasOnGround: boolean = false;
@@ -12,10 +12,10 @@ export class FallDamage extends ScriptComponent {
 		const gameObject = this.entity as GameObject;
 		if (!gameObject) return;
 		const healthComponent = gameObject.getComponent(HealthComponent);
-		const rb = gameObject.getComponent(RigidBody);
-		if (!healthComponent || !rb) return;
+		const dynamicBody = gameObject.getComponent(DynamicBody);
+		if (!healthComponent || !dynamicBody) return;
 		const currentPosition = gameObject.transform.position;
-		const isOnground = rb.isOnGround;
+		const isOnground = dynamicBody.isOnGround;
 		if (isOnground && this.wasOnGround == false) {
 			const fallDistance = Math.abs(this.startFallPosition - currentPosition.y);
 			if (fallDistance > 6) {

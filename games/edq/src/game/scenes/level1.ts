@@ -7,7 +7,6 @@ import { GameSceneLevel } from "../enum/scene";
 import { createBox } from "../prefabs/box";
 import { createPlayer } from "../prefabs/player";
 import { Collider } from "engine/physics/components/collider";
-import { RigidBody } from "engine/physics/components/rigid-body";
 import { BodyType } from "engine/physics/enum/body-type";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
@@ -19,6 +18,9 @@ import { Engine } from "engine";
 import { PlayerController } from "../script-components/player-controller";
 import { createBullet } from "../prefabs/bullet";
 import { DebugMode } from "engine/debug/debug";
+import { StaticBody } from "engine/physics/components/static-body";
+import { PlayerHud } from "../hud/hud";
+import { BasicMovement } from "../script-components/basic-movement";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -29,7 +31,7 @@ export class Level1 extends GameScene {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
-		this.loadBackground();
+		this.loadBackground();	
 		this.loadWorld();
 		// this.loadForeground();
 		// this.loadEffects();
@@ -61,18 +63,18 @@ export class Level1 extends GameScene {
 
 	
 
-		const floorId = this.addEntity(
-			new GameObject({
-				position: new Vector2(0, 3.2),
-				rotation: 0,
-				size: new Vector2(1000, 5),
-			})
-		);
-		this.floor = this.getEntityById<GameObject>(floorId);
-		this.floor.addComponent(new RigidBody(this.floor, BodyType.Static));
-		this.floor.addComponent(new Collider(new Vector2(0, 0), new Vector2(1000, 5)));
-		this.floor.addTag("floor");
-		this.floor.getComponent(Collider).ignoreZIndex = true;
+		// const floorId = this.addEntity(
+		// 	new GameObject({
+		// 		position: new Vector2(0, 3.2),
+		// 		rotation: 0,
+		// 		size: new Vector2(1000, 5),
+		// 	})
+		// );
+		// this.floor = this.getEntityById<GameObject>(floorId);
+		// this.floor.addComponent(new StaticBody(this.floor));
+		// this.floor.addComponent(new Collider(new Vector2(0, 0), new Vector2(1000, 5)));
+		// this.floor.addTag("floor");
+		// this.floor.getComponent(Collider).ignoreZIndex = true;
 		// this.addEntity(createBox(new Vector2(0, 0.5)));
 		// this.addEntity(createBox(new Vector2(2, -1.4)));
 		// this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
@@ -82,10 +84,14 @@ export class Level1 extends GameScene {
 				this.addEntity(createBox(new Vector2((j+10)*0.5+i*2, i * -2)));
 			}
 		}
+
+		for(let i = 0; i < 200; i++) {
+				this.addEntity(createBox(new Vector2((i-20)*0.5,1).multiplyBy(1)));
+		}
 	
 
 
-		const playerId = this.addEntity(createPlayer(new Vector2(0, 0)));
+		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));
 		this.player = this.getEntityById<GameObject>(playerId);
 		
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
@@ -94,7 +100,12 @@ export class Level1 extends GameScene {
 
 		// player 2 
 		const player2 = createPlayer(new Vector2( 10, 0));
+		// player2.deleteComponent(PlayerController)
+		player2.getComponent(BasicMovement).inputKeys.left = "ArrowLeft";
+		player2.getComponent(BasicMovement).inputKeys.right = "ArrowRight";
+		player2.getComponent(BasicMovement).inputKeys.up = "ArrowUp";
 		player2.deleteComponent(PlayerController)
+		player2.deleteComponent(PlayerHud)
 		this.addEntity(player2);
 	}
 

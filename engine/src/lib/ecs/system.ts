@@ -1,6 +1,5 @@
 import { Scene } from "../graphics/scenes/scene";
-import { Renderable } from "../common/interfaces/renderable";
-import { Updatable } from "../common/interfaces/updatable";
+import {  Updatable } from "../common/interfaces/updatable";
 
 export abstract class System implements Updatable {
 	private name: string = "System";
@@ -26,4 +25,5 @@ export abstract class System implements Updatable {
 	}
 
 	abstract update(deltaTime: number): void;
+	abstract fixedUpdate(deltaTime: number): void;
 }

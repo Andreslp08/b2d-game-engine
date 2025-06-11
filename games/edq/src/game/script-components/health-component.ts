@@ -1,4 +1,3 @@
-import { PIXELS_PER_METER } from "engine/common/constants";
 import type { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
@@ -79,6 +78,10 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 
 	update(delta: number): void {
 		this.displayedHealth = MathUtil.lerp(this.displayedHealth, this.health, 5 * delta);
+	}
+
+	fixedUpdate(deltaTime: number): void {
+		
 	}
 }
 

@@ -3,8 +3,8 @@ import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
 import { Time } from "./common/interfaces/time";
+import { Transform } from "./common/components/transform";
 
-let lastTime = 0;
 // let accFrameMs = 0;
 // const frameRate = 60;
 // const frameMs = 1000 / frameRate;
@@ -18,6 +18,9 @@ export class Engine {
 	static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
 	private static _sleeping: boolean = false;
+	private accumulator: number = 0;
+	private fixedDelta: number = 1 / 60;
+	private lastTime: number = 0;
 
 	constructor() {
 		const gameRoot = document.getElementById("game-root") as HTMLDivElement;
@@ -56,6 +59,7 @@ export class Engine {
 					Engine._sleeping = false;
 					MouseManager.listen();
 					KeyBoardManager.listen();
+					this.lastTime = performance.now();
 				}, 250);
 			}
 		});
@@ -65,7 +69,7 @@ export class Engine {
 		Engine._isRunning = true;
 		Engine._isPaused = false;
 		requestAnimationFrame = window.requestAnimationFrame((time) => {
-			lastTime = time;
+			this.lastTime = time;
 			this.loop(time);
 		});
 	}
@@ -73,7 +77,7 @@ export class Engine {
 	public stop() {
 		Engine._isRunning = false;
 		Engine._isPaused = false;
-		lastTime = 0;
+		this.lastTime = 0;
 		if (requestAnimationFrame) {
 			window.cancelAnimationFrame(requestAnimationFrame);
 		}
@@ -125,14 +129,19 @@ export class Engine {
 	}
 
 	private loop(currentTime: number = 0): void {
-		const dt = (currentTime - lastTime) / 1000; // en segundos
-		lastTime = currentTime;
-
+		const dt = (currentTime - this.lastTime) / 1000; // en segundos
+		this.accumulator = Math.min(this.accumulator + dt, 0.25);
+		this.lastTime = currentTime;
 		if (!Engine._isPaused && !Engine._sleeping) {
 			// Actualizar el tiempo global con escala de tiempo
-			Time._update(dt);
-
 			if (this.scene) {
+				while (this.accumulator >= this.fixedDelta) {
+					this.scene.fixedUpdate?.(this.fixedDelta);
+					Time.fixedUpdate(this.fixedDelta);
+					this.accumulator -= this.fixedDelta;
+				}
+				Time.update(dt);
+				Time.setFixedUpdateAccumulator(this.accumulator);
 				this.scene.update(Time.deltaTime); // La lógica usa dt real
 			}
 		}

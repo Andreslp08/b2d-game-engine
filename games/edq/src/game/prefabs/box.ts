@@ -5,9 +5,9 @@ import { Entity } from "engine/ecs/entity";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { RigidBody } from "engine/physics/components/rigid-body";
 import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
+import { StaticBody } from "engine/physics/components/static-body";
 
 
 const BOX_SIZE = 0.5;
@@ -45,7 +45,7 @@ export const createBox = (positon: Vector2): GameObject => {
 		size: new Vector2(500, 500),
 	});
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(BOX_SIZE, BOX_SIZE)));
-	entity.addComponent(new RigidBody(entity, BodyType.Static));
+	entity.addComponent(new StaticBody(entity));
 	if(entity.hasComponent(Sprite)){
 		entity.deleteComponent(Sprite);
 	}

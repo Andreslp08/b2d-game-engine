@@ -8,4 +8,6 @@ export class ZIndexSortingSystem extends System {
 			world.sortEntitiesByZIndex();
 		}
 	}
+
+	fixedUpdate(deltaTime: number): void {}
 }

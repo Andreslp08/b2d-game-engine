@@ -121,4 +121,9 @@ export default class Vector2 {
 		this.y = y;
 		return this;
 	}
+
+	public dot(vector: Vector2): number {
+		return this.x * vector.x + this.y * vector.y;
+	}
+
 }
