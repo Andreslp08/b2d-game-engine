@@ -6,8 +6,6 @@ import { GameScene } from "./game-scene";
 import { GameSceneLevel } from "../enum/scene";
 import { createBox } from "../prefabs/box";
 import { createPlayer } from "../prefabs/player";
-import { Collider } from "engine/physics/components/collider";
-import { BodyType } from "engine/physics/enum/body-type";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
@@ -16,9 +14,6 @@ import { createWeapon } from "../prefabs/weapon";
 import { WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { PlayerController } from "../script-components/player-controller";
-import { createBullet } from "../prefabs/bullet";
-import { DebugMode } from "engine/debug/debug";
-import { StaticBody } from "engine/physics/components/static-body";
 import { PlayerHud } from "../hud/hud";
 import { BasicMovement } from "../script-components/basic-movement";
 
@@ -97,7 +92,6 @@ export class Level1 extends GameScene {
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
-
 		// player 2 
 		const player2 = createPlayer(new Vector2( 10, 0));
 		// player2.deleteComponent(PlayerController)
