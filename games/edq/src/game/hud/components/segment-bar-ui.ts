@@ -130,7 +130,7 @@ export class SegmentBarUI extends UIComponent {
         const lifeRatio = this._displayedValue / this._maxValue;
         const pulse = 0.5 + 0.5 * Math.cos(Time.time * 3);
         const intensityScale = 1 - lifeRatio;
-        const pulseAlpha = pulse * intensityScale;
+        const pulseAlpha = Math.abs(pulse * intensityScale);
 
         context.globalAlpha = pulseAlpha;
         context.fillStyle = this.blurColor;
