@@ -4,7 +4,6 @@ import type { Entity } from "engine/ecs/entity";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "../script-components/health-component";
 import { ShieldComponent } from "../script-components/shield-component";
@@ -26,10 +25,8 @@ export class BulletController extends ScriptComponent {
 	private destroyBullet() {
         const scene = this.entity.getScene();
 		if (scene) scene.destroyEntity(this.entity);
-		console.log("destroy bullet");
 	}
 	onCollisionEnter(entity: Entity): void {
-        console.log("collision bullet", entity);
         this.destroyBullet();
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		const healthComponent = entity.getComponent(HealthComponent);
