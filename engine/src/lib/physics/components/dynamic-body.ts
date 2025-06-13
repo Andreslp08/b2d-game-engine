@@ -17,6 +17,7 @@ export class DynamicBody extends Component {
 	isOnGround: boolean = false;
 	isMoving: boolean = false;
 	movement: Vector2 = new Vector2(0, 0);
+	private _lastDirection: { x: 1 | -1; y: 1 | -1 } = { x: 1, y: 1 };
 
 	constructor(object: GameObject) {
 		super();
@@ -43,4 +44,16 @@ export class DynamicBody extends Component {
 	get bodyType(): BodyType {
 		return this._bodyType;
 	}
+
+	get direction(): { x: 1 | -1; y: 1 | -1 } {
+		return this._lastDirection;
+	}
+
+	updateDirection(): void {
+	if (this.velocity.x > 0) this._lastDirection.x = 1;
+	else if (this.velocity.x < 0) this._lastDirection.x = -1;
+
+	if (this.velocity.y > 0) this._lastDirection.y = 1;
+	else if (this.velocity.y < 0) this._lastDirection.y = -1;
+}
 }

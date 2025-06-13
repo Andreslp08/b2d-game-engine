@@ -12,13 +12,19 @@ export const createWeapon = (position: Vector2) => {
 			rotation: 0,
 			size: new Vector2(0.4, 0.4),
 		},
-		new Sprite("weapon", AssetsManager.getImage("/assets/textures/WaterWeapon.png"), {
-			position: new Vector2(0, 0),
-			rotation: 0,
-			size: new Vector2(500, 500),
-		})
+		new Sprite(
+			"weapon",
+			AssetsManager.getImage("/assets/textures/WaterWeapon.png"),
+			new Vector2(0, 0),
+			new Vector2(500, 500),
+			{
+				position: new Vector2(0, 0),
+				rotation: 0,
+				size: new Vector2(1, 1),
+			}
+		)
 	);
-    weapon.addTag("weapon");
-    weapon.addComponent(new WeaponController(weapon));
+	weapon.addTag("weapon");
+	weapon.addComponent(new WeaponController(weapon));
 	return weapon;
 };

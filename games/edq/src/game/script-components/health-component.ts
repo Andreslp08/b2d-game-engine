@@ -1,9 +1,9 @@
-import type { GameObject } from "engine/common/entities/game-object";
+import  { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
-import type { Entity } from "engine/ecs/entity";
+import  { Entity } from "engine/ecs/entity";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import type { WorldCamera } from "engine/graphics/cameras/world-camera";
+import  { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import type { ITranform } from "engine/input/interfaces/transform.interface";
 import { MathUtil } from "engine/math/math-util";

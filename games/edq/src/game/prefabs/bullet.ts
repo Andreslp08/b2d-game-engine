@@ -23,11 +23,11 @@ export class BulletController extends ScriptComponent {
 	onStart(): void {}
 
 	private destroyBullet() {
-        const scene = this.entity.getScene();
+		const scene = this.entity.getScene();
 		if (scene) scene.destroyEntity(this.entity);
 	}
 	onCollisionEnter(entity: Entity): void {
-        this.destroyBullet();
+		this.destroyBullet();
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		const healthComponent = entity.getComponent(HealthComponent);
 		const damage = 10;
@@ -42,12 +42,11 @@ export class BulletController extends ScriptComponent {
 		} else if (!shieldComponent && healthComponent) {
 			healthComponent.setDamage(damage);
 		}
-
 	}
 
 	onUpdate(deltaTime: number): void {
 		if (this.shootStartTime > 2) {
-            this.destroyBullet();
+			this.destroyBullet();
 		}
 		if (this.shooted) {
 			this.shootStartTime += deltaTime;
@@ -62,13 +61,19 @@ export const createBullet = (position: Vector2) => {
 			size: new Vector2(0.15, 0.15),
 			rotation: 0,
 		},
-		new Sprite("bullet", AssetsManager.getImage("/assets/textures/WaterBullet.png"), {
-			position: new Vector2(0, 0),
-			rotation: 0,
-			size: new Vector2(500, 500),
-		})
+		new Sprite(
+			"bullet",
+			AssetsManager.getImage("/assets/textures/WaterBullet.png"),
+			new Vector2(0, 0),
+			new Vector2(500, 500),
+			{
+				position: new Vector2(0, 0),
+				rotation: 0,
+				size: new Vector2(1, 1),
+			}
+		)
 	);
-    obj.addTag("bullet");
+	obj.addTag("bullet");
 	obj.addComponent(new BulletController(obj));
 	obj.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.2, 0.2)));
 	obj.addComponent(new DynamicBody(obj));

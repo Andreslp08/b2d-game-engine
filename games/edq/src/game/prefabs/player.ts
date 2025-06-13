@@ -3,7 +3,6 @@ import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-anima
 import Vector2 from "engine/math/vector2";
 import { PlayerIdle } from "../sprite-sequences";
 import { Collider } from "engine/physics/components/collider";
-import { BodyType } from "engine/physics/enum/body-type";
 import { BasicMovement } from "../script-components/basic-movement";
 import { PlayerController } from "../script-components/player-controller";
 import { HealthComponent } from "../script-components/health-component";
@@ -20,7 +19,9 @@ export const createPlayer = (position: Vector2): GameObject => {
 		size: new Vector2(0.8, 1),
 	});
 	entity.addTag("player");
-	entity.addComponent(new SpriteAnimation(PlayerIdle, entity, true));
+	const spriteAnimation = new SpriteAnimation(PlayerIdle, entity, true);
+	spriteAnimation.setZindex(1);
+	entity.addComponent(spriteAnimation);
 	entity.addComponent(new DynamicBody(entity));
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());

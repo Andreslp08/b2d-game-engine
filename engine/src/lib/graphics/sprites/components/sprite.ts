@@ -3,16 +3,9 @@ import { Transform } from "../../../common/components/transform";
 import { Component } from "../../../ecs/component";
 import { ITranform } from "../../../input/interfaces/transform.interface";
 import { MathUtil } from "../../../math/math-util";
+import Vector2 from "../../../math/vector2";
 
 export class Sprite extends Component {
-	imageClipTransform: ITranform;
-	entityTransform: ITranform;
-	image: GameImage;
-	id: string;
-	visible: boolean;
-	direction: { x: 1 | -1; y: 1 | -1 } = { x: 1, y: 1 };
-	showBlankSprite: boolean = true;
-
 	/**
 	 * Constructor for a Sprite component.
 	 * @param {string} id - unique identifier for the sprite
@@ -20,11 +13,71 @@ export class Sprite extends Component {
 	 * @param {ITranform} imageClipTransform - the real transform values for the image
 	 * clip (i.e. the sub-section of the real image to be rendered)
 	 */
-	constructor(id: string, image: GameImage, imageClipTransform: ITranform) {
+	constructor(
+		private _id: string,
+		private _image: GameImage,
+		private _trimPosition: Vector2,
+		private _trimSize: Vector2,
+		private _renderTransform: ITranform,
+		private _direction: { x: 1 | -1; y: 1 | -1 } = { x: 1, y: 1 },
+		private _visible: boolean = true,
+		private _showBlankSprite: boolean = true
+	) {
 		super();
-		this.id = id;
-		this.image = image;
-		this.imageClipTransform = imageClipTransform;
-		this.visible = true;
+	}
+
+	public setDirection(direction: { x: 1 | -1; y: 1 | -1 }) {
+		this._direction = direction;
+	}
+
+	public setVisible(visible: boolean) {
+		this._visible = visible;
+	}
+
+	public setShowBlankSprite(showBlankSprite: boolean) {
+		this._showBlankSprite = showBlankSprite;
+	}
+
+	public setTrimSize(trimSize: Vector2) {
+		this._trimSize = trimSize;
+	}
+
+	public setTrimPosition(trimPosition: Vector2) {
+		this._trimPosition = trimPosition;
+	}
+
+	public setRenderTransform(renderTransformOffset: ITranform) {
+		this._renderTransform = renderTransformOffset;
+	}
+	public get renderTransform(): ITranform {
+		return this._renderTransform;
+	}
+
+	public get showBlankSprite(): boolean {
+		return this._showBlankSprite;
+	}
+
+	public get visible(): boolean {
+		return this._visible;
+	}
+
+	public get trimPosition(): Vector2 {
+		return this._trimPosition;
+	}
+
+	public get trimSize(): Vector2 {
+		return this._trimSize;
+	}
+
+	public get image(): GameImage {
+		return this._image;
+	}
+
+	public get id(): string {
+		return this._id;
+	}
+
+	public get direction(): { x: 1 | -1; y: 1 | -1 } {
+		return this._direction;
 	}
 }

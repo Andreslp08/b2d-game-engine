@@ -1,5 +1,6 @@
 
 
+import { Entity } from "../../ecs/entity";
 import { Sprite } from "./components/sprite";
 
 
@@ -9,6 +10,10 @@ export class SpriteSequence {
 
 	constructor(name:string) {
 		this.name = name;	
+	}
+
+	updateSpritesEntity(entity: Entity) {
+		this.sprites.forEach((sprite) => sprite.setEntity(entity));
 	}
 
 	addSprite(sprite: Sprite) {

@@ -1,4 +1,4 @@
-import type { Entity } from "engine/ecs/entity";
+import  { Entity } from "engine/ecs/entity";
 import { ScriptComponent } from "engine/scripts/script-component";
 
 export class ShieldComponent extends ScriptComponent {

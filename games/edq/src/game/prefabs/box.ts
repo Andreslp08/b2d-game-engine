@@ -9,13 +9,12 @@ import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { StaticBody } from "engine/physics/components/static-body";
 
-
 const BOX_SIZE = 0.5;
 
 export class BoxMessage extends ScriptComponent {
 	message: string = "";
-	speed:number = 1;
-	amplitude:number = 0.1;
+	speed: number = 1;
+	amplitude: number = 0.1;
 	time: number = 0;
 
 	constructor(entity: Entity, message: string) {
@@ -27,7 +26,8 @@ export class BoxMessage extends ScriptComponent {
 		const transform = this.entity.getComponent(Transform);
 		this.time += deltaTime;
 		if (transform) {
-			transform.position.x =transform.position.x + Math.cos(this.time*this.speed * Math.PI) * this.amplitude;
+			transform.position.x =
+				transform.position.x + Math.cos(this.time * this.speed * Math.PI) * this.amplitude;
 		}
 	}
 }
@@ -39,14 +39,20 @@ export const createBox = (positon: Vector2): GameObject => {
 		size: new Vector2(BOX_SIZE, BOX_SIZE),
 	});
 	entity.addTag("box");
-	const sprite = new Sprite("box", AssetsManager.getImage("/assets/textures/Box.png"), {
-		position: new Vector2(0, 0),
-		rotation: 0,
-		size: new Vector2(500, 500),
-	});
+	const sprite = new Sprite(
+		"box",
+		AssetsManager.getImage("/assets/textures/Box.png"),
+		new Vector2(0, 0),
+		new Vector2(500, 500),
+		{
+			position: new Vector2(0, 0),
+			rotation: 0,
+			size: new Vector2(1, 1),
+		}
+	);
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(BOX_SIZE, BOX_SIZE)));
 	entity.addComponent(new StaticBody(entity));
-	if(entity.hasComponent(Sprite)){
+	if (entity.hasComponent(Sprite)) {
 		entity.deleteComponent(Sprite);
 	}
 	entity.addComponent(sprite);

@@ -1,6 +1,5 @@
 import { Transform } from "engine/common/components/transform";
 import { GameObject } from "engine/common/entities/game-object";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { MouseManager } from "engine/input/mouse-manager";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
@@ -8,8 +7,9 @@ import { Collider } from "engine/physics/components/collider";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BulletController, createBullet } from "../prefabs/bullet";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import type { WorldCamera } from "engine/graphics/cameras/world-camera";
+import { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { Sprite } from "engine/graphics/sprites/components/sprite";
 
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
@@ -55,7 +55,7 @@ export class WeaponController extends ScriptComponent {
 
 	shot() {
 		if (this.shooting) return;
-		const directionX = this.weaponHolder?.getComponent(Sprite)?.direction.x ?? 1;
+		const directionX = this.weaponHolder?.getComponent(DynamicBody)?.direction.x ?? 1;
 		const rotatedOffset = this.attachmentOffset.clone().rotate(this.currentAimAngle);
 		const spawnPosition = this.weaponPosition
 			.clone()
@@ -100,10 +100,10 @@ export class WeaponController extends ScriptComponent {
 		const holderGameObject = this.weaponHolder as GameObject;
 		const holderTransform = holderGameObject.getComponent(Transform);
 		if (!holderTransform) return;
+		const holderBody = holderGameObject.getComponent(DynamicBody);
 		const weaponSprite = weaponObject.getComponent(Sprite);
-		const holderSprite = holderGameObject.getComponent(Sprite);
-		if (!weaponSprite || !holderSprite) return;
-		weaponSprite.direction = holderSprite.direction;
+		if (!weaponSprite) return;
+		weaponSprite.setDirection(holderBody.direction);
 		const base = holderTransform.position.clone();
 		const offsetX = Math.abs(
 			holderTransform.size.x / 2 - weaponTransform.size.x / 2 + this.attachmentOffset.x
@@ -112,7 +112,7 @@ export class WeaponController extends ScriptComponent {
 			holderTransform.size.y / 2 - weaponTransform.size.y + this.attachmentOffset.y;
 
 		weaponTransform.position = base.add(
-			new Vector2(holderSprite.direction.x * offsetX, offsetY)
+			new Vector2(holderBody.direction.x * offsetX, offsetY)
 		);
 
 		const mousePos = MouseManager.getPosition(); // ← posición en PANTALLA
@@ -125,7 +125,7 @@ export class WeaponController extends ScriptComponent {
 		// Diferencia entre mouse y centro
 		const dir = mouseWorldPos.clone().substract(weaponTransform.position).normalize();
 		// Ángulo en radianes, luego a grados
-		let angleRad = Math.atan2(dir.y, dir.x * weaponSprite.direction.x);
+		let angleRad = Math.atan2(dir.y, dir.x * holderBody.direction.x);
 		// Limitar a ±90 grados (es decir, entre -PI/2 y +PI/2 radianes)
 		const minAngle = -Math.PI / 2;
 		const maxAngle = Math.PI / 2;

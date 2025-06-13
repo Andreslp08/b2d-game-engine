@@ -176,6 +176,7 @@ export class PhysicsSystem extends System {
 			const isStatic = !isDynamic && !isKinematic;
 			if (isDynamic) {
 				this.dynamicPhysics(deltaTime, dynamicBody);
+				dynamicBody.updateDirection();
 				this.dynamicCollisionResolver(entity, entities);
 			}
 			if (isKinematic) {

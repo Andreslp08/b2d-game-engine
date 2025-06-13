@@ -4,7 +4,7 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { BasicMovement } from "./basic-movement";
 import Vector2 from "engine/math/vector2";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { PlayerIdle, PlayerJumpSequence, RightRunningSequence } from "../sprite-sequences";
+import { PlayerIdle, PlayerJumpSequence, PlayerRunningSequence } from "../sprite-sequences";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
@@ -19,7 +19,6 @@ export class PlayerController extends ScriptComponent {
 		super(entity);
 	}
 
-
 	onFixedUpdate(_deltaTime: number): void {
 		const camera = WorldCameras.currentCamera;
 
@@ -27,9 +26,7 @@ export class PlayerController extends ScriptComponent {
 		const leftBound = scene.getEntityByTag<GameObject>("main-left-bound");
 		const rightBound = scene.getEntityByTag<GameObject>("main-right-bound");
 
-
-		
-		const targetGameObject = (this.entity as GameObject);
+		const targetGameObject = this.entity as GameObject;
 		const thresholdX = 0;
 		const thresholdY = targetGameObject.transform.size.y;
 		const targetPos = targetGameObject.transform.position.clone();
@@ -39,7 +36,7 @@ export class PlayerController extends ScriptComponent {
 		const dy = targetPos.y - cameraPos.y;
 
 		// Solo mover en X si sale del umbral
-		if (Math.abs(dx) > thresholdX ) {
+		if (Math.abs(dx) > thresholdX) {
 			cameraPos.x = targetPos.x - Math.sign(dx) * thresholdX;
 		}
 
@@ -54,9 +51,9 @@ export class PlayerController extends ScriptComponent {
 		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
 		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
 
-		if(leftDistance > 6.8 && rightDistance > 6.8) {
+		if (leftDistance > 6.8 && rightDistance > 6.8) {
 			camera.setPosition(newCameraPos);
-		}else{
+		} else {
 			camera.setYPosition(newCameraPos.y);
 		}
 
@@ -149,12 +146,12 @@ export class PlayerController extends ScriptComponent {
 
 		// Animación según estado
 		if (spriteAnimation) {
-			gameObject.sprite.direction.x = movement.direction.x > 0 ? 1 : -1;
+			spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
 			if (!dynamicBody.isOnGround) {
 				spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
 			} else {
 				if (Math.abs(dynamicBody.velocity.x) > 0.01) {
-					spriteAnimation.setAnimation(RightRunningSequence, true, 0.08);
+					spriteAnimation.setAnimation(PlayerRunningSequence, true, 0.08);
 				} else {
 					spriteAnimation.setAnimation(PlayerIdle, true, 0.08);
 				}

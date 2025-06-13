@@ -13,9 +13,8 @@ import { createVerticalBounds } from "../prefabs/vertical-bounds";
 import { createWeapon } from "../prefabs/weapon";
 import { WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
-import { PlayerController } from "../script-components/player-controller";
-import { PlayerHud } from "../hud/hud";
-import { BasicMovement } from "../script-components/basic-movement";
+import { createSoldier } from "../prefabs/soldier";
+import { DebugMode } from "engine/debug/debug";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -26,7 +25,8 @@ export class Level1 extends GameScene {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
-		this.loadBackground();	
+		// DebugMode.check("colliders");
+		this.loadBackground();
 		this.loadWorld();
 		// this.loadForeground();
 		// this.loadEffects();
@@ -47,16 +47,20 @@ export class Level1 extends GameScene {
 
 	loadWorld() {
 		const leftWallId = this.addEntity(
-			createVerticalBounds({position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0}, "left"),
-		)
+			createVerticalBounds(
+				{ position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0 },
+				"left"
+			)
+		);
 		const leftWall = this.getEntityById<GameObject>(leftWallId);
 
 		const rightWallId = this.addEntity(
-			createVerticalBounds({position: new Vector2(2000, 0), size: new Vector2(3, 1000), rotation: 0}, "right"),
-		)
+			createVerticalBounds(
+				{ position: new Vector2(2000, 0), size: new Vector2(3, 1000), rotation: 0 },
+				"right"
+			)
+		);
 		const rightWall = this.getEntityById<GameObject>(rightWallId);
-
-	
 
 		// const floorId = this.addEntity(
 		// 	new GameObject({
@@ -74,33 +78,25 @@ export class Level1 extends GameScene {
 		// this.addEntity(createBox(new Vector2(2, -1.4)));
 		// this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
 
-		for(let i = 0; i < 50; i++) {
-			for(let j = 0; j < 5; j++) {
-				this.addEntity(createBox(new Vector2((j+10)*0.5+i*2, i * -2)));
+		for (let i = 0; i < 50; i++) {
+			for (let j = 0; j < 5; j++) {
+				this.addEntity(createBox(new Vector2((j + 10) * 0.5 + i * 2, i * -2)));
 			}
 		}
 
-		for(let i = 0; i < 200; i++) {
-				this.addEntity(createBox(new Vector2((i-20)*0.5,1).multiplyBy(1)));
+		for (let i = 0; i < 200; i++) {
+			this.addEntity(createBox(new Vector2((i - 20) * 0.5, 1).multiplyBy(1)));
 		}
-	
-
 
 		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));
 		this.player = this.getEntityById<GameObject>(playerId);
-		
+
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
-		// player 2 
-		const player2 = createPlayer(new Vector2( 10, 0));
-		// player2.deleteComponent(PlayerController)
-		player2.getComponent(BasicMovement).inputKeys.left = "ArrowLeft";
-		player2.getComponent(BasicMovement).inputKeys.right = "ArrowRight";
-		player2.getComponent(BasicMovement).inputKeys.up = "ArrowUp";
-		player2.deleteComponent(PlayerController)
-		player2.deleteComponent(PlayerHud)
-		this.addEntity(player2);
+		//soldier
+		const soldier = createSoldier(new Vector2(3, -3));
+		this.addEntity(soldier);
 	}
 
 	loadForeground() {
@@ -128,29 +124,34 @@ export class Level1 extends GameScene {
 		this.addEntity(d);
 	}
 
-	loadUI() {
-	
-	}
+	loadUI() {}
 
 	loadBackground() {
 		const w = 8;
 		const h = 8;
 		const x = -4;
-		const y =1;
+		const y = 1;
 
 		for (let i = 0; i < 10; i++) {
 			const bg = new GameObject(
 				{
-					position: new Vector2((x +(i * w))+i*0.5, y),
+					position: new Vector2(x + i * w + i * 0.5, y),
 					rotation: 0,
 					size: new Vector2(w, h),
 				},
-				new Sprite("city", AssetsManager.getImage("/assets/textures/city.png"), {
-					position: new Vector2(0, 0),
-					rotation: 0,
-					size: new Vector2(5000, 5000),
-				})
+				new Sprite(
+					"city",
+					AssetsManager.getImage("/assets/textures/city.png"),
+					new Vector2(0, 0),
+					new Vector2(5000, 5000),
+					{
+						position: new Vector2(0, 0),
+						rotation: 0,
+						size: new Vector2(1, 1),
+					}
+				)
 			);
+			bg.addTag("background");
 			bg.renderLayer = RenderLayerTypes.Background;
 
 			this.addEntity(bg);
@@ -176,6 +177,4 @@ export class Level1 extends GameScene {
 			console.log("oki");
 		}
 	}
-	
-
 }

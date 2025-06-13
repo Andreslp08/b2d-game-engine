@@ -18,6 +18,7 @@ import { Camera } from "../cameras/camera";
 import { Entity } from "../../ecs/entity";
 import { Collider } from "../../physics/components/collider";
 import { UIRenderer } from "./ui-renderer";
+import { SpriteAnimation } from "../sprites/components/sprite-animation";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -51,9 +52,11 @@ export class RenderSystem extends System {
 		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
 		for (const entity of worldEntities) {
 			const spriteComponents = entity.getComponents(Sprite);
+			const spriteAnimations = entity.getComponents(SpriteAnimation);
+			const allSprites = [...spriteComponents, ...spriteAnimations];
 			const colliderComponents = entity.getComponents(Collider);
 			const transformComponents = entity.getComponents(Transform);
-			spriteComponents.forEach((_) => {
+			allSprites.forEach((_) => {
 				const render = new SpriteRenderer(entity);
 				render.render(renderingContext);
 			});

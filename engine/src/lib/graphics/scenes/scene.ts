@@ -12,12 +12,12 @@ import {
 	UICameras,
 	WorldCameras,
 } from "../cameras/camera-managers";
-import { SpriteSystem } from "../sprites/system/sprites-system";
+import { SpriteAnimationSystem } from "../sprites/system/sprite-animation-system";
 import { PhysicsSystem } from "../../physics/system/physics-system";
 import { ScriptSystem } from "../../scripts/script-system";
 import { DebugSystem } from "../../debug/debug-system";
 import { ZIndexSortingSystem } from "../render/render-sorting-system";
-import {  Updatable } from "../../common/interfaces/updatable";
+import { Updatable } from "../../common/interfaces/updatable";
 import { System } from "../../ecs/system";
 import { Component, ComponentClass } from "../../ecs/component";
 import { Entity } from "../../ecs/entity";
@@ -31,12 +31,12 @@ export class Scene implements Updatable {
 	private _renderer: RenderSystem;
 
 	constructor() {
-		this.addSystem(new ScriptSystem(this)); 
+		this.addSystem(new ScriptSystem(this));
 		this.addSystem(new PhysicsSystem(this));
 		this.addSystem(new ZIndexSortingSystem(this));
-		this.addSystem(new SpriteSystem(this)); 
-		this.addSystem(new DebugSystem(this)); 
-		this.addSystem(new RenderSystem(this)); 
+		this.addSystem(new SpriteAnimationSystem(this));
+		this.addSystem(new DebugSystem(this));
+		this.addSystem(new RenderSystem(this));
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
 		) as RenderSystem;
@@ -73,7 +73,7 @@ export class Scene implements Updatable {
 	fixedUpdate(deltaTime: number): void {
 		this.systems.forEach((system) => system.fixedUpdate(deltaTime));
 	}
-	
+
 	get renderer() {
 		return this._renderer;
 	}
