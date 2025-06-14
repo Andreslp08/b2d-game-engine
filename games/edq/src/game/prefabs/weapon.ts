@@ -8,7 +8,7 @@ import { WeaponController } from "../script-components/weapon";
 export const createWeapon = (position: Vector2) => {
 		const sprite = new Sprite({
 			id: "bullet",
-			image: AssetsManager.getImageByName("spritesheet:desert_eagle"),
+			image: AssetsManager.getImageByName("spritesheet:desert-eagle"),
 			framePosition: new Vector2(0, 0),
 			frameSize: { w: 500, h: 500 },
 		});

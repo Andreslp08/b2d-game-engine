@@ -74,7 +74,7 @@ export const createBullet = (
 ) => {
 	const sprite = new Sprite({
 		id: "bullet",
-		image: AssetsManager.getImageByName("spritesheet:desert_eagle_bullet"),
+		image: AssetsManager.getImageByName("spritesheet:desert-eagle-bullet"),
 		framePosition: new Vector2(0, 0),
 		frameSize: { w: 500, h: 500 },
 	});

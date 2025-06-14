@@ -14,7 +14,7 @@ export const createSoldier = (position: Vector2) => {
 	const idleAtlas = AssetsManager.getAtlasByName("atlas:soldier-idle");
 	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
 
-	const size = new Vector2(1.4, 1.4);
+	const size = new Vector2(1.1, 1.4);
 	const soldier = new GameObject({
 		position: position.clone(),
 		rotation: 0,
@@ -23,8 +23,8 @@ export const createSoldier = (position: Vector2) => {
 	soldier.addComponent(new SpriteAnimation(PlayerIdle, soldier, true, 0.07));
 	const dynamicbody = new KinematicBody(soldier);
 	const collider = new Collider(
-		new Vector2(0, 0.1),
-		size.clone().multiply(new Vector2(0.5, 0.8))
+		new Vector2(0, -0.02),
+		size.clone().multiply(new Vector2(0.8, 0.8))
 	);
 	const health = new HealthComponent(soldier, 100, 100, true);
 	// const spriteAnim = new SpriteAnimation(SoldierIdleSequence, soldier, true, 0.07);

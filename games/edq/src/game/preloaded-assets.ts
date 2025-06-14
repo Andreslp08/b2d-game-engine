@@ -64,13 +64,13 @@ export const PRELOAD_ASSETS: { type: GameAssetsTypes; name: string; path: string
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "spritesheet:desert_eagle",
-		path: "/assets/textures/DesertEagle.png",
+		name: "spritesheet:desert-eagle",
+		path: "/assets/textures/desert-eagle.png",
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "spritesheet:desert_eagle_bullet",
-		path: "/assets/textures/DE_Bullet.png",
+		name: "spritesheet:desert-eagle-bullet",
+		path: "/assets/textures/desert-eagle-bullet.png",
 	},
 	{ type: GameAssetsTypes.Image, name: "spritesheet:box", path: "/assets/textures/Box.png" },
 	{ type: GameAssetsTypes.Image, name: "spritesheet:city", path: "/assets/textures/city.png" },
