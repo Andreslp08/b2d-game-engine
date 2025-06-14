@@ -12,6 +12,7 @@ export class Camera implements Renderable {
 	private _fade:boolean = false;
 	private _fadeAlpha:number = 0;
 	private _fadeColor:string = "#000";
+	private renderFilters:string = "";
 
 	constructor(initialPosition: Vector2, scene: Scene) {
 		this.renderLayer = RenderLayerTypes.World;
@@ -74,8 +75,16 @@ export class Camera implements Renderable {
 		this.position.y -= deltaCameraY;
 	}
 
+	setRenderFilters(filters: string): void {
+		this.renderFilters = filters;
+	}
+
 	getZoomY(): number {
 		return this.zoomY;
+	}
+
+	getRenderFilters(): string {
+		return this.renderFilters;
 	}
 
 

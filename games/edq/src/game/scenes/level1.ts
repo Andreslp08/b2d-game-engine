@@ -15,6 +15,7 @@ import { WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode } from "engine/debug/debug";
+import { BackgroundCameras, UICameras, WorldCameras } from "engine/graphics/cameras/camera-managers";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -24,7 +25,7 @@ export class Level1 extends GameScene {
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
-		// DebugMode.enabled = true;
+		// DebugMode.enabled = true;	
 		// DebugMode.check("colliders");
 		this.loadBackground();
 		this.loadWorld();
@@ -62,21 +63,6 @@ export class Level1 extends GameScene {
 		);
 		const rightWall = this.getEntityById<GameObject>(rightWallId);
 
-		// const floorId = this.addEntity(
-		// 	new GameObject({
-		// 		position: new Vector2(0, 3.2),
-		// 		rotation: 0,
-		// 		size: new Vector2(1000, 5),
-		// 	})
-		// );
-		// this.floor = this.getEntityById<GameObject>(floorId);
-		// this.floor.addComponent(new StaticBody(this.floor));
-		// this.floor.addComponent(new Collider(new Vector2(0, 0), new Vector2(1000, 5)));
-		// this.floor.addTag("floor");
-		// this.floor.getComponent(Collider).ignoreZIndex = true;
-		// this.addEntity(createBox(new Vector2(0, 0.5)));
-		// this.addEntity(createBox(new Vector2(2, -1.4)));
-		// this.addEntity(createBox(new Vector2(2 * 2, -1.4)));
 
 		for (let i = 0; i < 50; i++) {
 			for (let j = 0; j < 5; j++) {
@@ -100,17 +86,7 @@ export class Level1 extends GameScene {
 	}
 
 	loadForeground() {
-		// const fg = new GameObject({
-		// 	position: new Vector2(-2, -0.5),
-		// 	rotation: 0,
-		// 	size: new Vector2(7,7),
-		// }, new Sprite("city", AssetsManager.getImage("/assets/textures/city.png"), {
-		// 	position: new Vector2(0, 0),
-		// 	rotation: 0,
-		// 	size: new Vector2(5000, 5000),
-		// }));
-		// fg.renderLayer = RenderLayerTypes.Foreground;
-		// this.addEntity(fg);
+	
 	}
 
 	loadDebug() {
@@ -139,17 +115,12 @@ export class Level1 extends GameScene {
 					rotation: 0,
 					size: new Vector2(w, h),
 				},
-				new Sprite(
-					"city",
-					AssetsManager.getImage("/assets/textures/city.png"),
-					new Vector2(0, 0),
-					new Vector2(5000, 5000),
-					{
-						position: new Vector2(0, 0),
-						rotation: 0,
-						size: new Vector2(1, 1),
-					}
-				)
+				new Sprite({
+					id: "bg",
+					image: AssetsManager.getImageByName("spritesheet:city"),
+					framePosition: new Vector2(0, 0),
+					frameSize: { w: 5000, h: 5000 },
+				})
 			);
 			bg.addTag("background");
 			bg.renderLayer = RenderLayerTypes.Background;

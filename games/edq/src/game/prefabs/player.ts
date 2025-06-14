@@ -1,7 +1,6 @@
 import { GameObject } from "engine/common/entities/game-object";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import Vector2 from "engine/math/vector2";
-import { PlayerIdle } from "../sprite-sequences";
 import { Collider } from "engine/physics/components/collider";
 import { BasicMovement } from "../script-components/basic-movement";
 import { PlayerController } from "../script-components/player-controller";
@@ -11,15 +10,29 @@ import { PlayerHud } from "../hud/hud";
 import { ShieldComponent } from "../script-components/shield-component";
 import { WeaponHolder } from "../script-components/weapon";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
+import { AssetsManager } from "engine/common/assets-manager/assets-manager";
+
+
 
 export const createPlayer = (position: Vector2): GameObject => {
+
+	//images
+	// const runningImage = AssetsManager.getImageByName("/assets/textures/PlayerRight.png");
+	// const JumpImage = AssetsManager.getImageByPath("/assets/textures/PlayerJumpRight.png");
+	const idleImage = AssetsManager.getImageByName("spritesheet:player-idle");
+	//atlas
+	const idleAtlas = AssetsManager.getAtlasByName("atlas:player-idle");
+
+	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
+	
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
 		size: new Vector2(0.8, 1),
 	});
 	entity.addTag("player");
-	const spriteAnimation = new SpriteAnimation(PlayerIdle, entity, true);
+	const spriteAnimation = new SpriteAnimation(PlayerIdle, entity, true, 0.12);
 	spriteAnimation.setZindex(1);
 	entity.addComponent(spriteAnimation);
 	entity.addComponent(new DynamicBody(entity));
@@ -29,8 +42,8 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new HealthComponent(entity, 100, 100, true));
 	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
-	entity.addComponent( new PlayerHud(entity));
-	entity.addComponent( new WeaponHolder(entity));
+	entity.addComponent(new PlayerHud(entity));
+	entity.addComponent(new WeaponHolder(entity));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(DynamicBody);
 	const playerMovement = entity.getComponent(BasicMovement);

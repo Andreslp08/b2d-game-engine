@@ -8,10 +8,14 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "../script-components/health-component";
 import { ShieldComponent } from "../script-components/shield-component";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { Time } from "engine/common/interfaces/time";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
 	private shootStartTime = 0;
+	private shouldDestroy = false;
+	private collisionStartTime = 0;
+	private collisionDetected = false;
 
 	setShooted(shooted: boolean) {
 		this.shooted = shooted;
@@ -25,9 +29,11 @@ export class BulletController extends ScriptComponent {
 	private destroyBullet() {
 		const scene = this.entity.getScene();
 		if (scene) scene.destroyEntity(this.entity);
+		this.shouldDestroy = true;
 	}
 	onCollisionEnter(entity: Entity): void {
-		this.destroyBullet();
+		this.collisionStartTime = Time.time;
+		this.collisionDetected = true;
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		const healthComponent = entity.getComponent(HealthComponent);
 		const damage = 10;
@@ -45,33 +51,41 @@ export class BulletController extends ScriptComponent {
 	}
 
 	onUpdate(deltaTime: number): void {
-		if (this.shootStartTime > 2) {
+		if (this.shouldDestroy) {
 			this.destroyBullet();
 		}
+
 		if (this.shooted) {
 			this.shootStartTime += deltaTime;
+		}
+		if (this.collisionDetected) {
+			this.collisionStartTime += deltaTime;
+		}
+		if (this.collisionStartTime > 1.8 || this.shootStartTime > 5) {
+			this.shouldDestroy = true;
 		}
 	}
 }
 
-export const createBullet = (position: Vector2) => {
+export const createBullet = (
+	position: Vector2,
+	rotation: number,
+	direction: { x: -1 | 1; y: -1 | 1 }
+) => {
+	const sprite = new Sprite({
+		id: "bullet",
+		image: AssetsManager.getImageByName("spritesheet:desert_eagle_bullet"),
+		framePosition: new Vector2(0, 0),
+		frameSize: { w: 500, h: 500 },
+	});
+	sprite.setDirection({ x: direction.x, y: direction.y });
 	const obj = new GameObject(
 		{
 			position: position.clone(),
-			size: new Vector2(0.15, 0.15),
-			rotation: 0,
+			size: new Vector2(0.2, 0.2),
+			rotation: rotation,
 		},
-		new Sprite(
-			"bullet",
-			AssetsManager.getImage("/assets/textures/WaterBullet.png"),
-			new Vector2(0, 0),
-			new Vector2(500, 500),
-			{
-				position: new Vector2(0, 0),
-				rotation: 0,
-				size: new Vector2(1, 1),
-			}
-		)
+		sprite
 	);
 	obj.addTag("bullet");
 	obj.addComponent(new BulletController(obj));

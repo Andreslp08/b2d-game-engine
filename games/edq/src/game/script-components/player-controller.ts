@@ -4,7 +4,6 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { BasicMovement } from "./basic-movement";
 import Vector2 from "engine/math/vector2";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { PlayerIdle, PlayerJumpSequence, PlayerRunningSequence } from "../sprite-sequences";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
@@ -145,17 +144,17 @@ export class PlayerController extends ScriptComponent {
 		}
 
 		// Animación según estado
-		if (spriteAnimation) {
-			spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
-			if (!dynamicBody.isOnGround) {
-				spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
-			} else {
-				if (Math.abs(dynamicBody.velocity.x) > 0.01) {
-					spriteAnimation.setAnimation(PlayerRunningSequence, true, 0.08);
-				} else {
-					spriteAnimation.setAnimation(PlayerIdle, true, 0.08);
-				}
-			}
-		}
+		// if (spriteAnimation) {
+		// 	spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
+		// 	if (!dynamicBody.isOnGround) {
+		// 		spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
+		// 	} else {
+		// 		if (Math.abs(dynamicBody.velocity.x) > 0.01) {
+		// 			spriteAnimation.setAnimation(PlayerRunningSequence, true, 0.08);
+		// 		} else {
+		// 			spriteAnimation.setAnimation(PlayerIdle, true, 0.08);
+		// 		}
+		// 	}
+		// }
 	}
 }

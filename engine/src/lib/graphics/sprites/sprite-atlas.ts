@@ -1,4 +1,5 @@
-import { GameImage } from "../../common/assets-manager/assets-manager";
+
+import { GameImage } from "../../common/assets-manager/game-image";
 import { Component } from "../../ecs/component";
 import Vector2 from "../../math/vector2";
 

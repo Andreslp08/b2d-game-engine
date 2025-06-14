@@ -65,6 +65,7 @@ export class PhysicsSystem extends System {
 			);
 
 			if (penetrationX !== 0) {
+				this.notifyCollision(targetEntity, entity);
 				targetTransform.position.x -= penetrationX;
 
 				// Rebote solo si venía en dirección de la colisión
@@ -73,6 +74,7 @@ export class PhysicsSystem extends System {
 					(penetrationX > 0 && targetDynamicBody.velocity.x > 0) ||
 					(penetrationX < 0 && targetDynamicBody.velocity.x < 0)
 				) {
+					this.notifyCollision(targetEntity, entity);
 					targetDynamicBody.velocity = this.reflect(
 						targetDynamicBody.velocity,
 						normalX,
@@ -88,7 +90,6 @@ export class PhysicsSystem extends System {
 			if (!this.isCollision(targetEntity, entity)) continue;
 
 			targetCollider.isColliding = true;
-			this.notifyCollision(targetEntity, entity);
 			const colliderA = targetCollider;
 			const colliderB = entity.getComponent(Collider);
 			const penetrationY = CollisionUtil.getVerticalCollisionPenetration(
@@ -97,6 +98,7 @@ export class PhysicsSystem extends System {
 			);
 
 			if (penetrationY !== 0) {
+				this.notifyCollision(targetEntity, entity);
 				targetTransform.position.y -= penetrationY;
 
 				const normalY = penetrationY > 0 ? Vector2.DOWN : Vector2.UP;
@@ -112,6 +114,7 @@ export class PhysicsSystem extends System {
 				}
 
 				if (penetrationY > 0) {
+					this.notifyCollision(targetEntity, entity);
 					targetDynamicBody.isOnGround = true;
 					targetCollider.collisionDirection.y = CollisionDirection.BOTTOM;
 				} else {

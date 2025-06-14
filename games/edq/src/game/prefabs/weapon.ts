@@ -6,23 +6,19 @@ import Vector2 from "engine/math/vector2";
 import { WeaponController } from "../script-components/weapon";
 
 export const createWeapon = (position: Vector2) => {
+		const sprite = new Sprite({
+			id: "bullet",
+			image: AssetsManager.getImageByName("spritesheet:desert_eagle"),
+			framePosition: new Vector2(0, 0),
+			frameSize: { w: 500, h: 500 },
+		});
 	const weapon = new GameObject(
 		{
 			position,
 			rotation: 0,
 			size: new Vector2(0.4, 0.4),
 		},
-		new Sprite(
-			"weapon",
-			AssetsManager.getImage("/assets/textures/WaterWeapon.png"),
-			new Vector2(0, 0),
-			new Vector2(500, 500),
-			{
-				position: new Vector2(0, 0),
-				rotation: 0,
-				size: new Vector2(1, 1),
-			}
-		)
+		sprite
 	);
 	weapon.addTag("weapon");
 	weapon.addComponent(new WeaponController(weapon));

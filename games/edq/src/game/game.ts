@@ -1,10 +1,10 @@
 import { Engine } from "engine";
-import { AssetsPreloader } from "engine/common/assets-manager/assets-manager";
 import Vector2 from "engine/math/vector2";
-import { PRELOAD_IMAGES_PATHS } from "./preloaded-assets";
+import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preloaded-assets";
 import { Screen } from "engine/graphics/screen/screen";
 import { useGameStore } from "../store/store";
 import { GameSceneLoader } from "./scene-loader";
+import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
 // import { GameSceneLoader } from "./scene-loader";
 
 const setLoadingGame = useGameStore.getState().setLoadingGame;
@@ -24,7 +24,7 @@ addEventListener("resize", () => {
 });
 
 export const preloadGame = () => {
-	AssetsPreloader.set(PRELOAD_IMAGES_PATHS, (e) => {
+	AssetsPreloader.set(ASSETS_TO_PRELOAD, (e) => {
 		console.log(`${e.progress}% Loading game assets '${e.currentAssetLoading}'`);
 		if (e.progress >= 100 && e.finished) {
 			setTimeout(() => {
@@ -33,6 +33,7 @@ export const preloadGame = () => {
 				if (scene) {
 					console.log(scene.displayName);
 				}
+				console.log(AssetsPreloader.assets)
 			}, 0);
 			// setTimeout(() => {
 			// 	setLoadingGame(false);

@@ -23,12 +23,12 @@ export class SpriteAnimationSystem extends System {
 			anim.currentTime = 0;
 			anim.currentFrame++;
 
-			if (anim.currentFrame >= anim.spriteSequence.sprites.length) {
-				anim.currentFrame = anim.loop ? 0 : anim.spriteSequence.sprites.length - 1;
+			if (anim.currentFrame >= anim.spritesheet.sprites.length) {
+				anim.currentFrame = anim.loop ? 0 : anim.spritesheet.sprites.length - 1;
 			}
 		}
 
-		const nextFrameSprite = anim.spriteSequence.sprites[anim.currentFrame];
+		const nextFrameSprite = anim.spritesheet.sprites[anim.currentFrame];
 		anim.currentSprite = nextFrameSprite;
 		// console.log(anim.currentSprite.id)
 	}

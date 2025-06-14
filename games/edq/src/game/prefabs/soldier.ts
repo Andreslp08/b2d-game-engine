@@ -6,27 +6,31 @@ import { HealthComponent } from "../script-components/health-component";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { PlayerIdle } from "../sprite-sequences";
+import { KinematicBody } from "engine/physics/components/kinematic-body";
+import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
 
 export const createSoldier = (position: Vector2) => {
-	const size = new Vector2(0.4, 0.4);
+	const idleImage = AssetsManager.getImageByName("spritesheet:soldier-idle");
+	const idleAtlas = AssetsManager.getAtlasByName("atlas:soldier-idle");
+	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
+
+	const size = new Vector2(1.4, 1.4);
 	const soldier = new GameObject({
 		position: position.clone(),
 		rotation: 0,
 		size: size,
 	});
-	const dynamicbody = new DynamicBody(soldier);
-	const collider = new Collider(new Vector2(0, 0), size);
+	soldier.addComponent(new SpriteAnimation(PlayerIdle, soldier, true, 0.07));
+	const dynamicbody = new KinematicBody(soldier);
+	const collider = new Collider(
+		new Vector2(0, 0.1),
+		size.clone().multiply(new Vector2(0.5, 0.8))
+	);
 	const health = new HealthComponent(soldier, 100, 100, true);
-	const idleImage = AssetsManager.getImage("/assets/textures/Soldier.png");
-	const sprite = new Sprite("soldier", idleImage, new Vector2(0, 0), new Vector2(500, 500), {
-		position: new Vector2(0, 0),
-		rotation: 0,
-		size: new Vector2(1, 1),
-	});
-
-    soldier.addComponent(sprite);
-	dynamicbody.bounciness = new Vector2(0.6, 0.6);
+	// const spriteAnim = new SpriteAnimation(SoldierIdleSequence, soldier, true, 0.07);
+	// spriteAnim.setAnimation(SoldierIdleSequence, true);
+	// soldier.addComponent(spriteAnim);
+	// dynamicbody.bounciness = new Vector2(0.6, 0.6);
 	soldier.addComponent(dynamicbody);
 	soldier.addComponent(collider);
 	soldier.addComponent(health);

@@ -1,10 +1,10 @@
 import { GameObject } from "../../../common/entities/game-object";
 import { Component } from "../../../ecs/component";
-import { SpriteSequence } from "../sprite-sequence";
+import { SpriteSheet } from "../spritesheet";
 import { Sprite } from "./sprite";
 
 export class SpriteAnimation extends Component {
-	spriteSequence: SpriteSequence;
+	spritesheet: SpriteSheet;
 	loop: boolean;
 	speed: number;
 	currentFrame: number;
@@ -13,7 +13,7 @@ export class SpriteAnimation extends Component {
 	currentSprite: Sprite;
 
 	constructor(
-		spriteSequence: SpriteSequence,
+		spritesheet: SpriteSheet,
 		gameObject: GameObject,
 		loop: boolean,
 		speed?: number
@@ -21,15 +21,16 @@ export class SpriteAnimation extends Component {
 		super();
 		this.loop = loop;
 		this.speed = speed ?? 1;
-		this.spriteSequence = spriteSequence;
+		this.spritesheet = spritesheet;
 		this.currentFrame = 0;
 		this.currentTime = 0;
 		this.gameObject = gameObject;
+		this.spritesheet.updateSpritesEntity(this.gameObject);
 	}
-	setAnimation(sequence: SpriteSequence, loop: boolean, speed?: number) {
-		sequence.updateSpritesEntity(this.gameObject);
-		if (this.spriteSequence === sequence) return; // Ya está esta animación
-		this.spriteSequence = sequence;
+	setAnimation(spritesheet: SpriteSheet, loop: boolean, speed?: number) {
+		spritesheet.updateSpritesEntity(this.gameObject);
+		if (this.spritesheet === spritesheet) return; // Ya está esta animación
+		this.spritesheet = spritesheet;
 		this.loop = loop;
 		this.speed = speed ?? this.speed;
 		this.currentFrame = 0;
@@ -37,9 +38,9 @@ export class SpriteAnimation extends Component {
 	}
 
 	setAnimationDirectionInX(direction: 1 | -1) {
-		this.spriteSequence.sprites.forEach((sprite) => sprite.direction.x = direction);
+		this.spritesheet.sprites.forEach((sprite) => (sprite.direction.x = direction));
 	}
 	setAnimationDirectionInY(direction: 1 | -1) {
-		this.spriteSequence.sprites.forEach((sprite) => sprite.direction.y = direction);
+		this.spritesheet.sprites.forEach((sprite) => (sprite.direction.y = direction));
 	}
 }

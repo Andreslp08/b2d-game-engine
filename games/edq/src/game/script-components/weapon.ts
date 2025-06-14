@@ -15,6 +15,7 @@ export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
 
 	attachWeapon(weapon: GameObject) {
+		// console.log(weapon)
 		if (!weapon.hasTag("weapon")) return;
 		if (!weapon.hasComponent(WeaponController)) return;
 		this.weapon = weapon;
@@ -61,7 +62,7 @@ export class WeaponController extends ScriptComponent {
 			.clone()
 			.add(rotatedOffset.multiply(new Vector2(directionX, 1)));
 
-		const obj = createBullet(spawnPosition);
+		const obj = createBullet(spawnPosition, MathUtil.radToDeg(this.currentAimAngle ), { x: directionX, y: 1 });
 		const bulletController = obj.getComponent(BulletController);
 		obj.setZindex(-1);
 		const collider = obj.getComponent(Collider);
@@ -83,7 +84,7 @@ export class WeaponController extends ScriptComponent {
 			const force = new Vector2(1, 0)
 				.rotate(this.currentAimAngle)
 				.multiply(new Vector2(directionX, 1))
-				.multiplyBy(8000);
+				.multiplyBy(6000);
 			dynamicBody.addForce(force);
 			if (bulletController) {
 				bulletController.setShooted(true);
@@ -140,7 +141,7 @@ export class WeaponController extends ScriptComponent {
 	}
 
 	onFixedUpdate(deltaTime: number): void {
-		const fireRate = 0.3;
+		const fireRate = 0.6;
 		this.fireCooldown -= deltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
 			this.shot();

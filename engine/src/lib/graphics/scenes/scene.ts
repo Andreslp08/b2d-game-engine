@@ -29,6 +29,7 @@ export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected systems: Set<System> = new Set();
 	private _renderer: RenderSystem;
+	private renderFilters: string = "";
 
 	constructor() {
 		this.addSystem(new ScriptSystem(this));
@@ -176,5 +177,13 @@ export class Scene implements Updatable {
 
 	removeAllCameras() {
 		WorldCameras.removeAllCameras();
+	}
+
+	setRenderFilters(filters: string) {
+		this.renderFilters = filters;
+	}
+
+	getRenderFilters() {
+		return this.renderFilters;
 	}
 }

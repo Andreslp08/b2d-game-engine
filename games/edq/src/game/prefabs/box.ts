@@ -39,17 +39,12 @@ export const createBox = (positon: Vector2): GameObject => {
 		size: new Vector2(BOX_SIZE, BOX_SIZE),
 	});
 	entity.addTag("box");
-	const sprite = new Sprite(
-		"box",
-		AssetsManager.getImage("/assets/textures/Box.png"),
-		new Vector2(0, 0),
-		new Vector2(500, 500),
-		{
-			position: new Vector2(0, 0),
-			rotation: 0,
-			size: new Vector2(1, 1),
-		}
-	);
+	const sprite = new Sprite({
+		id: "box",
+		image: AssetsManager.getImageByName("spritesheet:box"),
+		framePosition: new Vector2(0, 0),
+		frameSize: {w:500, h:500},
+	});
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(BOX_SIZE, BOX_SIZE)));
 	entity.addComponent(new StaticBody(entity));
 	if (entity.hasComponent(Sprite)) {
