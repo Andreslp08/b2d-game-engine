@@ -1,6 +1,6 @@
+import { MathUtil } from './../../math/math-util';
 import { Transform } from "../../common/components/transform";
 import { GameObject } from "../../common/entities/game-object";
-import { Time } from "../../common/interfaces/time";
 import { Sprite } from "../sprites/components/sprite";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { Renderer } from "./render";
@@ -89,8 +89,8 @@ export class SpriteRenderer extends Renderer {
 		const direction = sprite.getDirection();
 
 		renderingContext.translate(pos.x - anchor.x, pos.y - anchor.y);
-		renderingContext.rotate(transform.rotation);
-		renderingContext.rotate(sprite.getRotation());
+		renderingContext.rotate(MathUtil.degToRad(transform.rotation));
+		renderingContext.rotate(MathUtil.degToRad(sprite.getRotation()));
 		renderingContext.scale(scale.x * direction.x , scale.y * direction.y);
 		renderingContext.translate(-size.x * pivot.x, -size.y * pivot.y);
 	}
