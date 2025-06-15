@@ -11,7 +11,7 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { createVerticalBounds } from "../prefabs/vertical-bounds";
 import { createWeapon } from "../prefabs/weapon";
-import { WeaponHolder } from "../script-components/weapon";
+import { WeaponController, WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode } from "engine/debug/debug";
@@ -79,7 +79,10 @@ export class Level1 extends GameScene {
 
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
-		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
+		const weaponController = weapon.getComponent(WeaponController);
+		weaponController.setAttachmentOffset(new Vector2(0.2, -0.1));
+		weapon.setZindex(-1);
+		// this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
 		const soldier = createSoldier(new Vector2(3, -3));
 		this.addEntity(soldier);

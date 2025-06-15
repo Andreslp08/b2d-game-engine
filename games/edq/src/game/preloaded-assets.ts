@@ -81,6 +81,16 @@ export const PRELOAD_ASSETS: { type: GameAssetsTypes; name: string; path: string
 	},
 	{
 		type: GameAssetsTypes.Image,
+		name: "spritesheet:player-idle-no-arms",
+		path: "/assets/textures/player-idle-no-arms.png",
+	},
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:player-right-arm",
+		path: "/assets/textures/player-right-arm.png",
+	},
+	{
+		type: GameAssetsTypes.Image,
 		name: "spritesheet:soldier-idle",
 		path: "/assets/textures/soldier-idle.png",
 	},
@@ -90,6 +100,11 @@ export const PRELOAD_ASSETS: { type: GameAssetsTypes; name: string; path: string
 		type: GameAssetsTypes.Atlas,
 		name: "atlas:player-idle",
 		path: "/assets/atlas/player-idle.json",
+	},
+	{
+		type: GameAssetsTypes.Atlas,
+		name: "atlas:player-idle-no-arms",
+		path: "/assets/atlas/player-idle-no-arms.json",
 	},
 	{
 		type: GameAssetsTypes.Atlas,

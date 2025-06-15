@@ -1,0 +1,67 @@
+﻿{"frames": {
+
+"player_idle_no_arms0000":
+{
+	"frame": {"x":0,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0001":
+{
+	"frame": {"x":255,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0002":
+{
+	"frame": {"x":510,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0003":
+{
+	"frame": {"x":765,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0004":
+{
+	"frame": {"x":1020,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0005":
+{
+	"frame": {"x":1275,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+},
+"player_idle_no_arms0006":
+{
+	"frame": {"x":1530,"y":0,"w":255,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
+	"sourceSize": {"w":255,"h":638}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "22.0.4.185",
+	"image": "player-idle-no-arms.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":1024},
+	"scale": "1"
+}
+}

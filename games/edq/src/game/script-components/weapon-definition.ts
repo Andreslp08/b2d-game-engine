@@ -1,9 +1,7 @@
-import { Component } from "engine/ecs/component";
+import type { GameObject } from "engine/common/entities/game-object";
 
-
-export class WeaponDefinition extends Component{
-    fireRate:number = 0.5;
-    damage:number = 1;
-    range:number = 100;
-    
+export interface WeaponDefinition{
+    fireRate:number;
+    damage:number;
+    range:number;
 }

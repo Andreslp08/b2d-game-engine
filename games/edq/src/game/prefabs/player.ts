@@ -10,31 +10,18 @@ import { PlayerHud } from "../hud/hud";
 import { ShieldComponent } from "../script-components/shield-component";
 import { WeaponHolder } from "../script-components/weapon";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-
-
+import { PlayerSpriteController } from "../script-components/sprite-controller";
+import { Loot, LootType } from "../script-components/loot";
+import { LootInputController } from "../script-components/loot-input-controller";
 
 export const createPlayer = (position: Vector2): GameObject => {
-
-	//images
-	// const runningImage = AssetsManager.getImageByName("/assets/textures/PlayerRight.png");
-	// const JumpImage = AssetsManager.getImageByPath("/assets/textures/PlayerJumpRight.png");
-	const idleImage = AssetsManager.getImageByName("spritesheet:player-idle");
-	//atlas
-	const idleAtlas = AssetsManager.getAtlasByName("atlas:player-idle");
-
-	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
-	
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
 		size: new Vector2(0.8, 1),
 	});
 	entity.addTag("player");
-	const spriteAnimation = new SpriteAnimation(PlayerIdle, entity, true, 0.12);
-	spriteAnimation.setZindex(1);
-	entity.addComponent(spriteAnimation);
+	entity.addComponent(new PlayerSpriteController(entity));
 	entity.addComponent(new DynamicBody(entity));
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
@@ -43,6 +30,13 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
 	entity.addComponent(new PlayerHud(entity));
+	const loot = new Loot(entity);
+	loot.setSlot(0, { type: LootType.HAND, data: null }, true);
+	loot.setSlot(1, { type: LootType.WEAPON, data: {a:2} }, false);
+	loot.setSlot(2, { type: LootType.WEAPON, data: null }, false);
+	entity.addComponent(new LootInputController(entity));
+	
+	entity.addComponent(loot);
 	entity.addComponent(new WeaponHolder(entity));
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(DynamicBody);
