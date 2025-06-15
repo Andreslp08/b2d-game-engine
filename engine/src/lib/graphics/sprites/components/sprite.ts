@@ -7,7 +7,7 @@ type SpriteData = {
 	image: GameImage;
 	framePosition: Vector2;
 	frameSize: { w: number; h: number };
-	scale?: number;
+	scale?: { x: number; y: number };
 	spriteSourceSize?: { x: number; y: number; w: number; h: number };
 	sourceSize?: { w: number; h: number };
 	direction?: { x: 1 | -1; y: 1 | -1 };
@@ -15,6 +15,7 @@ type SpriteData = {
 	showBlankSprite?: boolean;
 	rotation?: number;
 	anchor?: { x: number; y: number };
+	pivot?: { x: number; y: number };
 	trimmed?: boolean;
 	opacity?: number;
 	shadowColor?: string;
@@ -27,7 +28,7 @@ export class Sprite extends Component {
 	private id: string;
 	private framePosition: Vector2;
 	private frameSize: { w: number; h: number };
-	private scale: number;
+	private scale: { x: number; y: number };
 	private spriteSourceSize: { x: number; y: number; w: number; h: number };
 	private sourceSize: { w: number; h: number };
 	private image: GameImage;
@@ -36,6 +37,7 @@ export class Sprite extends Component {
 	private showBlankSprite: boolean;
 	private rotation: number = 0;
 	private anchor: { x: number; y: number };
+	private pivot: { x: number; y: number };
 	private trimmed: boolean;
 	private opacity: number = 1;
 	private shadowColor: string;
@@ -58,14 +60,15 @@ export class Sprite extends Component {
 		this.image = spriteData.image;
 		this.framePosition = spriteData.framePosition;
 		this.frameSize = spriteData.frameSize;
-		this.scale = spriteData.scale ?? 1;
+		this.scale = spriteData.scale ?? { x: 1, y: 1 };
 		this.spriteSourceSize = spriteData.spriteSourceSize || { x: 0, y: 0, w: this.frameSize.w, h: this.frameSize.h };
 		this.sourceSize = spriteData.sourceSize || { w: this.frameSize.w, h: this.frameSize.h };
 		this.direction = spriteData.direction || { x: 1, y: 1 };
 		this.visible = spriteData.visible || true;
-		this.showBlankSprite = spriteData.showBlankSprite ?? false;
+		this.showBlankSprite = spriteData.showBlankSprite ?? true;
 		this.rotation = spriteData.rotation ?? 0;
 		this.anchor = spriteData.anchor || { x: 0, y: 0 };
+		this.pivot = spriteData.pivot || { x: 0.5, y: 0.5 };
 		this.trimmed = spriteData.trimmed ?? false;
 		this.opacity = spriteData.opacity ?? 1;
 		this.shadowColor = spriteData.shadowColor ?? "#000";
@@ -93,7 +96,7 @@ export class Sprite extends Component {
 		this.frameSize = size;
 	}
 
-	setScale(scale: number) {
+	setScale(scale: { x: number; y: number }) {
 		this.scale = scale;
 	}
 
@@ -147,6 +150,10 @@ export class Sprite extends Component {
 
 	setFilter(filter: string) {
 		this.filter = filter;
+	}
+
+	setPivot(pivot: { x: number; y: number }) {
+		this.pivot = pivot;
 	}
 
 
@@ -226,6 +233,10 @@ export class Sprite extends Component {
 
 	getFilter() {
 		return this.filter;
+	}
+
+	getPivot() {
+		return this.pivot;
 	}
 
 }

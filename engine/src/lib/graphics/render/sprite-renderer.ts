@@ -1,40 +1,18 @@
 import { Transform } from "../../common/components/transform";
 import { GameObject } from "../../common/entities/game-object";
-import { MathUtil } from "../../math/math-util";
+import { Time } from "../../common/interfaces/time";
 import { Sprite } from "../sprites/components/sprite";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { Renderer } from "./render";
 
 export class SpriteRenderer extends Renderer {
-	renderSingleSprite(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
-		if (!sprite) return;
-		if (!sprite.getEntity()) return;
-		const entityTransform = sprite.getEntity().getComponent(Transform);
-		if (!entityTransform) return;
-		if (!sprite.getImage()) return;
-		if (!sprite.getFramePosition() || !sprite.getFrameSize()) return;
-		if (!sprite.getSourceSize()) return;
-		if (!sprite.getSpriteSourceSize()) return;
-		if (!sprite.isVisible()) return;
+
+	renderSprite(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
+		if (!sprite || !sprite.getEntity()) return;
 		const entity = sprite.getEntity() as GameObject;
-		// if(!entity.getTags().includes('player')) return;
-		const framePosition = sprite.getFramePosition();
-		const frameSize = sprite.getFrameSize();
-		const sourceSize = sprite.getSourceSize();
-		const spriteSourceSize = sprite.getSpriteSourceSize();
-		const scale = sprite.getScale();
-		const direction = sprite.getDirection();
+		const transform = entity.getComponent(Transform);
+		if (!transform || !sprite.isVisible()) return;
 		const image = sprite.getImage();
-		const showBlankSprite = sprite.shouldShowBlankSprite();
-		const spriteRotation = sprite.getRotation();
-		const entityRotation = entity.transform.rotation;
-		const entityPosX = entityTransform.position.x - entityTransform.size.x / 2;
-		const entityPosY = entityTransform.position.y - entityTransform.size.y / 2;
-		const entitySizeX = entityTransform.size.x;
-		const entitySizeY = entityTransform.size.y;
-		const anchor = sprite.getAnchor();
-		const destX = entityPosX - anchor.x;
-		const destY = entityPosY - anchor.y;
 		const opacity = sprite.getOpacity();
 		const shadowColor = sprite.getShadowColor();
 		const shadowBlur = sprite.getShadowBlur();
@@ -43,48 +21,80 @@ export class SpriteRenderer extends Renderer {
 		const filter = sprite.getFilter();
 
 		renderingContext.save();
-		renderingContext.translate(entityTransform.position.x, entityTransform.position.y);
-		renderingContext.scale(scale, scale);
-		renderingContext.scale(direction.x, direction.y);
-		renderingContext.rotate(MathUtil.degToRad(entityRotation));
-		renderingContext.rotate(MathUtil.degToRad(spriteRotation));
-		renderingContext.translate(-entityTransform.position.x, -entityTransform.position.y);
 		renderingContext.globalAlpha = opacity;
 		renderingContext.shadowColor = shadowColor;
 		renderingContext.shadowOffsetX = shadowOffsetX;
 		renderingContext.shadowOffsetY = shadowOffsetY;
 		renderingContext.shadowBlur = shadowBlur;
 		renderingContext.filter = filter;
-		
+		this.renderWorldTransform(renderingContext, sprite);
 		if (image && image.loaded) {
-			renderingContext.drawImage(
-				image.nativeElement,
-				framePosition.x,
-				framePosition.y,
-				frameSize.w,
-				frameSize.h,
-				destX,
-				destY,
-				entityTransform.size.x,
-				entityTransform.size.y
-			);
+			this.renderImage(renderingContext, sprite);
 		} else {
-			if (!showBlankSprite) {
-				return;
-			}
-			renderingContext.beginPath();
-			renderingContext.fillStyle = "#fff";
-			renderingContext.fillRect(
-				entityTransform.position.x - entityTransform.size.x / 2,
-				entityTransform.position.y - entityTransform.size.y / 2,
-				entityTransform.size.x,
-				entityTransform.size.y
-			);
-			renderingContext.closePath();
+			this.renderDefaultShape(renderingContext, sprite);
 		}
-
 		renderingContext.restore();
 	}
+
+	renderImage(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
+		if (!sprite || !sprite.getEntity()) return;
+		const entity = sprite.getEntity() as GameObject;
+		const transform = entity.getComponent(Transform);
+		if (!transform || !sprite.isVisible()) return;
+		const size = transform.size;
+		const framePos = sprite.getFramePosition(); // (x, y) del recorte dentro del atlas
+		const frameSize = sprite.getFrameSize(); // (w, h) del recorte
+		// const sourceSize = sprite.getSourceSize(); // tamaño total del sprite original
+		// const spriteSourceSize = sprite.getSpriteSourceSize(); // zona recortada visible
+		// const direction = sprite.getDirection();
+		const image = sprite.getImage();
+		renderingContext.drawImage(
+			image.nativeElement,
+			framePos.x,
+			framePos.y,
+			frameSize.w,
+			frameSize.h,
+			0,
+			0,
+			size.x,
+			size.y
+		);
+	}
+
+	renderDefaultShape(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
+		if (!sprite || !sprite.getEntity()) return;
+		const entity = sprite.getEntity();
+		const transform = entity.getComponent(Transform);
+		if (!transform) return;
+		const showBlankSprite = sprite.shouldShowBlankSprite();
+		if (!showBlankSprite) return;
+		const shouldShowBlankSprite = sprite.shouldShowBlankSprite();
+		if (!shouldShowBlankSprite) return;
+		const size = transform.size;
+		renderingContext.fillStyle = "#fff";
+		renderingContext.fillRect(0, 0, size.x, size.y);
+	}
+
+	renderWorldTransform(renderingContext: CanvasRenderingContext2D, sprite: Sprite): void {
+		if (!renderingContext || !sprite) return;
+		const gameObject = this.entity as GameObject;
+		if (!gameObject) return;
+		const transform = gameObject.getComponent(Transform);
+		if (!transform) return;
+		const size = transform.size;
+		const pos = transform.position;
+		const scale = sprite.getScale();
+		const pivot = sprite.getPivot();
+		const anchor = sprite.getAnchor();
+		const direction = sprite.getDirection();
+
+		renderingContext.translate(pos.x - anchor.x, pos.y - anchor.y);
+		renderingContext.rotate(transform.rotation);
+		renderingContext.rotate(sprite.getRotation());
+		renderingContext.scale(scale.x * direction.x , scale.y * direction.y);
+		renderingContext.translate(-size.x * pivot.x, -size.y * pivot.y);
+	}
+
 	render(renderingContext: CanvasRenderingContext2D): void {
 		if (!this.entity) return;
 		const entity = this.entity;
@@ -95,9 +105,9 @@ export class SpriteRenderer extends Renderer {
 		);
 		for (const component of ordered) {
 			if (component instanceof SpriteAnimation) {
-				this.renderSingleSprite(renderingContext, component.currentSprite);
+				this.renderSprite(renderingContext, component.currentSprite);
 			} else {
-				this.renderSingleSprite(renderingContext, component);
+				this.renderSprite(renderingContext, component);
 			}
 		}
 	}
