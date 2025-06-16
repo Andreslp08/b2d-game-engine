@@ -33,6 +33,7 @@ export class Level1 extends GameScene {
 		// this.loadEffects();
 		this.loadUI();
 		// this.loadDebug();
+		WorldCameras.currentCamera.setFieldOfView(1);
 	}
 
 	loadEffects() {
@@ -66,12 +67,12 @@ export class Level1 extends GameScene {
 
 		for (let i = 0; i < 50; i++) {
 			for (let j = 0; j < 5; j++) {
-				this.addEntity(createBox(new Vector2((j + 10) * 0.5 + i * 2, i * -2)));
+				this.addEntity(createBox(new Vector2((j + 10) * 0.7 + i * 2, i * -2.8)));
 			}
 		}
 
 		for (let i = 0; i < 200; i++) {
-			this.addEntity(createBox(new Vector2((i - 20) * 0.5, 1).multiplyBy(1)));
+			this.addEntity(createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1)));
 		}
 
 		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));

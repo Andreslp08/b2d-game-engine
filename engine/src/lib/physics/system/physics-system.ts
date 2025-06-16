@@ -50,77 +50,87 @@ export class PhysicsSystem extends System {
 		if (!targetDynamicBody || !targetCollider || !targetTransform) return;
 		if (!targetCollider.collidable) return;
 
-		// --- RESOLUCIÓN EN EJE X ---
-		targetTransform.position.x += targetDynamicBody.movement.x;
-		for (const entity of entities) {
-			if (!this.isCollision(targetEntity, entity)) continue;
+		const steps = 10;
+		const stepX = targetDynamicBody.movement.x / steps;
+		const stepY = targetDynamicBody.movement.y / steps;
 
-			targetCollider.isColliding = true;
-			this.notifyCollision(targetEntity, entity);
-			const colliderA = targetCollider;
-			const colliderB = entity.getComponent(Collider);
-			const penetrationX = CollisionUtil.getHorizontalCollisionPenetration(
-				colliderA,
-				colliderB
-			);
-
-			if (penetrationX !== 0) {
+		// --- RESOLUCIÓN EN EJE X (por pasos) ---
+		for (let i = 0; i < steps; i++) {
+			targetTransform.position.x += stepX;
+			let collided = false;
+			for (const entity of entities) {
+				if (!this.isCollision(targetEntity, entity)) continue;
+				collided = true;
+				targetCollider.isColliding = true;
 				this.notifyCollision(targetEntity, entity);
-				targetTransform.position.x -= penetrationX;
 
-				// Rebote solo si venía en dirección de la colisión
-				const normalX = penetrationX > 0 ? Vector2.RIGHT : Vector2.LEFT;
-				if (
-					(penetrationX > 0 && targetDynamicBody.velocity.x > 0) ||
-					(penetrationX < 0 && targetDynamicBody.velocity.x < 0)
-				) {
-					this.notifyCollision(targetEntity, entity);
-					targetDynamicBody.velocity = this.reflect(
-						targetDynamicBody.velocity,
-						normalX,
-						targetDynamicBody.bounciness.x
-					);
+				const colliderA = targetCollider;
+				const colliderB = entity.getComponent(Collider);
+				const penetrationX = CollisionUtil.getHorizontalCollisionPenetration(
+					colliderA,
+					colliderB
+				);
+
+				if (penetrationX !== 0) {
+					targetTransform.position.x -= stepX;
+					const normalX = penetrationX > 0 ? Vector2.RIGHT : Vector2.LEFT;
+					if (
+						(penetrationX > 0 && targetDynamicBody.velocity.x > 0) ||
+						(penetrationX < 0 && targetDynamicBody.velocity.x < 0)
+					) {
+						targetDynamicBody.velocity = this.reflect(
+							targetDynamicBody.velocity,
+							normalX,
+							targetDynamicBody.bounciness.x
+						);
+					}
+					break;
 				}
 			}
+			if (collided) break;
 		}
 
-		// --- RESOLUCIÓN EN EJE Y ---
-		targetTransform.position.y += targetDynamicBody.movement.y;
-		for (const entity of entities) {
-			if (!this.isCollision(targetEntity, entity)) continue;
-
-			targetCollider.isColliding = true;
-			const colliderA = targetCollider;
-			const colliderB = entity.getComponent(Collider);
-			const penetrationY = CollisionUtil.getVerticalCollisionPenetration(
-				colliderA,
-				colliderB
-			);
-
-			if (penetrationY !== 0) {
+		// --- RESOLUCIÓN EN EJE Y (por pasos) ---
+		for (let i = 0; i < steps; i++) {
+			targetTransform.position.y += stepY;
+			let collided = false;
+			for (const entity of entities) {
+				if (!this.isCollision(targetEntity, entity)) continue;
+				collided = true;
+				targetCollider.isColliding = true;
 				this.notifyCollision(targetEntity, entity);
-				targetTransform.position.y -= penetrationY;
 
-				const normalY = penetrationY > 0 ? Vector2.DOWN : Vector2.UP;
-				if (
-					(penetrationY > 0 && targetDynamicBody.velocity.y > 0) ||
-					(penetrationY < 0 && targetDynamicBody.velocity.y < 0)
-				) {
-					targetDynamicBody.velocity = this.reflect(
-						targetDynamicBody.velocity,
-						normalY,
-						targetDynamicBody.bounciness.y
-					);
-				}
+				const colliderA = targetCollider;
+				const colliderB = entity.getComponent(Collider);
+				const penetrationY = CollisionUtil.getVerticalCollisionPenetration(
+					colliderA,
+					colliderB
+				);
 
-				if (penetrationY > 0) {
-					this.notifyCollision(targetEntity, entity);
-					targetDynamicBody.isOnGround = true;
-					targetCollider.collisionDirection.y = CollisionDirection.BOTTOM;
-				} else {
-					targetCollider.collisionDirection.y = CollisionDirection.TOP;
+				if (penetrationY !== 0) {
+					targetTransform.position.y -= stepY;
+					const normalY = penetrationY > 0 ? Vector2.DOWN : Vector2.UP;
+					if (
+						(penetrationY > 0 && targetDynamicBody.velocity.y > 0) ||
+						(penetrationY < 0 && targetDynamicBody.velocity.y < 0)
+					) {
+						targetDynamicBody.velocity = this.reflect(
+							targetDynamicBody.velocity,
+							normalY,
+							targetDynamicBody.bounciness.y
+						);
+					}
+
+					if (penetrationY > 0) {
+						targetDynamicBody.isOnGround = true;
+						targetCollider.collisionDirection.y = CollisionDirection.BOTTOM;
+					} else {
+						targetCollider.collisionDirection.y = CollisionDirection.TOP;
+					}
+					break;
 				}
 			}
+			if (collided) break;
 		}
 	}
 

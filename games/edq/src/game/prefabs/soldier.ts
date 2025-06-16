@@ -14,7 +14,7 @@ export const createSoldier = (position: Vector2) => {
 	const idleAtlas = AssetsManager.getAtlasByName("atlas:soldier-idle");
 	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
 
-	const size = new Vector2(1.1, 1.4);
+	const size = new Vector2(1.6, 2);
 	const soldier = new GameObject({
 		position: position.clone(),
 		rotation: 0,

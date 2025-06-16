@@ -1,12 +1,12 @@
-import { MathUtil } from './../../math/math-util';
+import { MathUtil } from "./../../math/math-util";
 import { Transform } from "../../common/components/transform";
 import { GameObject } from "../../common/entities/game-object";
 import { Sprite } from "../sprites/components/sprite";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { Renderer } from "./render";
+import { PIXELS_PER_METER } from "../../common/constants";
 
 export class SpriteRenderer extends Renderer {
-
 	renderSprite(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
 		if (!sprite || !sprite.getEntity()) return;
 		const entity = sprite.getEntity() as GameObject;
@@ -41,10 +41,9 @@ export class SpriteRenderer extends Renderer {
 		const entity = sprite.getEntity() as GameObject;
 		const transform = entity.getComponent(Transform);
 		if (!transform || !sprite.isVisible()) return;
-		const size = transform.size;
 		const framePos = sprite.getFramePosition(); // (x, y) del recorte dentro del atlas
 		const frameSize = sprite.getFrameSize(); // (w, h) del recorte
-		// const sourceSize = sprite.getSourceSize(); // tamaño total del sprite original
+		const sourceSize = sprite.getSourceSize(); // tamaño total del sprite original
 		// const spriteSourceSize = sprite.getSpriteSourceSize(); // zona recortada visible
 		// const direction = sprite.getDirection();
 		const image = sprite.getImage();
@@ -56,8 +55,8 @@ export class SpriteRenderer extends Renderer {
 			frameSize.h,
 			0,
 			0,
-			size.x,
-			size.y
+			sourceSize.w / PIXELS_PER_METER,
+			sourceSize.h / PIXELS_PER_METER
 		);
 	}
 
@@ -79,22 +78,43 @@ export class SpriteRenderer extends Renderer {
 		if (!renderingContext || !sprite) return;
 		const gameObject = this.entity as GameObject;
 		if (!gameObject) return;
+
 		const transform = gameObject.getComponent(Transform);
 		if (!transform) return;
-		const size = transform.size;
+
 		const pos = transform.position;
-		const scale = sprite.getScale();
+		const size = transform.size; // tamaño lógico del GameObject (en metros)
+		const spriteScale = sprite.getScale(); // escala visual adicional
+		const direction = sprite.getDirection(); // -1 o 1
 		const pivot = sprite.getPivot();
 		const anchor = sprite.getAnchor();
-		const direction = sprite.getDirection();
 
+		const sourceSize = sprite.getSourceSize(); // tamaño original del sprite en px
+		const spriteW = sourceSize.w / PIXELS_PER_METER;
+		const spriteH = sourceSize.h / PIXELS_PER_METER;
+		const useSize = sprite.getUseGameObjectSize();
+
+		// Escala visual para que el sprite quepa en el size definido por el GameObject
+		const visualScale = { x: 1, y: 1 };
+
+		if (useSize) {
+			visualScale.x = transform.size.x / spriteW;
+			visualScale.y = transform.size.y / spriteH;
+		} else {
+			visualScale.x = 1;
+			visualScale.y = 1;
+		}
+
+		// Orden correcto de transformaciones
 		renderingContext.translate(pos.x - anchor.x, pos.y - anchor.y);
 		renderingContext.rotate(MathUtil.degToRad(transform.rotation));
 		renderingContext.rotate(MathUtil.degToRad(sprite.getRotation()));
-		renderingContext.scale(scale.x * direction.x , scale.y * direction.y);
-		renderingContext.translate(-size.x * pivot.x, -size.y * pivot.y);
+		renderingContext.scale(
+			visualScale.x * spriteScale.x * direction.x,
+			visualScale.y * spriteScale.y * direction.y
+		);
+		renderingContext.translate(-spriteW * pivot.x, -spriteH * pivot.y);
 	}
-
 	render(renderingContext: CanvasRenderingContext2D): void {
 		if (!this.entity) return;
 		const entity = this.entity;

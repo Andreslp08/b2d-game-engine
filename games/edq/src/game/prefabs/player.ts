@@ -18,7 +18,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
-		size: new Vector2(0.8, 1),
+		size: new Vector2(0.8,1.8),
 	});
 	entity.addTag("player");
 	entity.addComponent(new PlayerSpriteController(entity));
@@ -49,7 +49,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	playerBody.friction = 1800;
 	playerBody.dragScale = 109;
 	playerMovement.forceX = 7000;
-	playerMovement.forceY = 12000;
+	playerMovement.forceY = 16000;
 	playerMovement.maxJumpHeight = 1.2;
 	playerBody.bounciness = new Vector2(0, 0);
 	return entity;

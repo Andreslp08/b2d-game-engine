@@ -18,6 +18,7 @@ export class PlayerSpriteController extends ScriptComponent {
 	private playerIdleSS: SpriteSheet;
 	private playerIdleNoArmsSS: SpriteSheet;
 	private aimingArmSprite: Sprite;
+	private defaultAimingArmAnchor = new Vector2(-0.17, 0.12);
 
 	onStart(): void {
 		this.gameObject = this.entity as GameObject;
@@ -27,6 +28,8 @@ export class PlayerSpriteController extends ScriptComponent {
 		//atlas
 		const idleAtlas = AssetsManager.getAtlasByName("atlas:player-idle");
 		const idleNoArmsAtlas = AssetsManager.getAtlasByName("atlas:player-idle-no-arms");
+
+		const pivot = new Vector2(0.25, 0.1);
 
 		this.playerIdleSS = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
 
@@ -43,12 +46,12 @@ export class PlayerSpriteController extends ScriptComponent {
 		this.aimingArmSprite = new Sprite({
 			id: "player-right-arm",
 			framePosition: new Vector2(0, 0),
-			frameSize: { w: 101, h: 162 },
+			frameSize: { w: 118, h: 151 },
 			image: rightArm,
-			scale: { x: 0.38, y: 0.25 },
+			scale: new Vector2(0.43, 0.24),
 			rotation: 45,
-			anchor: { x: 0.13, y: 0.02 },
-			pivot: { x: 0.25, y: 0.25 },
+			anchor: this.defaultAimingArmAnchor.clone(),
+			pivot,
 		});
 
 		this.aimingArmSprite.setZindex(2);
@@ -106,11 +109,11 @@ export class PlayerSpriteController extends ScriptComponent {
 		spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
 		this.aimingArmSprite.setDirection(dynamicBody.direction);
 		if (dynamicBody.direction.x === 1) {
-			this.aimingArmSprite.setAnchor({ x: 0.13, y: 0.02 });
+			this.aimingArmSprite.setAnchor(this.defaultAimingArmAnchor.clone().multiply(new Vector2(-1, 1)));
 
 			this.aimingArmSprite.setRotation(armRotation);
 		} else {
-			this.aimingArmSprite.setAnchor({ x: -0.13, y: 0.02 });
+			this.aimingArmSprite.setAnchor(this.defaultAimingArmAnchor.clone().multiply(new Vector2(1, 1)));
 			this.aimingArmSprite.setRotation(-armRotation);
 		}
 		// if (isOnGround && velocityX > epsilon) {

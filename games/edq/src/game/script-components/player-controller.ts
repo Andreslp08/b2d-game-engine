@@ -20,14 +20,15 @@ export class PlayerController extends ScriptComponent {
 
 	onFixedUpdate(_deltaTime: number): void {
 		const camera = WorldCameras.currentCamera;
-
-		const scene = this.entity.getScene();
-		const leftBound = scene.getEntityByTag<GameObject>("main-left-bound");
-		const rightBound = scene.getEntityByTag<GameObject>("main-right-bound");
-
 		const targetGameObject = this.entity as GameObject;
-		const thresholdX = 0;
-		const thresholdY = targetGameObject.transform.size.y;
+		const cameraFOV = camera.getFieldOfView();
+
+		// Considerar el tamaño del viewport visible tras aplicar FOV
+		const adjustedViewportHalfHeight = targetGameObject.transform.size.y / 2 / cameraFOV;
+
+		const thresholdX = 0; // Opcional para suavizar el movimiento en X
+		const thresholdY = adjustedViewportHalfHeight;
+
 		const targetPos = targetGameObject.transform.position.clone();
 		const cameraPos = camera.getPosition().clone();
 
@@ -39,14 +40,22 @@ export class PlayerController extends ScriptComponent {
 			cameraPos.x = targetPos.x - Math.sign(dx) * thresholdX;
 		}
 
-		// Solo mover en Y si sale del umbral
+		// Solo mover en Y si sale del umbral (ajustado con FOV)
 		if (Math.abs(dy) > thresholdY) {
 			cameraPos.y = targetPos.y - Math.sign(dy) * thresholdY;
 		}
+
+		// Lerp final
 		const newCameraPos = new Vector2(
 			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
 			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * _deltaTime)
 		);
+
+		// Mantén tus límites laterales si lo necesitas
+		const scene = this.entity.getScene();
+		const leftBound = scene.getEntityByTag<GameObject>("main-left-bound");
+		const rightBound = scene.getEntityByTag<GameObject>("main-right-bound");
+
 		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
 		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
 
@@ -142,19 +151,5 @@ export class PlayerController extends ScriptComponent {
 		if (Math.abs(dynamicBody.velocity.y) > 0.01) {
 			movement.direction.y = dynamicBody.velocity.y > 0 ? 1 : -1;
 		}
-
-		// Animación según estado
-		// if (spriteAnimation) {
-		// 	spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
-		// 	if (!dynamicBody.isOnGround) {
-		// 		spriteAnimation.setAnimation(PlayerJumpSequence, false, 0.08);
-		// 	} else {
-		// 		if (Math.abs(dynamicBody.velocity.x) > 0.01) {
-		// 			spriteAnimation.setAnimation(PlayerRunningSequence, true, 0.08);
-		// 		} else {
-		// 			spriteAnimation.setAnimation(PlayerIdle, true, 0.08);
-		// 		}
-		// 	}
-		// }
 	}
 }

@@ -9,7 +9,7 @@ import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { StaticBody } from "engine/physics/components/static-body";
 
-const BOX_SIZE = 0.5;
+const BOX_SIZE = 0.7;
 
 export class BoxMessage extends ScriptComponent {
 	message: string = "";

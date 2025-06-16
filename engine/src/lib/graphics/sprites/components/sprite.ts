@@ -7,15 +7,16 @@ type SpriteData = {
 	image: GameImage;
 	framePosition: Vector2;
 	frameSize: { w: number; h: number };
-	scale?: { x: number; y: number };
+	scale?: Vector2;	
 	spriteSourceSize?: { x: number; y: number; w: number; h: number };
 	sourceSize?: { w: number; h: number };
+	useGameObjectSize?: boolean;
 	direction?: { x: 1 | -1; y: 1 | -1 };
 	visible?: boolean;
 	showBlankSprite?: boolean;
 	rotation?: number;
-	anchor?: { x: number; y: number };
-	pivot?: { x: number; y: number };
+	anchor?: Vector2;
+	pivot?: Vector2;
 	trimmed?: boolean;
 	opacity?: number;
 	shadowColor?: string;
@@ -28,7 +29,7 @@ export class Sprite extends Component {
 	private id: string;
 	private framePosition: Vector2;
 	private frameSize: { w: number; h: number };
-	private scale: { x: number; y: number };
+	private scale: Vector2;
 	private spriteSourceSize: { x: number; y: number; w: number; h: number };
 	private sourceSize: { w: number; h: number };
 	private image: GameImage;
@@ -36,8 +37,8 @@ export class Sprite extends Component {
 	private visible: boolean;
 	private showBlankSprite: boolean;
 	private rotation: number = 0;
-	private anchor: { x: number; y: number };
-	private pivot: { x: number; y: number };
+	private anchor: Vector2;
+	private pivot: Vector2;
 	private trimmed: boolean;
 	private opacity: number = 1;
 	private shadowColor: string;
@@ -45,6 +46,7 @@ export class Sprite extends Component {
 	private shadowOffsetX: number;
 	private shadowOffsetY: number;
 	private filter: string;
+	private useGameObjectSize: boolean;
 
 
 	/**
@@ -60,15 +62,15 @@ export class Sprite extends Component {
 		this.image = spriteData.image;
 		this.framePosition = spriteData.framePosition;
 		this.frameSize = spriteData.frameSize;
-		this.scale = spriteData.scale ?? { x: 1, y: 1 };
+		this.scale = spriteData.scale ??  new Vector2(1, 1);
 		this.spriteSourceSize = spriteData.spriteSourceSize || { x: 0, y: 0, w: this.frameSize.w, h: this.frameSize.h };
 		this.sourceSize = spriteData.sourceSize || { w: this.frameSize.w, h: this.frameSize.h };
 		this.direction = spriteData.direction || { x: 1, y: 1 };
 		this.visible = spriteData.visible || true;
 		this.showBlankSprite = spriteData.showBlankSprite ?? true;
 		this.rotation = spriteData.rotation ?? 0;
-		this.anchor = spriteData.anchor || { x: 0, y: 0 };
-		this.pivot = spriteData.pivot || { x: 0.5, y: 0.5 };
+		this.anchor = spriteData.anchor || new Vector2(0,0);
+		this.pivot = spriteData.pivot || new Vector2(0.5,0.5);
 		this.trimmed = spriteData.trimmed ?? false;
 		this.opacity = spriteData.opacity ?? 1;
 		this.shadowColor = spriteData.shadowColor ?? "#000";
@@ -76,6 +78,7 @@ export class Sprite extends Component {
 		this.shadowOffsetX = spriteData.shadowOffsetX ?? 0;
 		this.shadowOffsetY = spriteData.shadowOffsetY ?? 0;
 		this.filter = spriteData.filter ?? "";
+		this.useGameObjectSize = spriteData.useGameObjectSize ?? true;
 	}
 
 	// SETTERS
@@ -96,7 +99,7 @@ export class Sprite extends Component {
 		this.frameSize = size;
 	}
 
-	setScale(scale: { x: number; y: number }) {
+	setScale(scale: Vector2) {	
 		this.scale = scale;
 	}
 
@@ -120,7 +123,7 @@ export class Sprite extends Component {
 		this.rotation = rotation;
 	}
 
-	setAnchor(anchor: { x: number; y: number }) {
+	setAnchor(anchor: Vector2) {
 		this.anchor = anchor;
 	}
 
@@ -152,8 +155,12 @@ export class Sprite extends Component {
 		this.filter = filter;
 	}
 
-	setPivot(pivot: { x: number; y: number }) {
+	setPivot(pivot: Vector2) {
 		this.pivot = pivot;
+	}
+
+	setUseGameObjectSize(useGameObjectSize: boolean) {
+		this.useGameObjectSize = useGameObjectSize;
 	}
 
 
@@ -237,6 +244,10 @@ export class Sprite extends Component {
 
 	getPivot() {
 		return this.pivot;
+	}
+
+	getUseGameObjectSize() {
+		return this.useGameObjectSize;
 	}
 
 }

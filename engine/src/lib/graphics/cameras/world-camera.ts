@@ -16,8 +16,7 @@ export class WorldCamera extends Camera {
 		super(initialPosition, scene);
 		this.renderLayer = RenderLayerTypes.World;
 		this.position = initialPosition;
-		this.zoomX = 1;
-		this.zoomY = 1;
+		this.setFieldOfView(1);
 		this.scene = scene;
 	}
 
@@ -34,8 +33,8 @@ export class WorldCamera extends Camera {
 		const baseScale = PPM * uniformScale;
 
 		// Aplica zoom personalizado de cámara
-		const totalScaleX = baseScale * this.zoomX;
-		const totalScaleY = baseScale * this.zoomY;
+		const totalScaleX = baseScale * this._fieldOfView;
+		const totalScaleY = baseScale * this._fieldOfView;
 
 		return new Vector2(totalScaleX, totalScaleY);
 	}
