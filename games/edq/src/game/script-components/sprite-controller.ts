@@ -58,7 +58,7 @@ export class PlayerSpriteController extends ScriptComponent {
 		this.gameObject.addComponent(this.aimingArmSprite);
 	}
 
-	onFixedUpdate(deltaTime: number): void {
+	onFixedUpdate(): void {
 		if (!this.gameObject) return;
 		const dynamicBody = this.gameObject.getComponent(DynamicBody);
 		if (!dynamicBody) return;

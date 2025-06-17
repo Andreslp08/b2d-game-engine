@@ -38,10 +38,10 @@ export class ShieldComponent extends ScriptComponent {
 		this.maxShield = max;
 	}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 	
 	}
 
 
-	onLateUpdate(deltaTime: number): void {}
+	onLateUpdate(): void {}
 }

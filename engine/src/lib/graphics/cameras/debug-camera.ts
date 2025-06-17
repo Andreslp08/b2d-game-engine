@@ -21,5 +21,5 @@ export class DebugCamera extends Camera {
 		// context.fillStyle = "#f0f";
 		// context.fillRect(0, 0, 100, 100);
 	}
-	update(deltaTime: number): void {}
+	update(): void {}
 }

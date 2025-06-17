@@ -1,4 +1,5 @@
 import { Transform } from "../../common/components/transform";
+import { Time } from "../../common/interfaces/time";
 import { Entity } from "../../ecs/entity";
 import { System } from "../../ecs/system";
 import { Scene } from "../../graphics/scenes/scene";
@@ -201,9 +202,9 @@ export class PhysicsSystem extends System {
 		}
 	}
 
-	fixedUpdate(deltaTime: number): void {
-		this.calculatePhysics(deltaTime);
+	fixedUpdate(): void {
+		this.calculatePhysics(Time.fixedDeltaTime);
 	}
 
-	update(deltaTime: number): void {}
+	update(): void {}
 }

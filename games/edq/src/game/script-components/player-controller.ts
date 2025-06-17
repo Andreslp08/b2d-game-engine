@@ -10,15 +10,21 @@ import { WorldCameras } from "engine/graphics/cameras/camera-managers";
 import { MathUtil } from "engine/math/math-util";
 import { GameObject } from "engine/common/entities/game-object";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { Time } from "engine/common/interfaces/time";
 
 let isClimbKeyPressed = false;
 
 export class PlayerController extends ScriptComponent {
+	enableInputControl = true;
 	constructor(entity: Entity) {
 		super(entity);
 	}
 
-	onFixedUpdate(_deltaTime: number): void {
+	onStart(): void {
+		this.enableInputControl = true;
+	}
+
+	onFixedUpdate(): void {
 		const camera = WorldCameras.currentCamera;
 		const targetGameObject = this.entity as GameObject;
 		const cameraFOV = camera.getFieldOfView();
@@ -48,7 +54,7 @@ export class PlayerController extends ScriptComponent {
 		// Lerp final
 		const newCameraPos = new Vector2(
 			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
-			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * _deltaTime)
+			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * Time.deltaTime)
 		);
 
 		// Mantén tus límites laterales si lo necesitas
@@ -68,9 +74,11 @@ export class PlayerController extends ScriptComponent {
 		// === MOVIMIENTO Y CONTROLES ===
 		const entity = this.entity;
 		if (!entity.hasComponent(BasicMovement)) return;
-		this.horizontalController();
-		this.jumpController();
-		this.spriteAnimationsController();
+		if(this.enableInputControl){
+			this.horizontalController();
+			this.jumpController();
+		}
+		// this.spriteAnimationsController();
 	}
 
 	private climbController() {

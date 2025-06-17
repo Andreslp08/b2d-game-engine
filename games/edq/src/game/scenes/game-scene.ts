@@ -21,8 +21,8 @@ export class GameScene extends Scene {
 		return this._displayName;
 	}
 
-	update(deltaTime: number): void {
-		super.update(deltaTime);
+	update(): void {
+		super.update();
 		useGameStore.getState().setRunningGame(Engine.isRunning);
 	}
 }

@@ -1,3 +1,4 @@
+import { PIXELS_PER_METER } from "engine/common/constants";
 import  { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
@@ -51,7 +52,8 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 	}
 
 	render(context: CanvasRenderingContext2D): void {
-		const position = this.transform.position;
+		const cameraFOV = WorldCameras.currentCamera.getFieldOfView();
+		const position = this.transform.position.multiplyBy(cameraFOV);
 		const size = this.transform.size;
 		if (!this.visible) return;
 		if (!this.transform) return;
@@ -76,11 +78,11 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 		context.restore();
 	}
 
-	update(delta: number): void {
-		this.displayedHealth = MathUtil.lerp(this.displayedHealth, this.health, 5 * delta);
+	update(): void {
+		this.displayedHealth = MathUtil.lerp(this.displayedHealth, this.health, 5 * Time.deltaTime);
 	}
 
-	fixedUpdate(deltaTime: number): void {
+	fixedUpdate(): void {
 		
 	}
 }
@@ -109,7 +111,7 @@ export class HealthUI extends UIObject {
 
 	setHealth(health: number) {
 		this._healthBar.setHealth(health);
-		this._healthBar.update(Time.deltaTime);
+		this._healthBar.update();
 	}
 
 	showHealthBar(show: boolean) {
@@ -164,7 +166,7 @@ export class HealthComponent extends ScriptComponent {
 		this.maxHealth = maxHealth;
 	}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 		// if(this.health <= 0) {
 		// 	Time.timeScale = 0.1;
 		// }
@@ -178,7 +180,7 @@ export class HealthComponent extends ScriptComponent {
 		return this.showHealthBar;
 	}
 
-	onLateUpdate(deltaTime: number): void {
+	onLateUpdate(): void {
 		const scene = this.entity.getScene();
 		if (scene && (this.healthUI.getScene() === null || this.healthUI.getScene() !== scene)) {
 			scene.addEntity(this.healthUI);

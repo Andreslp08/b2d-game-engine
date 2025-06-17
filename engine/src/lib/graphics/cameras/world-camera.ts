@@ -3,6 +3,7 @@ import {
 	VIEWPORT_HEIGHT_IN_METERS,
 	VIEWPORT_WIDTH_IN_METERS,
 } from "../../common/constants";
+import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Scene } from "../scenes/scene";
@@ -73,6 +74,7 @@ export class WorldCamera extends Camera {
 		renderingContext.translate(offset.x, offset.y);
 		renderingContext.scale(totalScale.x, totalScale.y);
 		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
+		renderingContext.rotate(MathUtil.degToRad(this.getRotation()));
 	}
 
 	getWorldPositionFromScreenPosition(screenPosition: Vector2) {

@@ -22,7 +22,7 @@ export class LootInputController extends ScriptComponent {
 
     }
 
-    onUpdate(delta: number): void {
+    onUpdate(): void {
         if(!this.entity)return;
         const loot = this.entity.getComponent(Loot);
         if(!loot)return;

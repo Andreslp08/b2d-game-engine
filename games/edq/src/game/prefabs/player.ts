@@ -13,6 +13,7 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { PlayerSpriteController } from "../script-components/sprite-controller";
 import { Loot, LootType } from "../script-components/loot";
 import { LootInputController } from "../script-components/loot-input-controller";
+import { PlayerLifeController } from "../script-components/player-life-controller";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -30,6 +31,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
 	entity.addComponent(new PlayerHud(entity));
+	entity.addComponent(new PlayerLifeController(entity));
 	const loot = new Loot(entity);
 	loot.setSlot(0, { type: LootType.HAND, data: null }, true);
 	loot.setSlot(1, { type: LootType.WEAPON, data: {a:2} }, false);
@@ -48,7 +50,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	playerBody.mass = 80;
 	playerBody.friction = 1800;
 	playerBody.dragScale = 109;
-	playerMovement.forceX = 7000;
+	playerMovement.forceX = 14000;
 	playerMovement.forceY = 16000;
 	playerMovement.maxJumpHeight = 1.2;
 	playerBody.bounciness = new Vector2(0, 0);

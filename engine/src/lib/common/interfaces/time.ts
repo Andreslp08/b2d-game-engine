@@ -1,6 +1,8 @@
 export class Time {
 	private static _deltaTime = 0;
+	private static _unscaledDeltaTime = 0;
 	private static _fixedDeltaTime = 0;
+	private static _unscaledFixedDeltaTime = 0;
 	private static _time = 0;
 	private static _timeScale = 1;
 	private static _fixedAccumulator = 0;
@@ -15,6 +17,18 @@ export class Time {
 
 	public static get fixedDeltaTime() {
 		return this._fixedDeltaTime;
+	}
+
+	public static get unscaledDeltaTime() {
+		return this._unscaledDeltaTime;
+	}
+
+	public static get unscaledFixedDeltaTime() {
+		return this._unscaledFixedDeltaTime;
+	}
+
+	public static set timeScale(value: number) {
+		this._timeScale = value;
 	}
 
 	public static get timeScale() {
@@ -32,10 +46,12 @@ export class Time {
 	// Solo el Engine puede actualizar esto
 	public static update(dt: number) {
 		this._deltaTime = dt * Time._timeScale;
+		this._unscaledDeltaTime = dt;
 		this._time += dt;
 	}
 	public static fixedUpdate(dt: number) {
-		this._fixedDeltaTime = dt;
+		this._fixedDeltaTime = dt * Time._timeScale;
+		this._unscaledFixedDeltaTime = dt;
 	}
 
 	public static setFixedUpdateAccumulator(accumulator: number) {

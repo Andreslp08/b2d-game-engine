@@ -10,6 +10,7 @@ import { WorldCameras } from "engine/graphics/cameras/camera-managers";
 import { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { Time } from "engine/common/interfaces/time";
 
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
@@ -25,7 +26,7 @@ export class WeaponHolder extends ScriptComponent {
 
 	onStart(): void {}
 
-	onUpdate(deltaTime: number): void {}
+	onUpdate(): void {}
 
 	onDestroy(): void {
 		const scene = this.entity.getScene();
@@ -55,6 +56,7 @@ export class WeaponController extends ScriptComponent {
 	}
 
 	shot() {
+		// if(!this.weaponHolder) return;
 		if (this.shooting) return;
 		const directionX = this.weaponHolder?.getComponent(DynamicBody)?.direction.x ?? 1;
 		const rotatedOffset = this.attachmentOffset.clone().rotate(this.currentAimAngle);
@@ -92,7 +94,7 @@ export class WeaponController extends ScriptComponent {
 		}
 	}
 
-	onLateUpdate(deltaTime: number): void {
+	onLateUpdate(): void {
 		if (!this.weaponHolder) return;
 		const weaponObject = this.entity as GameObject;
 		const weaponTransform = weaponObject.getComponent(Transform);
@@ -140,9 +142,9 @@ export class WeaponController extends ScriptComponent {
 
 	}
 
-	onFixedUpdate(deltaTime: number): void {
+	onFixedUpdate(): void {
 		const fireRate = 0.6;
-		this.fireCooldown -= deltaTime;
+		this.fireCooldown -= Time.fixedDeltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
 			this.shot();
 			this.fireCooldown = fireRate;

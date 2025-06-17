@@ -24,6 +24,6 @@ export abstract class System implements Updatable {
 		this.scene = world;
 	}
 
-	abstract update(deltaTime: number): void;
-	abstract fixedUpdate(deltaTime: number): void;
+	abstract update(): void;
+	abstract fixedUpdate(): void;
 }

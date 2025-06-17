@@ -10,7 +10,7 @@ export class SpriteAnimationSystem extends System {
 		this.setName("SpriteSystem");
 	}
 
-	fixedUpdate(deltaTime: number): void {}
+	fixedUpdate(): void {}
 
 	updateAnimations(spriteAnimation: SpriteAnimation) {
 		const anim = spriteAnimation;
@@ -33,7 +33,7 @@ export class SpriteAnimationSystem extends System {
 		// console.log(anim.currentSprite.id)
 	}
 
-	update(deltaTime: number): void {
+	update(): void {
 		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
 			const gameObject = entity as GameObject;

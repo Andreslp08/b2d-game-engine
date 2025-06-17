@@ -18,8 +18,8 @@ export class ScriptComponent extends Component {
 	onTriggerStay(entity: Entity): void {}
 
 	onStart(): void {}
-	onUpdate(deltaTime: number): void {}
-	onFixedUpdate(deltaTime: number): void {}
-	onLateUpdate(deltaTime: number): void {}
+	onUpdate(): void {}
+	onFixedUpdate(): void {}
+	onLateUpdate(): void {}
 	onDestroy(): void {}
 }

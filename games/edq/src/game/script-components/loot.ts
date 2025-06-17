@@ -89,5 +89,5 @@ export class Loot extends ScriptComponent {
 		}
 	}
 
-	onFixedUpdate(deltaTime: number): void {}
+	onFixedUpdate(): void {}
 }

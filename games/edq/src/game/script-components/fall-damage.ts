@@ -8,7 +8,7 @@ export class FallDamage extends ScriptComponent {
 	private startFallPosition = 0;
 	onStart(): void {}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 		const gameObject = this.entity as GameObject;
 		if (!gameObject) return;
 		const healthComponent = gameObject.getComponent(HealthComponent);

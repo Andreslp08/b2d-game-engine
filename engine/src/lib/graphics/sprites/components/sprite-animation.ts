@@ -38,9 +38,9 @@ export class SpriteAnimation extends Component {
 	}
 
 	setAnimationDirectionInX(direction: 1 | -1) {
-		this.spritesheet.sprites.forEach((sprite) => (sprite.direction.x = direction));
+		this.spritesheet.sprites.forEach((sprite) => (sprite.getDirection().x = direction));
 	}
 	setAnimationDirectionInY(direction: 1 | -1) {
-		this.spritesheet.sprites.forEach((sprite) => (sprite.direction.y = direction));
+		this.spritesheet.sprites.forEach((sprite) => (sprite.getDirection().y = direction));
 	}
 }

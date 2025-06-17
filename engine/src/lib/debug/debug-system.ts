@@ -6,7 +6,7 @@ import { DebugMode } from "./debug";
 
 
 export class DebugSystem extends System{
-    update(deltaTime: number): void {
+    update(): void {
         const entities = this.getScene().getEntitiesAsArray();
         if(DebugMode.enabled === false) return
         entities.forEach((entity) => {
@@ -38,7 +38,7 @@ export class DebugSystem extends System{
         });
     }
 
-    fixedUpdate(deltaTime: number): void {
+    fixedUpdate(): void {
         
     }
 

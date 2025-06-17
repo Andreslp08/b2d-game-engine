@@ -50,16 +50,16 @@ export class BulletController extends ScriptComponent {
 		}
 	}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 		if (this.shouldDestroy) {
 			this.destroyBullet();
 		}
 
 		if (this.shooted) {
-			this.shootStartTime += deltaTime;
+			this.shootStartTime += Time.deltaTime;
 		}
 		if (this.collisionDetected) {
-			this.collisionStartTime += deltaTime;
+			this.collisionStartTime += Time.deltaTime;
 		}
 		if (this.collisionStartTime > 1.8 || this.shootStartTime > 5) {
 			this.shouldDestroy = true;

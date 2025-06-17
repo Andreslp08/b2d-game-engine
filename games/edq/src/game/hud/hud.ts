@@ -56,7 +56,7 @@ export class PlayerHud extends ScriptComponent {
 		this.hudUI = new HudUI();
 	}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 		if (!this.entity) return;
 		const scene = this.entity.getScene();
 		if (scene && (this.hudUI.getScene() === null || this.hudUI.getScene() !== scene)) {

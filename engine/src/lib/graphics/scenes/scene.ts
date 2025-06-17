@@ -67,12 +67,12 @@ export class Scene implements Updatable {
 		DebugCameras.setCurrentCamera(debugCamera);
 	}
 
-	update(deltaTime: number): void {
-		this.systems.forEach((system) => system.update(deltaTime));
+	update(): void {
+		this.systems.forEach((system) => system.update());
 	}
 
-	fixedUpdate(deltaTime: number): void {
-		this.systems.forEach((system) => system.fixedUpdate(deltaTime));
+	fixedUpdate(): void {
+		this.systems.forEach((system) => system.fixedUpdate());
 	}
 
 	get renderer() {

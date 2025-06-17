@@ -23,5 +23,5 @@ export class UICamera extends Camera {
 		renderingContext.scale(uniformScale, uniformScale);
 	}
 
-	update(deltaTime: number): void {}
+	update(): void {}
 }

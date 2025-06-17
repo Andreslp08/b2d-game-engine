@@ -1,3 +1,4 @@
+
 import { System } from "../ecs/system";
 import { ScriptComponent } from "./script-component";
 
@@ -5,7 +6,7 @@ export class ScriptSystem extends System {
 	// 50 veces por segundo (como Unity)
 	private startedScripts: Set<ScriptComponent> = new Set();
 
-	update(deltaTime: number): void {
+	update(): void {
 		const entities = this.getScene().getEntitiesAsArray();
 
 		// ⏱️ Llamar start
@@ -28,7 +29,7 @@ export class ScriptSystem extends System {
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onUpdate === "function") {
-					script.onUpdate(deltaTime);
+					script.onUpdate();
 				}
 			});
 		}
@@ -38,19 +39,19 @@ export class ScriptSystem extends System {
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onLateUpdate === "function") {
-					script.onLateUpdate(deltaTime);
+					script.onLateUpdate();
 				}
 			});
 		}
 	}
 
-	fixedUpdate(deltaTime: number): void {
+	fixedUpdate(): void {
 		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onFixedUpdate === "function") {
-					script.onFixedUpdate(deltaTime);
+					script.onFixedUpdate();
 				}
 			});
 		}

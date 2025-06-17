@@ -13,6 +13,7 @@ export class Camera implements Renderable {
 	private _fadeAlpha:number = 0;
 	private _fadeColor:string = "#000";
 	private renderFilters:string = "";
+	private _rotation:number = 0;
 
 	constructor(initialPosition: Vector2, scene: Scene) {
 		this.renderLayer = RenderLayerTypes.World;
@@ -71,6 +72,14 @@ export class Camera implements Renderable {
 
 	getFieldOfView(): number {
 		return this._fieldOfView;
+	}
+
+	setRotation(rotation: number): void {
+		this._rotation = rotation;
+	}
+
+	getRotation(): number {
+		return this._rotation;
 	}
 
 

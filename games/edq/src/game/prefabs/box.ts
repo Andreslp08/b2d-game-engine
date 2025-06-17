@@ -8,6 +8,7 @@ import { Collider } from "engine/physics/components/collider";
 import { BodyType } from "engine/physics/enum/body-type";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { StaticBody } from "engine/physics/components/static-body";
+import { Time } from "engine/common/interfaces/time";
 
 const BOX_SIZE = 0.7;
 
@@ -22,9 +23,9 @@ export class BoxMessage extends ScriptComponent {
 		this.message = message;
 	}
 
-	onUpdate(deltaTime: number): void {
+	onUpdate(): void {
 		const transform = this.entity.getComponent(Transform);
-		this.time += deltaTime;
+		this.time += Time.deltaTime;
 		if (transform) {
 			transform.position.x =
 				transform.position.x + Math.cos(this.time * this.speed * Math.PI) * this.amplitude;

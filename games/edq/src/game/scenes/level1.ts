@@ -16,6 +16,7 @@ import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode } from "engine/debug/debug";
 import { BackgroundCameras, UICameras, WorldCameras } from "engine/graphics/cameras/camera-managers";
+import { PlayerController } from "../script-components/player-controller";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -77,6 +78,9 @@ export class Level1 extends GameScene {
 
 		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));
 		this.player = this.getEntityById<GameObject>(playerId);
+		// setTimeout(() => {
+		// 	this.player.transform.position = new Vector2(0, -199);
+		// }, 2000);
 
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);

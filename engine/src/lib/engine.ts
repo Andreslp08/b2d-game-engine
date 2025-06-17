@@ -147,14 +147,14 @@ export class Engine {
 
 		if (!Engine._isPaused && !Engine._sleeping) {
 			if (this.scene) {
-				while (this.accumulator >= this.fixedDelta) {
-					this.scene.fixedUpdate?.(this.fixedDelta);
+				while (this.accumulator >= this.fixedDelta * Time.timeScale) {
+					this.scene.fixedUpdate?.();
 					Time.fixedUpdate(this.fixedDelta);
 					this.accumulator -= this.fixedDelta;
 				}
 				Time.update(dt);
 				Time.setFixedUpdateAccumulator(this.accumulator);
-				this.scene.update(Time.deltaTime);
+				this.scene.update();
 			}
 		}
 
