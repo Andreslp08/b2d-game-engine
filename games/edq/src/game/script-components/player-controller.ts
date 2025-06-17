@@ -15,16 +15,20 @@ import { Time } from "engine/common/interfaces/time";
 let isClimbKeyPressed = false;
 
 export class PlayerController extends ScriptComponent {
-	enableInputControl = true;
+	enabled = true;
+	enableInputController = true;
 	constructor(entity: Entity) {
 		super(entity);
 	}
 
 	onStart(): void {
-		this.enableInputControl = true;
+		this.enabled = true;
 	}
 
-	onFixedUpdate(): void {
+	onUpdate(): void {
+		if (!this.enabled) {
+			return;
+		}
 		const camera = WorldCameras.currentCamera;
 		const targetGameObject = this.entity as GameObject;
 		const cameraFOV = camera.getFieldOfView();
@@ -64,21 +68,20 @@ export class PlayerController extends ScriptComponent {
 
 		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
 		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
-
+		const db = this.entity.getComponent(DynamicBody);
+		const finalCameraPosition = db?.isMoving ? newCameraPos: targetPos;
 		if (leftDistance > 6.8 && rightDistance > 6.8) {
-			camera.setPosition(newCameraPos);
+			camera.setPosition(finalCameraPosition);
 		} else {
-			camera.setYPosition(newCameraPos.y);
+			camera.setYPosition(finalCameraPosition.y);
 		}
 
 		// === MOVIMIENTO Y CONTROLES ===
 		const entity = this.entity;
 		if (!entity.hasComponent(BasicMovement)) return;
-		if(this.enableInputControl){
-			this.horizontalController();
-			this.jumpController();
-		}
-		// this.spriteAnimationsController();
+		if(!this.enableInputController) return;
+		this.horizontalController();
+		this.jumpController();
 	}
 
 	private climbController() {
