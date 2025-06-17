@@ -22,7 +22,6 @@ export class FallDamage extends ScriptComponent {
 		const isOnground = dynamicBody.isOnGround;
 		if (isOnground && this.wasOnGround == false) {
 			const fallDistance = Math.abs(this.startFallPosition - currentPosition.y);
-			console.log('fall distance',fallDistance);
 			if (fallDistance > 6) {
 				const damage = fallDistance * 2.5;
 				healthComponent.setHealth(healthComponent.getHealth() - damage);
