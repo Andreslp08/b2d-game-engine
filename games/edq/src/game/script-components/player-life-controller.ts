@@ -46,6 +46,14 @@ export class PlayerLifeController extends ScriptComponent {
 		if (!scene) return;
 
 		if (health.getHealth() <= 0) {
+							this.cameraShakeTimer += Time.unscaledDeltaTime;
+				const shakeSpeed = 1.5; // Oscilaciones por segundo
+				const shakeAmount = 5; // Rango de movimiento (radianes)
+
+				const shake =
+					Math.sin((this.cameraShakeTimer * shakeSpeed * Math.PI) / 2) * shakeAmount;
+
+				this.changeAllCamerasRotation(shake);
 			this.grayscaleValue = MathUtil.lerp(
 				this.grayscaleValue,
 				100,
@@ -56,28 +64,20 @@ export class PlayerLifeController extends ScriptComponent {
 
 			// Movimiento de cámara de lado a lado
 			if (this.grayscaleValue >= 90) {
-				this.cameraShakeTimer += Time.unscaledDeltaTime;
-				const shakeSpeed = 1.2; // Oscilaciones por segundo
-				const shakeAmount = 1.5; // Rango de movimiento (radianes)
-
-				const shake =
-					Math.sin((this.cameraShakeTimer * shakeSpeed * Math.PI) / 2) * shakeAmount;
-
-				this.changeAllCamerasRotation(shake);
 				// Lento al morir
 				const newTimeScale = MathUtil.lerp(Time.timeScale, 0, Time.unscaledDeltaTime * 2);
 				Time.timeScale = newTimeScale < 0.01 ? 0 : newTimeScale;
 			}
 
             			// FOV zoom suave
-			if (this.fov <= 3 && this.grayscaleValue >= 40) {
+			if (this.fov <= 3 && this.grayscaleValue >= 20) {
 				this.fov += 0.3 * Time.unscaledDeltaTime;
 				this.changeAllCamerasFOV(this.fov);
 			}
 
 			const playerController = entity.getComponent(PlayerController);
 			if (playerController) {
-				playerController.enableInputControl = false;
+				entity.deleteComponent(PlayerController);
 			}
 		}
 	}
