@@ -71,10 +71,25 @@ export class WorldCamera extends Camera {
 		const offset = this.calculateOffset(renderingContext);
 		const totalScale = this.calculateScale(renderingContext);
 		const cameraPosition = this.calculateCameraPosition();
+
+		// 🔁 1. Offset para centrar en pantalla con barras negras
 		renderingContext.translate(offset.x, offset.y);
+
+		// 🔁 2. Escalado lógico
 		renderingContext.scale(totalScale.x, totalScale.y);
-		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
+
+		// 🔁 3. CENTRAR ORIGEN EN MEDIO DE LA VISTA LÓGICA
+		renderingContext.translate(VIEWPORT_WIDTH_IN_METERS / 2, VIEWPORT_HEIGHT_IN_METERS / 2);
+
+		// 🔁 4. Aplicar rotación
 		renderingContext.rotate(MathUtil.degToRad(this.getRotation()));
+
+		// 🔁 5. Volver a alejarse del centro
+		renderingContext.translate(-VIEWPORT_WIDTH_IN_METERS / 2, -VIEWPORT_HEIGHT_IN_METERS / 2);
+
+		// 🔁 6. Mover cámara como si no se hubiera rotado
+		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
+
 	}
 
 	getWorldPositionFromScreenPosition(screenPosition: Vector2) {
