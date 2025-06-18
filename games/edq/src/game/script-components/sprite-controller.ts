@@ -18,7 +18,7 @@ export class PlayerSpriteController extends ScriptComponent {
 	private playerIdleSS: SpriteSheet;
 	private playerIdleNoArmsSS: SpriteSheet;
 	private aimingArmSprite: Sprite;
-	private defaultAimingArmAnchor = new Vector2(-0.17, 0.12);
+	private defaultAimingArmAnchor = new Vector2(-0.17, 0.15);
 
 	onStart(): void {
 		this.gameObject = this.entity as GameObject;

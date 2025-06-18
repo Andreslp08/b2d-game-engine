@@ -2,64 +2,56 @@
 
 "player-idle0000":
 {
-	"frame": {"x":0,"y":0,"w":255,"h":638},
+	"frame": {"x":0,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 },
 "player-idle0001":
 {
-	"frame": {"x":255,"y":0,"w":255,"h":638},
+	"frame": {"x":255,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 },
 "player-idle0002":
 {
-	"frame": {"x":510,"y":0,"w":255,"h":638},
+	"frame": {"x":510,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 },
 "player-idle0003":
 {
-	"frame": {"x":765,"y":0,"w":255,"h":638},
+	"frame": {"x":765,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 },
 "player-idle0004":
 {
-	"frame": {"x":1020,"y":0,"w":255,"h":638},
+	"frame": {"x":1020,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 },
 "player-idle0005":
 {
-	"frame": {"x":1275,"y":0,"w":255,"h":638},
+	"frame": {"x":1275,"y":0,"w":255,"h":637},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
-},
-"player-idle0006":
-{
-	"frame": {"x":1530,"y":0,"w":255,"h":638},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":638},
-	"sourceSize": {"w":255,"h":638}
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":637},
+	"sourceSize": {"w":255,"h":637}
 }},
 "meta": {
 	"app": "Adobe Animate",
 	"version": "22.0.4.185",
-	"image": "idle.png",
+	"image": "player-idle.png",
 	"format": "RGBA8888",
 	"size": {"w":2048,"h":1024},
 	"scale": "1"
