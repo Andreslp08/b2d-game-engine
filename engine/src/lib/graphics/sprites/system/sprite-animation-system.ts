@@ -3,6 +3,8 @@ import { SpriteAnimation } from "../components/sprite-animation";
 import { GameObject } from "../../../common/entities/game-object";
 import { Scene } from "../../scenes/scene";
 import { Time } from "../../../common/interfaces/time";
+import { Entity } from "../../../ecs/entity";
+import { CullingTarget } from "../../../performance/enum/culling-type";
 
 export class SpriteAnimationSystem extends System {
 	constructor(scene: Scene) {
@@ -36,6 +38,7 @@ export class SpriteAnimationSystem extends System {
 	update(): void {
 		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const gameObject = entity as GameObject;
 			if (!gameObject.hasComponent(SpriteAnimation)) continue;
 			const animations = gameObject.getComponents(SpriteAnimation);
