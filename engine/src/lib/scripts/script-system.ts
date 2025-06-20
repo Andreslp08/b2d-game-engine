@@ -1,5 +1,6 @@
-
+import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
+import { CullingTarget } from "../performance/enum/culling-type";
 import { ScriptComponent } from "./script-component";
 
 export class ScriptSystem extends System {
@@ -12,6 +13,7 @@ export class ScriptSystem extends System {
 		// ⏱️ Llamar start
 		for (const entity of entities) {
 			const scripts = entity.getComponents(ScriptComponent);
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			scripts.forEach((script) => {
 				if (
 					typeof script.onStart === "function" &&
@@ -26,6 +28,7 @@ export class ScriptSystem extends System {
 
 		// ⏱️ Llamar Update
 		for (const entity of entities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onUpdate === "function") {
@@ -36,6 +39,7 @@ export class ScriptSystem extends System {
 
 		// 🕓 Llamar LateUpdate
 		for (const entity of entities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onLateUpdate === "function") {
@@ -48,6 +52,7 @@ export class ScriptSystem extends System {
 	fixedUpdate(): void {
 		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const scripts = entity.getComponents(ScriptComponent);
 			scripts.forEach((script) => {
 				if (typeof script.onFixedUpdate === "function") {

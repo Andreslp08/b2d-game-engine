@@ -4,7 +4,7 @@ import { ITranform } from "../../input/interfaces/transform.interface";
 import Vector2 from "../../math/vector2";
 import { Transform } from "../components/transform";
 import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
-import { CullingComponent } from "../components/culling";
+import { CullingConfigComponent } from "../../performance/culling";
 
 export class GameObject extends Entity {
 	transform: Transform;
@@ -14,10 +14,10 @@ export class GameObject extends Entity {
 		this._renderLayer = RenderLayerTypes.World;
 		this.addTag("game-object");
 		this.addComponent(new Transform(transform));
-		this.addComponent( new CullingComponent());
+		this.addComponent(new CullingConfigComponent());
 		this.transform = this.getComponent(Transform);
 		if (sprite) {
 			this.addComponent(sprite);
-		} 
+		}
 	}
 }

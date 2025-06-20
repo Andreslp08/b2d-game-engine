@@ -19,6 +19,7 @@ import { Entity } from "../../ecs/entity";
 import { Collider } from "../../physics/components/collider";
 import { UIRenderer } from "./ui-renderer";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
+import { CullingTarget } from "../../performance/enum/culling-type";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -51,6 +52,7 @@ export class RenderSystem extends System {
 	) => {
 		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
 		for (const entity of worldEntities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.RENDER])) continue;
 			const spriteComponents = entity.getComponents(Sprite);
 			const spriteAnimations = entity.getComponents(SpriteAnimation);
 			const allSprites = [...spriteComponents, ...spriteAnimations];

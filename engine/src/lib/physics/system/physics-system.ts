@@ -4,6 +4,7 @@ import { Entity } from "../../ecs/entity";
 import { System } from "../../ecs/system";
 import { Scene } from "../../graphics/scenes/scene";
 import Vector2 from "../../math/vector2";
+import { CullingTarget } from "../../performance/enum/culling-type";
 import { ScriptComponent } from "../../scripts/script-component";
 import { Collider } from "../components/collider";
 import { DynamicBody } from "../components/dynamic-body";
@@ -182,6 +183,7 @@ export class PhysicsSystem extends System {
 	private calculatePhysics(deltaTime: number) {
 		const entities = this.getScene().getEntitiesAsArray();
 		for (const entity of entities) {
+			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const dynamicBody = entity.getComponent(DynamicBody);
 			const kinematicBody = entity.getComponent(KinematicBody);
 			const staticBody = entity.getComponent(StaticBody);

@@ -24,6 +24,7 @@ import { Entity } from "../../ecs/entity";
 import { RenderSystem } from "../render/render-system";
 import Vector2 from "../../math/vector2";
 import { ScriptComponent } from "../../scripts/script-component";
+import { CullingSystem } from "../../performance/culling-system";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
@@ -32,6 +33,7 @@ export class Scene implements Updatable {
 	private renderFilters: string = "";
 
 	constructor() {
+		this.addSystem(new CullingSystem(this));
 		this.addSystem(new ScriptSystem(this));
 		this.addSystem(new PhysicsSystem(this));
 		this.addSystem(new ZIndexSortingSystem(this));

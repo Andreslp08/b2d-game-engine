@@ -3,6 +3,8 @@ import { Component, ComponentClass } from "./component";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
 import { Scene } from "../graphics/scenes/scene";
 import { Transform } from "../common/components/transform";
+import { Culling, CullingConfigComponent } from "../performance/culling";
+import { CullingTarget } from "../performance/enum/culling-type";
 
 export class Entity {
 	private static idIncrementator: number = 0;
@@ -63,9 +65,13 @@ export class Entity {
 		if (!component) {
 			throw new Error("Cannot add null component");
 		}
-		const hasComponent = this.getAllComponents().some((c) => c.constructor  === component.constructor);
-		if(component.isUnique() && hasComponent) {	
-			throw new Error(`Entity ${this.id} already has a ${component.constructor.name} component`);
+		const hasComponent = this.getAllComponents().some(
+			(c) => c.constructor === component.constructor
+		);
+		if (component.isUnique() && hasComponent) {
+			throw new Error(
+				`Entity ${this.id} already has a ${component.constructor.name} component`
+			);
 		}
 		this.components.add(component);
 		component.setEntity(this);
@@ -113,5 +119,15 @@ export class Entity {
 
 	getScene(): Scene {
 		return this.scene;
+	}
+
+	static isBeingCulling(entity: Entity, targets: CullingTarget[]) {
+		const culling = entity.getComponent(Culling);
+		const cullingConfig = entity.getComponent(CullingConfigComponent);
+		if (culling) {
+			if (targets.includes(cullingConfig.cullingTarget))
+				return true;
+		}
+		return false;
 	}
 }
