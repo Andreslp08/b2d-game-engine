@@ -5,6 +5,7 @@ export class ScriptComponent extends Component {
 
 	constructor(entity: Entity) {
 		super();
+		this.unique = false;
 		entity.addComponent(this);
 		this.setEntity(entity);
 	}

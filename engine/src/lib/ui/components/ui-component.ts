@@ -7,6 +7,7 @@ export  class UIComponent extends Component implements Renderable{
 
     constructor(protected  transform:ITranform){
         super();
+        this.unique = false;
     }
 
     setPosition(position:Vector2){

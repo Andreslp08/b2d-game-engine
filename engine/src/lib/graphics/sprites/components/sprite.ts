@@ -58,6 +58,7 @@ export class Sprite extends Component {
 	 */
 	constructor(spriteData: SpriteData) {
 		super();
+		this.unique = false;
 		this.id = spriteData.id;
 		this.image = spriteData.image;
 		this.framePosition = spriteData.framePosition;

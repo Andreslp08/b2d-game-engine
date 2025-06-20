@@ -7,6 +7,7 @@ export abstract class Component {
 	readonly tags: Tags;
 	protected entity: Entity;
 	protected zIndex: number = 1;
+	protected unique: boolean = true;
 	debugMode: boolean = false;
 
 	constructor() {
@@ -27,5 +28,9 @@ export abstract class Component {
 
 	getEntity(): Entity {
 		return this.entity;
+	}
+
+	isUnique(): boolean {
+		return this.unique;
 	}
 }

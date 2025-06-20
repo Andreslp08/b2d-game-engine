@@ -19,6 +19,7 @@ export class SpriteAnimation extends Component {
 		speed?: number
 	) {
 		super();
+		this.unique = false;
 		this.loop = loop;
 		this.speed = speed ?? 1;
 		this.spritesheet = spritesheet;

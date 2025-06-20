@@ -2,6 +2,7 @@ import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
 import { Scene } from "../graphics/scenes/scene";
+import { Transform } from "../common/components/transform";
 
 export class Entity {
 	private static idIncrementator: number = 0;
@@ -61,6 +62,10 @@ export class Entity {
 	addComponent(component: Component) {
 		if (!component) {
 			throw new Error("Cannot add null component");
+		}
+		const hasComponent = this.getAllComponents().some((c) => c.constructor  === component.constructor);
+		if(component.isUnique() && hasComponent) {	
+			throw new Error(`Entity ${this.id} already has a ${component.constructor.name} component`);
 		}
 		this.components.add(component);
 		component.setEntity(this);
