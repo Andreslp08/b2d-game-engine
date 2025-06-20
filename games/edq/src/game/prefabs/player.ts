@@ -27,7 +27,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
 	entity.addComponent(new PlayerController(entity));
-	entity.addComponent(new HealthComponent(entity, 100, 100, true));
+	entity.addComponent(new HealthComponent(entity, 100, 100, false));
 	entity.addComponent(new ShieldComponent(entity));
 	entity.addComponent(new FallDamage(entity));
 	entity.addComponent(new PlayerHud(entity));
