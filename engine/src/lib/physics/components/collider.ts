@@ -20,6 +20,7 @@ export class Collider extends Component implements CollisionDetectionStategy {
 
 	constructor(offsetPosition: Vector2, size: Vector2) {
 		super();
+		this.unique = false;
 		this.collidable = true;
 		this.isColliding = false;
 		this.offsetPosition = offsetPosition;
