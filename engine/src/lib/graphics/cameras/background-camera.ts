@@ -1,7 +1,7 @@
 import { VIEWPORT_HEIGHT_IN_METERS, VIEWPORT_WIDTH_IN_METERS } from "../../common/constants";
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
-import { Scene } from "../scenes/scene";
+import { Scene } from "../../scenes/scene";
 import { WorldCameras } from "./camera-managers";
 import { WorldCamera } from "./world-camera";
 
@@ -19,5 +19,4 @@ export class BackgroundCamera extends WorldCamera {
 		}
 		return worldCamera.getPosition();
 	}
-
 }

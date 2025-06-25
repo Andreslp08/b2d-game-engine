@@ -6,7 +6,7 @@ import {
 import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
-import { Scene } from "../scenes/scene";
+import { Scene } from "../../scenes/scene";
 import { Screen } from "../screen/screen";
 import { Camera } from "./camera";
 
@@ -89,7 +89,6 @@ export class WorldCamera extends Camera {
 
 		// 🔁 6. Mover cámara como si no se hubiera rotado
 		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
-
 	}
 
 	getWorldPositionFromScreenPosition(screenPosition: Vector2) {

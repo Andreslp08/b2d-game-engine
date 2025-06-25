@@ -1,7 +1,7 @@
 import { System } from "../../../ecs/system";
 import { SpriteAnimation } from "../components/sprite-animation";
 import { GameObject } from "../../../common/entities/game-object";
-import { Scene } from "../../scenes/scene";
+import { Scene } from "../../../scenes/scene";
 import { Time } from "../../../common/interfaces/time";
 import { Entity } from "../../../ecs/entity";
 import { CullingTarget } from "../../../performance/enum/culling-type";

@@ -1,4 +1,4 @@
-import { Scene } from "./graphics/scenes/scene";
+import { Scene } from "./scenes/scene";
 import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";

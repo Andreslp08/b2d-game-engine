@@ -1,7 +1,7 @@
 import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
-import { Scene } from "../graphics/scenes/scene";
+import { Scene } from "../scenes/scene";
 import { Transform } from "../common/components/transform";
 import { Culling, CullingConfigComponent } from "../performance/culling";
 import { CullingTarget } from "../performance/enum/culling-type";
@@ -125,8 +125,7 @@ export class Entity {
 		const culling = entity.getComponent(Culling);
 		const cullingConfig = entity.getComponent(CullingConfigComponent);
 		if (culling) {
-			if (targets.includes(cullingConfig.cullingTarget))
-				return true;
+			if (targets.includes(cullingConfig.cullingTarget)) return true;
 		}
 		return false;
 	}

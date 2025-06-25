@@ -1,6 +1,6 @@
 import { Transform } from "../../common/components/transform";
 import { System } from "../../ecs/system";
-import { Scene } from "../scenes/scene";
+import { Scene } from "../../scenes/scene";
 import { Sprite } from "../sprites/components/sprite";
 import { SpriteRenderer } from "./sprite-renderer";
 import { TransformRenderer } from "./transform-renderer";
@@ -78,11 +78,11 @@ export class RenderSystem extends System {
 	render(renderingContext: CanvasRenderingContext2D): void {
 		const entities = this.getScene().getEntitiesAsArray();
 		const scene = this.getScene();
-		if(!scene) return;
+		if (!scene) return;
 
 		renderingContext.save();
 		const filters = scene.getRenderFilters();
-		if(filters) renderingContext.filter = filters;
+		if (filters) renderingContext.filter = filters;
 		// BACKGROUND
 		if (BackgroundCameras.currentCamera) {
 			renderingContext.save();

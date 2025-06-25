@@ -1,5 +1,5 @@
-import { Scene } from "../graphics/scenes/scene";
-import {  Updatable } from "../common/interfaces/updatable";
+import { Scene } from "../scenes/scene";
+import { Updatable } from "../common/interfaces/updatable";
 
 export abstract class System implements Updatable {
 	private name: string = "System";

@@ -1,6 +1,6 @@
 import Vector2 from "../../math/vector2";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
-import { Scene } from "../scenes/scene";
+import { Scene } from "../../scenes/scene";
 import { Screen } from "../screen/screen";
 import { Camera } from "./camera";
 

@@ -1,9 +1,9 @@
-import { UICamera } from "../cameras/ui-camera";
-import { BackgroundCamera } from "../cameras/background-camera";
-import { ForegroundCamera } from "../cameras/foreground-camera";
-import { DebugCamera } from "../cameras/debug-camera";
-import { EffectCamera } from "../cameras/effect-camera";
-import { WorldCamera } from "../cameras/world-camera";
+import { UICamera } from "../graphics/cameras/ui-camera";
+import { BackgroundCamera } from "../graphics/cameras/background-camera";
+import { ForegroundCamera } from "../graphics/cameras/foreground-camera";
+import { DebugCamera } from "../graphics/cameras/debug-camera";
+import { EffectCamera } from "../graphics/cameras/effect-camera";
+import { WorldCamera } from "../graphics/cameras/world-camera";
 import {
 	BackgroundCameras,
 	DebugCameras,
@@ -11,20 +11,20 @@ import {
 	ForegroundCameras,
 	UICameras,
 	WorldCameras,
-} from "../cameras/camera-managers";
-import { SpriteAnimationSystem } from "../sprites/system/sprite-animation-system";
-import { PhysicsSystem } from "../../physics/system/physics-system";
-import { ScriptSystem } from "../../scripts/script-system";
-import { DebugSystem } from "../../debug/debug-system";
-import { ZIndexSortingSystem } from "../render/render-sorting-system";
-import { Updatable } from "../../common/interfaces/updatable";
-import { System } from "../../ecs/system";
-import { Component, ComponentClass } from "../../ecs/component";
-import { Entity } from "../../ecs/entity";
-import { RenderSystem } from "../render/render-system";
-import Vector2 from "../../math/vector2";
-import { ScriptComponent } from "../../scripts/script-component";
-import { CullingSystem } from "../../performance/culling-system";
+} from "../graphics/cameras/camera-managers";
+import { SpriteAnimationSystem } from "../graphics/sprites/system/sprite-animation-system";
+import { PhysicsSystem } from "../physics/system/physics-system";
+import { ScriptSystem } from "../scripts/script-system";
+import { DebugSystem } from "../debug/debug-system";
+import { ZIndexSortingSystem } from "../graphics/render/render-sorting-system";
+import { Updatable } from "../common/interfaces/updatable";
+import { System } from "../ecs/system";
+import { Component, ComponentClass } from "../ecs/component";
+import { Entity } from "../ecs/entity";
+import { RenderSystem } from "../graphics/render/render-system";
+import Vector2 from "../math/vector2";
+import { ScriptComponent } from "../scripts/script-component";
+import { CullingSystem } from "../performance/culling-system";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();

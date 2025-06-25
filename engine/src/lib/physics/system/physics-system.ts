@@ -2,7 +2,7 @@ import { Transform } from "../../common/components/transform";
 import { Time } from "../../common/interfaces/time";
 import { Entity } from "../../ecs/entity";
 import { System } from "../../ecs/system";
-import { Scene } from "../../graphics/scenes/scene";
+import { Scene } from "../../scenes/scene";
 import Vector2 from "../../math/vector2";
 import { CullingTarget } from "../../performance/enum/culling-type";
 import { ScriptComponent } from "../../scripts/script-component";

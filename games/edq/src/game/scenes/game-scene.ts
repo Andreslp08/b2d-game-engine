@@ -1,7 +1,7 @@
 import { Engine } from "engine";
 import { useGameStore } from "../../store/store";
 import { GameSceneLevel } from "./../enum/scene";
-import { Scene } from "engine/graphics/scenes/scene";
+import { Scene } from "engine/scenes/scene";
 
 export class GameScene extends Scene {
 	private _level: GameSceneLevel;

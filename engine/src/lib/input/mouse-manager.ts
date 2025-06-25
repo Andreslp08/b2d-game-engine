@@ -1,4 +1,4 @@
-import { Scene } from "../graphics/scenes/scene";
+import { Scene } from "../scenes/scene";
 import { Screen } from "../graphics/screen/screen";
 import {
 	ClickEvent,
@@ -22,8 +22,11 @@ export class MouseManager {
 		MouseManager._position = new Vector2(0, 0);
 		const onMouseMove = (e: MouseEvent) => {
 			const canvas = Screen.getInstance().getCanvasElement();
-			const canvasRect = canvas.getBoundingClientRect()
-			MouseManager._position = new Vector2(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
+			const canvasRect = canvas.getBoundingClientRect();
+			MouseManager._position = new Vector2(
+				e.clientX - canvasRect.left,
+				e.clientY - canvasRect.top
+			);
 			MouseManager._positionOffset = new Vector2(e.offsetX, e.offsetY);
 		};
 		window.removeEventListener("mousemove", onMouseMove);
@@ -54,8 +57,8 @@ export class MouseManager {
 				window.removeEventListener("mousemove", onMouseMove);
 				window.removeEventListener("mousedown", onMouseDown);
 				window.removeEventListener("mouseup", onMouseUp);
-			}
-		}
+			},
+		};
 	}
 
 	public static onWheel(wheelEventListener: WheelEventListener): void {
@@ -111,34 +114,34 @@ export class MouseManager {
 	}
 
 	public static getWorldPosition(scene: Scene): Vector2 {
-	const screen = Screen.getInstance();
-	const canvas = screen.getCanvasElement();
+		const screen = Screen.getInstance();
+		const canvas = screen.getCanvasElement();
 
-	const mousePx = MouseManager.getPosition(); // posición ya corregida respecto al canvas
-	const camera = scene.camera;
+		const mousePx = MouseManager.getPosition(); // posición ya corregida respecto al canvas
+		const camera = scene.camera;
 
-	const canvasRes = screen.getResolution(); // resolución actual del canvas
-	const baseRes = screen.baseResolution;
+		const canvasRes = screen.getResolution(); // resolución actual del canvas
+		const baseRes = screen.baseResolution;
 
-	// Igual que en Camera: escala uniforme y total
-	const scaleX = canvasRes.x / baseRes.x;
-	const scaleY = canvasRes.y / baseRes.y;
-	const uniformScale = Math.min(scaleX, scaleY);
-	const totalScale = PIXELS_PER_METER * uniformScale * camera.zoomX;
+		// Igual que en Camera: escala uniforme y total
+		const scaleX = canvasRes.x / baseRes.x;
+		const scaleY = canvasRes.y / baseRes.y;
+		const uniformScale = Math.min(scaleX, scaleY);
+		const totalScale = PIXELS_PER_METER * uniformScale * camera.zoomX;
 
-	// Obtener mitad del tamaño del canvas en metros
-	const halfWidthMeters = (canvas.width / totalScale) / 2;
-	const halfHeightMeters = (canvas.height / totalScale) / 2;
+		// Obtener mitad del tamaño del canvas en metros
+		const halfWidthMeters = canvas.width / totalScale / 2;
+		const halfHeightMeters = canvas.height / totalScale / 2;
 
-	// Posición de cámara en metros al tope-izquierda
-	const cameraOriginX = camera.position.x - halfWidthMeters;
-	const cameraOriginY = camera.position.y - halfHeightMeters;
+		// Posición de cámara en metros al tope-izquierda
+		const cameraOriginX = camera.position.x - halfWidthMeters;
+		const cameraOriginY = camera.position.y - halfHeightMeters;
 
-	// Posición del mouse en metros (ajustando al escalado total)
-	const worldX = mousePx.x / totalScale + cameraOriginX;
-	const worldY = mousePx.y / totalScale + cameraOriginY;
+		// Posición del mouse en metros (ajustando al escalado total)
+		const worldX = mousePx.x / totalScale + cameraOriginX;
+		const worldY = mousePx.y / totalScale + cameraOriginY;
 
-	return new Vector2(worldX, worldY);
+		return new Vector2(worldX, worldY);
 	}
 
 	public static showCursor(visible: boolean): void {
