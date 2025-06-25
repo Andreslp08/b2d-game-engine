@@ -1,16 +1,17 @@
 import { GameImage } from "../../../common/assets-manager/game-image";
 import { Component } from "../../../ecs/component";
+import { ITranform } from "../../../input/interfaces/transform.interface";
 import Vector2 from "../../../math/vector2";
 
 type SpriteData = {
-	id: string;
 	image: GameImage;
 	framePosition: Vector2;
 	frameSize: { w: number; h: number };
-	scale?: Vector2;	
+	scale?: Vector2;
 	spriteSourceSize?: { x: number; y: number; w: number; h: number };
 	sourceSize?: { w: number; h: number };
-	useGameObjectSize?: boolean;
+	worldTransform?: ITranform;
+	useEntityTransform?: boolean;
 	direction?: { x: 1 | -1; y: 1 | -1 };
 	visible?: boolean;
 	showBlankSprite?: boolean;
@@ -26,7 +27,6 @@ type SpriteData = {
 	filter?: string;
 };
 export class Sprite extends Component {
-	private id: string;
 	private framePosition: Vector2;
 	private frameSize: { w: number; h: number };
 	private scale: Vector2;
@@ -46,8 +46,8 @@ export class Sprite extends Component {
 	private shadowOffsetX: number;
 	private shadowOffsetY: number;
 	private filter: string;
-	private useGameObjectSize: boolean;
-
+	private useEntityTransform: boolean;
+	private worldTransform: ITranform;
 
 	/**
 	 * Constructor for a Sprite component.
@@ -59,19 +59,23 @@ export class Sprite extends Component {
 	constructor(spriteData: SpriteData) {
 		super();
 		this.unique = false;
-		this.id = spriteData.id;
 		this.image = spriteData.image;
 		this.framePosition = spriteData.framePosition;
 		this.frameSize = spriteData.frameSize;
-		this.scale = spriteData.scale ??  new Vector2(1, 1);
-		this.spriteSourceSize = spriteData.spriteSourceSize || { x: 0, y: 0, w: this.frameSize.w, h: this.frameSize.h };
+		this.scale = spriteData.scale ?? new Vector2(1, 1);
+		this.spriteSourceSize = spriteData.spriteSourceSize || {
+			x: 0,
+			y: 0,
+			w: this.frameSize.w,
+			h: this.frameSize.h,
+		};
 		this.sourceSize = spriteData.sourceSize || { w: this.frameSize.w, h: this.frameSize.h };
 		this.direction = spriteData.direction || { x: 1, y: 1 };
 		this.visible = spriteData.visible || true;
 		this.showBlankSprite = spriteData.showBlankSprite ?? true;
 		this.rotation = spriteData.rotation ?? 0;
-		this.anchor = spriteData.anchor || new Vector2(0,0);
-		this.pivot = spriteData.pivot || new Vector2(0.5,0.5);
+		this.anchor = spriteData.anchor || new Vector2(0, 0);
+		this.pivot = spriteData.pivot || new Vector2(0.5, 0.5);
 		this.trimmed = spriteData.trimmed ?? false;
 		this.opacity = spriteData.opacity ?? 1;
 		this.shadowColor = spriteData.shadowColor ?? "#000";
@@ -79,7 +83,8 @@ export class Sprite extends Component {
 		this.shadowOffsetX = spriteData.shadowOffsetX ?? 0;
 		this.shadowOffsetY = spriteData.shadowOffsetY ?? 0;
 		this.filter = spriteData.filter ?? "";
-		this.useGameObjectSize = spriteData.useGameObjectSize ?? true;
+		this.useEntityTransform = spriteData.useEntityTransform ?? true;
+		this.worldTransform = spriteData.worldTransform || null;
 	}
 
 	// SETTERS
@@ -100,7 +105,7 @@ export class Sprite extends Component {
 		this.frameSize = size;
 	}
 
-	setScale(scale: Vector2) {	
+	setScale(scale: Vector2) {
 		this.scale = scale;
 	}
 
@@ -160,10 +165,13 @@ export class Sprite extends Component {
 		this.pivot = pivot;
 	}
 
-	setUseGameObjectSize(useGameObjectSize: boolean) {
-		this.useGameObjectSize = useGameObjectSize;
+	setUseEntityTransform(useGameObjectSize: boolean) {
+		this.useEntityTransform = useGameObjectSize;
 	}
 
+	setWorldTransform(worldTransform: ITranform) {
+		this.worldTransform = worldTransform;
+	}
 
 	// GETTERS
 
@@ -247,8 +255,11 @@ export class Sprite extends Component {
 		return this.pivot;
 	}
 
-	getUseGameObjectSize() {
-		return this.useGameObjectSize;
+	isUsingEntityTransform() {
+		return this.useEntityTransform;
 	}
 
+	getWorldTransform() {
+		return this.worldTransform;
+	}
 }
