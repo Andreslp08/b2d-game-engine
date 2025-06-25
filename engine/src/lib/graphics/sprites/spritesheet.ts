@@ -30,7 +30,6 @@ export class SpriteSheet {
 			const sourceSize = frameContent.sourceSize;
 			const spriteSourceSize = frameContent.spriteSourceSize;
 			const sprite = new Sprite({
-				id: key,
 				image: image,
 				framePosition: new Vector2(frame.x, frame.y),
 				frameSize: { w: frame.w, h: frame.h },
