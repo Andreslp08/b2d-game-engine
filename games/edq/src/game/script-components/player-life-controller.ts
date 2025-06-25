@@ -77,7 +77,7 @@ export class PlayerLifeController extends ScriptComponent {
 
 			const playerController = entity.getComponent(PlayerController);
 			if (playerController) {
-				entity.deleteComponent(PlayerController);
+				entity.deleteallComponentsByClass(PlayerController);
 			}
 		}
 	}
