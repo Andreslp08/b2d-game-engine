@@ -85,13 +85,29 @@ export class Entity {
 		return Array.from(this.components);
 	}
 
-	deleteAllComponent(): void {
+	deleteAllComponents(): void {
 		this.components = new Set();
 	}
 
-	deleteComponent<T extends Component>(component: ComponentClass<T>): void {
+	deleteallComponentsByClass<T extends Component>(component: ComponentClass<T>): void {
 		for (const iterator of this.components) {
 			if (iterator instanceof component) {
+				this.components.delete(iterator);
+			}
+		}
+	}
+
+	deleteComponentById(id: string): void {
+		for (const iterator of this.components) {
+			if (iterator.getId() === id) {
+				this.components.delete(iterator);
+			}
+		}
+	}
+
+	deleteComponentByTag(tag: string): void {
+		for (const iterator of this.components) {
+			if (iterator.tags.has(tag)) {
 				this.components.delete(iterator);
 			}
 		}
