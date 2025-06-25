@@ -10,8 +10,12 @@ export class SpriteRenderer extends Renderer {
 	renderSprite(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
 		if (!sprite || !sprite.getEntity()) return;
 		const entity = sprite.getEntity() as GameObject;
-		const transform = entity.getComponent(Transform);
-		if (!transform || !sprite.isVisible()) return;
+		const isUsingEntityTransform = sprite.isUsingEntityTransform();
+		const transform = isUsingEntityTransform
+			? entity.getComponent(Transform)
+			: sprite.getWorldTransform();
+		if (isUsingEntityTransform && !transform) return;
+		if (!sprite.isVisible()) return;
 		const image = sprite.getImage();
 		const opacity = sprite.getOpacity();
 		const shadowColor = sprite.getShadowColor();
@@ -39,8 +43,12 @@ export class SpriteRenderer extends Renderer {
 	renderImage(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
 		if (!sprite || !sprite.getEntity()) return;
 		const entity = sprite.getEntity() as GameObject;
-		const transform = entity.getComponent(Transform);
-		if (!transform || !sprite.isVisible()) return;
+		const isUsingEntityTransform = sprite.isUsingEntityTransform();
+		const transform = isUsingEntityTransform
+			? entity.getComponent(Transform)
+			: sprite.getWorldTransform();
+		if (isUsingEntityTransform && !transform) return;
+		if (!sprite.isVisible()) return;
 		const framePos = sprite.getFramePosition(); // (x, y) del recorte dentro del atlas
 		const frameSize = sprite.getFrameSize(); // (w, h) del recorte
 		const sourceSize = sprite.getSourceSize(); // tamaño total del sprite original
@@ -63,8 +71,12 @@ export class SpriteRenderer extends Renderer {
 	renderDefaultShape(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
 		if (!sprite || !sprite.getEntity()) return;
 		const entity = sprite.getEntity();
-		const transform = entity.getComponent(Transform);
-		if (!transform) return;
+		const isUsingEntityTransform = sprite.isUsingEntityTransform();
+		const transform = isUsingEntityTransform
+			? entity.getComponent(Transform)
+			: sprite.getWorldTransform();
+		if (isUsingEntityTransform && !transform) return;
+		if (!sprite.isVisible()) return;
 		const showBlankSprite = sprite.shouldShowBlankSprite();
 		if (!showBlankSprite) return;
 		const shouldShowBlankSprite = sprite.shouldShowBlankSprite();
@@ -78,10 +90,12 @@ export class SpriteRenderer extends Renderer {
 		if (!renderingContext || !sprite) return;
 		const gameObject = this.entity as GameObject;
 		if (!gameObject) return;
-
-		const transform = gameObject.getComponent(Transform);
-		if (!transform) return;
-
+		const isUsingEntityTransform = sprite.isUsingEntityTransform();
+		const transform = isUsingEntityTransform
+			? gameObject.getComponent(Transform)
+			: sprite.getWorldTransform();
+		if (isUsingEntityTransform && !transform) return;
+		if (!sprite.isVisible()) return;
 		const pos = transform.position;
 		const size = transform.size; // tamaño lógico del GameObject (en metros)
 		const spriteScale = sprite.getScale(); // escala visual adicional
@@ -92,18 +106,12 @@ export class SpriteRenderer extends Renderer {
 		const sourceSize = sprite.getSourceSize(); // tamaño original del sprite en px
 		const spriteW = sourceSize.w / PIXELS_PER_METER;
 		const spriteH = sourceSize.h / PIXELS_PER_METER;
-		const useSize = sprite.getUseGameObjectSize();
 
-		// Escala visual para que el sprite quepa en el size definido por el GameObject
+		// Escala visual para que el sprite quepa en el size definido por el transform
 		const visualScale = { x: 1, y: 1 };
 
-		if (useSize) {
-			visualScale.x = transform.size.x / spriteW;
-			visualScale.y = transform.size.y / spriteH;
-		} else {
-			visualScale.x = 1;
-			visualScale.y = 1;
-		}
+		visualScale.x = transform.size.x / spriteW;
+		visualScale.y = transform.size.y / spriteH;
 
 		// Orden correcto de transformaciones
 		renderingContext.translate(pos.x - anchor.x, pos.y - anchor.y);
