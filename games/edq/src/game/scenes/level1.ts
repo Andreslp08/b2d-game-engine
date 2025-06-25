@@ -124,7 +124,6 @@ export class Level1 extends GameScene {
 					size: new Vector2(w, h),
 				},
 				new Sprite({
-					id: "bg",
 					image: AssetsManager.getImageByName("spritesheet:city"),
 					framePosition: new Vector2(0, 0),
 					frameSize: { w: 5000, h: 5000 },
