@@ -44,4 +44,9 @@ export class SpriteAnimation extends Component {
 	setAnimationDirectionInY(direction: 1 | -1) {
 		this.spritesheet.sprites.forEach((sprite) => (sprite.getDirection().y = direction));
 	}
+
+	setZindex(zIndex: number): void {
+		super.setZindex(zIndex);
+		this.spritesheet.sprites.forEach((sprite) => sprite.setZindex(zIndex));
+	}
 }
