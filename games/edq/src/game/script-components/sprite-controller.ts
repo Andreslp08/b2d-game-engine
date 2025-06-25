@@ -66,7 +66,6 @@ export class PlayerSpriteController extends ScriptComponent {
 		this.gameObject.addComponent(spriteAnimation);
 
 		this.aimingArmSprite = new Sprite({
-			id: "player-right-arm",
 			framePosition: new Vector2(0, 0),
 			frameSize: { w: 118, h: 151 },
 			image: rightArm,

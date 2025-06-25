@@ -49,7 +49,7 @@ export const createBox = (positon: Vector2): GameObject => {
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(BOX_SIZE, BOX_SIZE)));
 	entity.addComponent(new StaticBody(entity));
 	if (entity.hasComponent(Sprite)) {
-		entity.deleteComponent(Sprite);
+		entity.deleteallComponentsByClass(Sprite);
 	}
 	entity.addComponent(sprite);
 	// entity.addComponent(new BoxMessage(entity, "hello"));
