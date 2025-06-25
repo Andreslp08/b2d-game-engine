@@ -41,7 +41,6 @@ export const createBox = (positon: Vector2): GameObject => {
 	});
 	entity.addTag("box");
 	const sprite = new Sprite({
-		id: "box",
 		image: AssetsManager.getImageByName("spritesheet:box"),
 		framePosition: new Vector2(0, 0),
 		frameSize: {w:500, h:500},
