@@ -107,7 +107,7 @@ export class Scene implements Updatable {
 
 	destroyEntity(entity: Entity): void {
 		entity.getComponents(ScriptComponent).forEach((script) => script.onDestroy());
-		entity.deleteAllComponent();
+		entity.deleteAllComponents();
 		this.entities.delete(entity);
 		entity.setScene(null);
 	}
