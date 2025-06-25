@@ -66,7 +66,7 @@ export class CullingSystem extends System {
 			const cullingSettings = entity.getComponent(CullingConfigComponent);
 			if (!cullingSettings) continue;
 			if (cullingSettings.cullingType === CullingType.NONE) {
-				if (entity.hasComponent(Culling)) entity.deleteComponent(Culling);
+				if (entity.hasComponent(Culling)) entity.deleteallComponentsByClass(Culling);
 				continue;
 			}
 
@@ -77,7 +77,7 @@ export class CullingSystem extends System {
 			const isStrict = cullingSettings.frustrumStrict;
 			const isInView = this.IsInViewport(entity, xRadius, yRadius, isStrict);
 			if (isInView) {
-				if (entity.hasComponent(Culling)) entity.deleteComponent(Culling);
+				if (entity.hasComponent(Culling)) entity.deleteallComponentsByClass(Culling);
 			} else {
 				if (!entity.hasComponent(Culling)) entity.addComponent(new Culling());
 			}
