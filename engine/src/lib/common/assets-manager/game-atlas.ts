@@ -35,7 +35,6 @@ export class GameAtlas extends Asset<IAtlasData> {
 			fetch(path)
 				.then((response) => response.json())
 				.then((data) => {
-					console.log("json jj", data);
 					resolve(data);
 				})
 				.catch((error) => {
