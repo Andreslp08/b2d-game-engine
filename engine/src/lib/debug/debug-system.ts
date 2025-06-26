@@ -1,5 +1,6 @@
 import { Transform } from "../common/components/transform";
 import { System } from "../ecs/system";
+import { Culling } from "../performance/culling";
 import { Collider } from "../physics/components/collider";
 import { DebugMode } from "./debug";
 
@@ -7,7 +8,7 @@ import { DebugMode } from "./debug";
 
 export class DebugSystem extends System{
     update(): void {
-        const entities = this.getScene().getEntitiesAsArray();
+        const entities = this.getScene().getEntitiesByQuery({all:[Transform, Collider], none: [Culling]});
         if(DebugMode.enabled === false) return
         entities.forEach((entity) => {
             if(DebugMode.currentMode === 'all' || DebugMode.currentMode === 'transforms'){

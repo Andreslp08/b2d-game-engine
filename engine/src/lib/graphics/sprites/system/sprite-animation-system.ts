@@ -5,6 +5,7 @@ import { Scene } from "../../../scenes/scene";
 import { Time } from "../../../common/interfaces/time";
 import { Entity } from "../../../ecs/entity";
 import { CullingTarget } from "../../../performance/enum/culling-type";
+import { Culling } from "../../../performance/culling";
 
 export class SpriteAnimationSystem extends System {
 	constructor(scene: Scene) {
@@ -36,7 +37,7 @@ export class SpriteAnimationSystem extends System {
 	}
 
 	update(): void {
-		const entities = this.getScene().getEntitiesAsArray();
+		const entities = this.getScene().getEntitiesByQuery({ all: [SpriteAnimation] , none: [Culling] });
 		for (const entity of entities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const gameObject = entity as GameObject;

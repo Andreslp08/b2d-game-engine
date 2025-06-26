@@ -25,9 +25,11 @@ import { RenderSystem } from "../graphics/render/render-system";
 import Vector2 from "../math/vector2";
 import { ScriptComponent } from "../scripts/script-component";
 import { CullingSystem } from "../performance/culling-system";
+import { TileMapSystem } from "../tiles/tilemap-system";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
+	protected indexedEntitiesByComponents: Map<ComponentClass<Component>, Entity[]> = new Map();
 	protected systems: Set<System> = new Set();
 	private _renderer: RenderSystem;
 	private renderFilters: string = "";
@@ -36,9 +38,10 @@ export class Scene implements Updatable {
 		this.addSystem(new CullingSystem(this));
 		this.addSystem(new ScriptSystem(this));
 		this.addSystem(new PhysicsSystem(this));
-		this.addSystem(new ZIndexSortingSystem(this));
+		// this.addSystem(new ZIndexSortingSystem(this));
 		this.addSystem(new SpriteAnimationSystem(this));
 		this.addSystem(new DebugSystem(this));
+		// this.addSystem(new TileMapSystem(this));
 		this.addSystem(new RenderSystem(this));
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
@@ -81,9 +84,75 @@ export class Scene implements Updatable {
 		return this._renderer;
 	}
 
+	indexEntity(entity: Entity): void {
+		for (const component of entity.getAllComponents()) {
+			let proto = component.constructor;
+
+			while (proto && proto.name !== "Object") {
+				const compClass = proto as ComponentClass<Component>;
+
+				if (!this.indexedEntitiesByComponents.has(compClass)) {
+					this.indexedEntitiesByComponents.set(compClass, []);
+				}
+
+				const list = this.indexedEntitiesByComponents.get(compClass);
+				if (!list.includes(entity)) {
+					list.push(entity);
+				}
+
+				proto = Object.getPrototypeOf(proto);
+			}
+		}
+	}
+
+	unindexEntity(entity: Entity, components?: ComponentClass<Component>[]): void {
+		// 🔹 Si se pasan componentes específicos, solo procesamos esos
+		if (components) {
+			for (const component of components) {
+				// Solo lo quitamos del índice si el entity ya NO tiene más de ese tipo
+				if (!entity.hasComponent(component)) {
+					const list = this.indexedEntitiesByComponents.get(component);
+					if (list) {
+						const index = list.indexOf(entity);
+						if (index !== -1) {
+							list.splice(index, 1);
+						}
+					}
+				}
+			}
+			return;
+		}
+
+		// 🔹 Si no se pasan componentes: desindexar completamente (respetando herencia)
+		for (const component of entity.getAllComponents()) {
+			let proto = component.constructor;
+
+			while (proto && proto.name !== "Object") {
+				const compClass = proto as ComponentClass<Component>;
+
+				// Verificar si ya no quedan más instancias de este tipo
+				if (!entity.hasComponent(compClass)) {
+					const list = this.indexedEntitiesByComponents.get(compClass);
+					if (list) {
+						const index = list.indexOf(entity);
+						if (index !== -1) {
+							list.splice(index, 1);
+						}
+					}
+				}
+
+				proto = Object.getPrototypeOf(proto);
+			}
+		}
+	}
+
 	addEntity(entity: Entity): string {
+		if (!entity) {
+			throw new Error("Entity is null");
+		}
 		this.entities.add(entity);
 		entity.setScene(this);
+		this.indexEntity(entity);
 		return entity.id;
 	}
 
@@ -106,10 +175,12 @@ export class Scene implements Updatable {
 	}
 
 	destroyEntity(entity: Entity): void {
+		if (!entity) return;
 		entity.getComponents(ScriptComponent).forEach((script) => script.onDestroy());
 		entity.deleteAllComponents();
 		this.entities.delete(entity);
 		entity.setScene(null);
+		this.unindexEntity(entity);
 	}
 
 	destroyEntityById(id: string): void {
@@ -144,6 +215,89 @@ export class Scene implements Updatable {
 
 	getEntitiesAsArray(): Entity[] {
 		return Array.from(this.entities);
+	}
+
+	getEntities(): Set<Entity> {
+		return this.entities;
+	}
+
+	getEntitiesByComponents(components: ComponentClass<Component>[]): Entity[] {
+		if (components.length === 0) return [];
+
+		if (components.length === 1) {
+			// Evitamos ordenamiento, filtros, Sets, etc.
+			return this.indexedEntitiesByComponents.get(components[0]) ?? [];
+		}
+
+		// No hacemos sort. Vamos cruzando la intersección desde el principio.
+		const [first, ...rest] = components;
+		let result = this.indexedEntitiesByComponents.get(first);
+		if (!result) return [];
+
+		for (let i = 0; i < rest.length; i++) {
+			const current = this.indexedEntitiesByComponents.get(rest[i]);
+			if (!current) return [];
+
+			// Evitamos usar Set si las listas son pequeñas
+			if (result.length < 32) {
+				result = result.filter((e) => current.includes(e));
+			} else {
+				const currentSet = new Set(current);
+				result = result.filter((e) => currentSet.has(e));
+			}
+		}
+
+		return result;
+	}
+
+getEntitiesByQuery({
+	all = [],
+	any = [],
+	none = [],
+}: {
+	all?: ComponentClass<Component>[];
+	any?: ComponentClass<Component>[];
+	none?: ComponentClass<Component>[];
+}): Entity[] {
+	const indexed = this.indexedEntitiesByComponents;
+
+	// Si hay ALL: hacemos intersección de todos
+	let result: Entity[];
+	if (all.length > 0) {
+		const sortedAll = [...all].sort(
+			(a, b) => (indexed.get(a)?.length ?? 0) - (indexed.get(b)?.length ?? 0)
+		);
+
+		result = indexed.get(sortedAll[0])?.slice() ?? [];
+
+		for (let i = 1; i < sortedAll.length; i++) {
+			const set = new Set(indexed.get(sortedAll[i]) ?? []);
+			result = result.filter((e) => set.has(e));
+		}
+	} else if (any.length > 0) {
+		// Si no hay ALL pero sí ANY: hacemos unión
+		result = Array.from(new Set(any.flatMap((comp) => indexed.get(comp) ?? [])));
+	} else {
+		// Si no hay ALL ni ANY: usamos todos los entities conocidos
+		const entitySet = new Set<Entity>();
+		for (const list of indexed.values()) {
+			for (const entity of list) {
+				entitySet.add(entity);
+			}
+		}
+		result = Array.from(entitySet);
+	}
+
+	// Aplicar filtro NONE
+	if (none.length > 0) {
+		const noneSet = new Set(none.flatMap((comp) => indexed.get(comp) ?? []));
+		result = result.filter((e) => !noneSet.has(e));
+	}
+
+	return result;
+}
+	getIndexedEntitiesByComponents(): Map<ComponentClass<Component>, Entity[]> {
+		return this.indexedEntitiesByComponents;
 	}
 
 	sortEntitiesByZIndex(): void {

@@ -2,7 +2,6 @@ import { Tags } from "../common/tags";
 import { Component, ComponentClass } from "./component";
 import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
 import { Scene } from "../scenes/scene";
-import { Transform } from "../common/components/transform";
 import { Culling, CullingConfigComponent } from "../performance/culling";
 import { CullingTarget } from "../performance/enum/culling-type";
 
@@ -75,6 +74,7 @@ export class Entity {
 		}
 		this.components.add(component);
 		component.setEntity(this);
+		if(this.scene) this.scene.indexEntity(this);
 	}
 
 	getComponents<T extends Component>(componentClass: ComponentClass<T>): T[] {
@@ -87,6 +87,7 @@ export class Entity {
 
 	deleteAllComponents(): void {
 		this.components = new Set();
+		if(this.scene) this.scene.unindexEntity(this);
 	}
 
 	deleteallComponentsByClass<T extends Component>(component: ComponentClass<T>): void {
@@ -95,12 +96,14 @@ export class Entity {
 				this.components.delete(iterator);
 			}
 		}
+		if(this.scene) this.scene.unindexEntity(this, [component]);
 	}
 
 	deleteComponentById(id: string): void {
 		for (const iterator of this.components) {
 			if (iterator.getId() === id) {
 				this.components.delete(iterator);
+				if(this.scene) this.scene.unindexEntity(this, [iterator.constructor as ComponentClass<Component>]);
 			}
 		}
 	}
@@ -109,6 +112,7 @@ export class Entity {
 		for (const iterator of this.components) {
 			if (iterator.tags.has(tag)) {
 				this.components.delete(iterator);
+				if(this.scene) this.scene.unindexEntity(this, [iterator.constructor as ComponentClass<Component>]);
 			}
 		}
 	}

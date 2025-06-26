@@ -20,6 +20,7 @@ import { Collider } from "../../physics/components/collider";
 import { UIRenderer } from "./ui-renderer";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { CullingTarget } from "../../performance/enum/culling-type";
+import { Culling } from "../../performance/culling";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -76,7 +77,7 @@ export class RenderSystem extends System {
 	};
 
 	render(renderingContext: CanvasRenderingContext2D): void {
-		const entities = this.getScene().getEntitiesAsArray();
+		const entities = this.getScene().getEntitiesByQuery({ all:[],  none: [Culling] });
 		const scene = this.getScene();
 		if (!scene) return;
 

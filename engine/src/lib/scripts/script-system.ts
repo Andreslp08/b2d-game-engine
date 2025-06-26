@@ -1,20 +1,25 @@
 import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
+import { Culling } from "../performance/culling";
 import { CullingTarget } from "../performance/enum/culling-type";
 import { ScriptComponent } from "./script-component";
 
 export class ScriptSystem extends System {
-	// 50 veces por segundo (como Unity)
 	private startedScripts: Set<ScriptComponent> = new Set();
 
 	update(): void {
-		const entities = this.getScene().getEntitiesAsArray();
+		const scene = this.getScene();
 
-		// ⏱️ Llamar start
+		// 🔍 Usamos solo entidades que tengan ScriptComponent y no estén culladas
+		const entities = scene.getEntitiesByQuery({
+			all: [ScriptComponent],
+			none: [Culling],
+		});
+
 		for (const entity of entities) {
 			const scripts = entity.getComponents(ScriptComponent);
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
-			scripts.forEach((script) => {
+
+			for (const script of scripts) {
 				if (
 					typeof script.onStart === "function" &&
 					script.getEntity() &&
@@ -23,42 +28,33 @@ export class ScriptSystem extends System {
 					script.onStart();
 					this.startedScripts.add(script);
 				}
-			});
-		}
 
-		// ⏱️ Llamar Update
-		for (const entity of entities) {
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
-			const scripts = entity.getComponents(ScriptComponent);
-			scripts.forEach((script) => {
 				if (typeof script.onUpdate === "function") {
 					script.onUpdate();
 				}
-			});
-		}
 
-		// 🕓 Llamar LateUpdate
-		for (const entity of entities) {
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
-			const scripts = entity.getComponents(ScriptComponent);
-			scripts.forEach((script) => {
 				if (typeof script.onLateUpdate === "function") {
 					script.onLateUpdate();
 				}
-			});
+			}
 		}
 	}
 
 	fixedUpdate(): void {
-		const entities = this.getScene().getEntitiesAsArray();
+		const scene = this.getScene();
+
+		const entities = scene
+			.getEntitiesByComponents([ScriptComponent])
+			.filter((e) => !Entity.isBeingCulling(e, [CullingTarget.ALL, CullingTarget.LOGIC]));
+
 		for (const entity of entities) {
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const scripts = entity.getComponents(ScriptComponent);
-			scripts.forEach((script) => {
+
+			for (const script of scripts) {
 				if (typeof script.onFixedUpdate === "function") {
 					script.onFixedUpdate();
 				}
-			});
+			}
 		}
 	}
 }

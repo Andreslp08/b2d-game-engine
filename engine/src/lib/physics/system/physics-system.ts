@@ -13,6 +13,7 @@ import { StaticBody } from "../components/static-body";
 import { BodyType } from "../enum/body-type";
 import { CollisionDirection } from "../enum/collision-direction";
 import { CollisionUtil } from "../util/collision-util";
+import { Culling } from "../../performance/culling";
 
 export class PhysicsSystem extends System {
 	constructor(scene: Scene) {
@@ -181,7 +182,7 @@ export class PhysicsSystem extends System {
 	}
 
 	private calculatePhysics(deltaTime: number) {
-		const entities = this.getScene().getEntitiesAsArray();
+		const entities = this.getScene().getEntitiesByQuery({all:[Transform, Collider], any:[DynamicBody, KinematicBody, StaticBody], none: [Culling]});
 		for (const entity of entities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const dynamicBody = entity.getComponent(DynamicBody);

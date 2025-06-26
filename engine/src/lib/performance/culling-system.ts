@@ -18,6 +18,11 @@ import { Culling, CullingConfigComponent } from "./culling";
 import { CullingType } from "./enum/culling-type";
 
 export class CullingSystem extends System {
+	constructor(scene) {
+		super(scene);
+
+
+	}
 	getCamera(entity: Entity): Camera {
 		switch (entity.renderLayer) {
 			case RenderLayerTypes.Background:
@@ -57,21 +62,21 @@ export class CullingSystem extends System {
 	};
 
 	update(): void {
+		
 		const scene = this.getScene();
+		
 		if (!scene) return;
-		const entities = scene.getEntitiesAsArray();
-		if (!entities || entities?.length === 0) return;
-
+		const entities = scene.getEntitiesByComponents([Transform, CullingConfigComponent]);
+		if (!entities || entities.length === 0) return;
+		// const entities = scene.getEntities();
+		// if (!entities || entities.size === 0) return;
 		for (const entity of entities) {
 			const cullingSettings = entity.getComponent(CullingConfigComponent);
-			if (!cullingSettings) continue;
+			if(!cullingSettings) continue;
 			if (cullingSettings.cullingType === CullingType.NONE) {
 				if (entity.hasComponent(Culling)) entity.deleteallComponentsByClass(Culling);
 				continue;
 			}
-
-			const transform = entity.getComponent(Transform);
-			if (!transform) continue;
 			const xRadius = cullingSettings.distanceRadius.x;
 			const yRadius = cullingSettings.distanceRadius.y;
 			const isStrict = cullingSettings.frustrumStrict;

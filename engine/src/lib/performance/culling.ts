@@ -10,4 +10,7 @@ export class CullingConfigComponent extends Component {
 	cullingTarget: CullingTarget = CullingTarget.ALL;
 }
 
-export class Culling extends Component {}
+export class Culling extends Component {
+	
+}
+
