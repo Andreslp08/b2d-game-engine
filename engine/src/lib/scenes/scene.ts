@@ -16,7 +16,6 @@ import { SpriteAnimationSystem } from "../graphics/sprites/system/sprite-animati
 import { PhysicsSystem } from "../physics/system/physics-system";
 import { ScriptSystem } from "../scripts/script-system";
 import { DebugSystem } from "../debug/debug-system";
-import { ZIndexSortingSystem } from "../graphics/render/render-sorting-system";
 import { Updatable } from "../common/interfaces/updatable";
 import { System } from "../ecs/system";
 import { Component, ComponentClass } from "../ecs/component";
@@ -38,7 +37,6 @@ export class Scene implements Updatable {
 		this.addSystem(new CullingSystem(this));
 		this.addSystem(new ScriptSystem(this));
 		this.addSystem(new PhysicsSystem(this));
-		// this.addSystem(new ZIndexSortingSystem(this));
 		this.addSystem(new SpriteAnimationSystem(this));
 		this.addSystem(new DebugSystem(this));
 		// this.addSystem(new TileMapSystem(this));
@@ -300,10 +298,6 @@ getEntitiesByQuery({
 		return this.indexedEntitiesByComponents;
 	}
 
-	sortEntitiesByZIndex(): void {
-		const entities = Array.from(this.entities).sort((a, b) => a.getZindex() - b.getZindex());
-		this.entities = new Set(entities);
-	}
 	get camera(): WorldCamera {
 		return WorldCameras.currentCamera as WorldCamera;
 	}

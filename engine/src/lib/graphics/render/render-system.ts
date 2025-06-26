@@ -77,7 +77,7 @@ export class RenderSystem extends System {
 	};
 
 	render(renderingContext: CanvasRenderingContext2D): void {
-		const entities = this.getScene().getEntitiesByQuery({ all:[],  none: [Culling] });
+		const entities = this.getScene().getEntitiesByQuery({ all:[],  none: [Culling] }).sort((a, b) => a.getZindex() - b.getZindex());
 		const scene = this.getScene();
 		if (!scene) return;
 
