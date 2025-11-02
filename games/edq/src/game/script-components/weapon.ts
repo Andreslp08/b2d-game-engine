@@ -86,7 +86,7 @@ export class WeaponController extends ScriptComponent {
 			const force = new Vector2(1, 0)
 				.rotate(this.currentAimAngle)
 				.multiply(new Vector2(directionX, 1))
-				.multiplyBy(6000);
+				.multiplyBy(10000);
 			dynamicBody.addForce(force);
 			if (bulletController) {
 				bulletController.setShooted(true);
@@ -106,7 +106,10 @@ export class WeaponController extends ScriptComponent {
 		const holderBody = holderGameObject.getComponent(DynamicBody);
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
-		weaponSprite.setDirection(holderBody.direction);
+		weaponSprite.setDirection({
+			x: holderBody.direction.x,
+			y: 1,
+		});
 		const base = holderTransform.position.clone();
 		const offsetX = Math.abs(
 			holderTransform.size.x / 2 - weaponTransform.size.x / 2 + this.attachmentOffset.x
@@ -143,7 +146,7 @@ export class WeaponController extends ScriptComponent {
 	}
 
 	onFixedUpdate(): void {
-		const fireRate = 0.6;
+		const fireRate = 0.4;
 		this.fireCooldown -= Time.fixedDeltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
 			this.shot();

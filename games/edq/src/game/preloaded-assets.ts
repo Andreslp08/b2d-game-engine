@@ -101,8 +101,23 @@ export const PRELOAD_ASSETS: { type: GameAssetsTypes; name: string; path: string
 	},
 	{
 		type: GameAssetsTypes.Image,
+		name: "spritesheet:player-jump",
+		path: "/assets/textures/player-jump.png",
+	},
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:player-jump-no-arm",
+		path: "/assets/textures/player-jump-no-arm.png",
+	},
+	{
+		type: GameAssetsTypes.Image,
 		name: "spritesheet:soldier-idle",
 		path: "/assets/textures/soldier-idle.png",
+	},
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:block1",
+		path: "/assets/textures/block1.png",
 	},
 
 	// ATLAS
@@ -130,5 +145,15 @@ export const PRELOAD_ASSETS: { type: GameAssetsTypes; name: string; path: string
 		type: GameAssetsTypes.Atlas,
 		name: "atlas:soldier-idle",
 		path: "/assets/atlas/soldier-idle.json",
+	},
+	{
+		type: GameAssetsTypes.Atlas,
+		name: "atlas:player-jump",
+		path: "/assets/atlas/player-jump.json",
+	},
+	{
+		type: GameAssetsTypes.Atlas,
+		name: "atlas:player-jump-no-arm",
+		path: "/assets/atlas/player-jump-no-arm.json",
 	},
 ];

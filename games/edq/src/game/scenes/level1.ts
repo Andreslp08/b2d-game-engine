@@ -15,8 +15,12 @@ import { WeaponController, WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode } from "engine/debug/debug";
-import { BackgroundCameras, UICameras, WorldCameras } from "engine/graphics/cameras/camera-managers";
-import { PlayerController } from "../script-components/player-controller";
+import {
+	BackgroundCameras,
+	UICameras,
+	WorldCameras,
+} from "engine/graphics/cameras/camera-managers";
+import { Collider } from "engine/physics/components/collider";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -26,13 +30,13 @@ export class Level1 extends GameScene {
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
-		// DebugMode.enabled = true;	
+		// DebugMode.enabled = true;
 		// DebugMode.check("colliders");
 		this.loadBackground();
 		this.loadWorld();
 		// this.loadForeground();
 		// this.loadEffects();
-		this.loadUI();
+		// this.loadUI();
 		// this.loadDebug();
 		WorldCameras.currentCamera.setFieldOfView(1);
 	}
@@ -73,7 +77,9 @@ export class Level1 extends GameScene {
 		}
 
 		for (let i = 0; i < 200; i++) {
-			this.addEntity(createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1)));
+			const box = createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1))
+			box.getComponent(Collider).ignoreZIndex = true;
+			this.addEntity(box);
 		}
 
 		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));
@@ -87,15 +93,25 @@ export class Level1 extends GameScene {
 		const weaponController = weapon.getComponent(WeaponController);
 		weaponController.setAttachmentOffset(new Vector2(0.2, -0.1));
 		weapon.setZindex(-1);
-		// this.player.getComponent(WeaponHolder).attachWeapon(weapon);
+		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
 		const soldier = createSoldier(new Vector2(3, -3));
 		this.addEntity(soldier);
+
+		// // // TEST DE RENDIMIENTO
+		// const go = Array.from({ length: 10000 }, (_, index) => {
+		// 	const g = new GameObject({
+		// 		position: new Vector2(index * 0.5, 0),
+		// 		rotation: 0,
+		// 		size: new Vector2(1, 1),
+		// 	}, new Sprite({ image: AssetsManager.getImageByName("spritesheet:box"), framePosition: new Vector2(0, 0), frameSize: { w: 500, h: 500 } }));
+		// 	g.addComponent(new Collider(new Vector2(0, 0), new Vector2(1, 1)));
+		// 	return g;
+		// });
+		// go.forEach((g) => this.addEntity(g));
 	}
 
-	loadForeground() {
-	
-	}
+	loadForeground() {}
 
 	loadDebug() {
 		const d = new GameObject({

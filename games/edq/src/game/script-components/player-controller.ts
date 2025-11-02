@@ -17,6 +17,13 @@ let isClimbKeyPressed = false;
 export class PlayerController extends ScriptComponent {
 	enabled = true;
 	enableInputController = true;
+	jumpDebounce = 0.2;
+	jumpDebounceStartTime = 0;
+	debouncingJump = false;
+	jumpDebounceTime = 0;
+	prevJump = false;
+	hasJumpedOnce = false;
+
 	constructor(entity: Entity) {
 		super(entity);
 	}
@@ -25,7 +32,7 @@ export class PlayerController extends ScriptComponent {
 		this.enabled = true;
 	}
 
-	onUpdate(): void {
+	onFixedUpdate(): void {
 		if (!this.enabled) {
 			return;
 		}
@@ -69,7 +76,7 @@ export class PlayerController extends ScriptComponent {
 		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
 		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
 		const db = this.entity.getComponent(DynamicBody);
-		const finalCameraPosition = db?.isMoving ? newCameraPos: targetPos;
+		const finalCameraPosition = db?.isMoving ? newCameraPos : targetPos;
 		if (leftDistance > 6.8 && rightDistance > 6.8) {
 			camera.setPosition(finalCameraPosition);
 		} else {
@@ -79,7 +86,7 @@ export class PlayerController extends ScriptComponent {
 		// === MOVIMIENTO Y CONTROLES ===
 		const entity = this.entity;
 		if (!entity.hasComponent(BasicMovement)) return;
-		if(!this.enableInputController) return;
+		if (!this.enableInputController) return;
 		this.horizontalController();
 		this.jumpController();
 	}
@@ -100,37 +107,52 @@ export class PlayerController extends ScriptComponent {
 		}
 	}
 
-	private jumpController() {
-		const entity = this.entity;
-		const dynamicBody = entity.getComponent(DynamicBody);
-		const gameObject = dynamicBody.gameObject;
-		const movement = gameObject.getComponent(BasicMovement);
-		const collider = entity.getComponent(Collider);
-		if (!entity.hasComponent(BasicMovement)) return;
-		const y = gameObject.transform.position.y;
-		// Salto
-		if (KeyBoardManager.keyDown(movement.inputKeys.up)) {
-			// console.log('xd', deltaTime)
-			if (dynamicBody.isOnGround && !movement.isJumping) {
-				movement.isJumping = true;
-				movement.jumpStartY = y;
-			}
-			if (
-				movement.jumpStartY !== null &&
-				movement.jumpStartY - y < movement.maxJumpHeight &&
-				movement.isJumping &&
-				collider.collisionDirection.y !== CollisionDirection.TOP
-			) {
-				dynamicBody.addForce(new Vector2(0, -movement.forceY));
-			}
-		}
-		if (
-			movement.isJumping &&
-			(!KeyBoardManager.keyDown(movement.inputKeys.up) || dynamicBody.velocity.y > 0)
-		) {
-			movement.isJumping = false;
+private jumpController() {
+	const entity = this.entity;
+	const dynamicBody = entity.getComponent(DynamicBody);
+	const gameObject = dynamicBody.gameObject;
+	const movement = gameObject.getComponent(BasicMovement);
+	const collider = entity.getComponent(Collider);
+	if (!entity.hasComponent(BasicMovement)) return;
+	const y = gameObject.transform.position.y;
+
+	if (this.hasJumpedOnce && !movement.isJumping && dynamicBody.isOnGround && !this.debouncingJump) {
+		this.debouncingJump = true;
+		this.jumpDebounceStartTime = Time.time;
+	}
+
+	if (this.debouncingJump) {
+		const delta = Time.time - this.jumpDebounceStartTime;
+		if (delta >= this.jumpDebounce) {
+			this.debouncingJump = false;
+			this.jumpDebounceStartTime = 0;
+			this.hasJumpedOnce = false;
 		}
 	}
+
+	// Salto
+	if (KeyBoardManager.keyDown(movement.inputKeys.up) && !this.debouncingJump) {
+		if (dynamicBody.isOnGround && !movement.isJumping) {
+			movement.isJumping = true;
+			movement.jumpStartY = y;
+			this.hasJumpedOnce = true; // 🔹 marca que ya saltó al menos una vez
+		}
+		if (
+			movement.jumpStartY !== null &&
+			movement.jumpStartY - y < movement.maxJumpHeight &&
+			movement.isJumping &&
+			collider.collisionDirection.y !== CollisionDirection.TOP
+		) {
+			dynamicBody.addForce(new Vector2(0, -movement.forceY));
+		}
+	}
+	if (
+		movement.isJumping &&
+		(!KeyBoardManager.keyDown(movement.inputKeys.up) || dynamicBody.velocity.y > 0)
+	) {
+		movement.isJumping = false;
+	}
+}
 
 	private horizontalController() {
 		const entity = this.entity;
@@ -152,7 +174,6 @@ export class PlayerController extends ScriptComponent {
 		const dynamicBody = entity.getComponent(DynamicBody);
 		const gameObject = dynamicBody.gameObject;
 		const movement = gameObject.getComponent(BasicMovement);
-		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
 
 		if (!entity.hasComponent(BasicMovement)) return;
 		// Dirección (solo si velocidad supera un umbral)

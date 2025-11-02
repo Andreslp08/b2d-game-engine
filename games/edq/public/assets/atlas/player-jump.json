@@ -1,0 +1,35 @@
+﻿{"frames": {
+
+"player-jump0000":
+{
+	"frame": {"x":0,"y":0,"w":379,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":379,"h":637},
+	"sourceSize": {"w":379,"h":637}
+},
+"player-jump0001":
+{
+	"frame": {"x":379,"y":0,"w":379,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":379,"h":637},
+	"sourceSize": {"w":379,"h":637}
+},
+"player-jump0002":
+{
+	"frame": {"x":758,"y":0,"w":379,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":379,"h":637},
+	"sourceSize": {"w":379,"h":637}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "22.0.4.185",
+	"image": "player-jump.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":1024},
+	"scale": "1"
+}
+}

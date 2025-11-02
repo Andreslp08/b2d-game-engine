@@ -50,7 +50,7 @@ export class BulletController extends ScriptComponent {
 		}
 	}
 
-	onUpdate(): void {
+	onFixedUpdate(): void {
 		if (this.shouldDestroy) {
 			this.destroyBullet();
 		}
@@ -90,6 +90,6 @@ export const createBullet = (
 	obj.addComponent(new BulletController(obj));
 	obj.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.2, 0.2)));
 	obj.addComponent(new DynamicBody(obj));
-	obj.getComponent(DynamicBody).bounciness = new Vector2(0.6, 0.6);
+	obj.getComponent(DynamicBody).bounciness = new Vector2(0, 0);
 	return obj;
 };
