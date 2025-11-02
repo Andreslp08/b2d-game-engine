@@ -21,6 +21,8 @@ import { UIRenderer } from "./ui-renderer";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { CullingTarget } from "../../performance/enum/culling-type";
 import { Culling } from "../../performance/culling";
+import { DrawDebugLine } from "../../debug/components/draw-line";
+import { DebugShapesRenderer } from "./debug-shapes-renderer";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -59,6 +61,7 @@ export class RenderSystem extends System {
 			const allSprites = [...spriteComponents, ...spriteAnimations];
 			const colliderComponents = entity.getComponents(Collider);
 			const transformComponents = entity.getComponents(Transform);
+			const debugLines = entity.getComponents(DrawDebugLine);
 			allSprites.forEach((_) => {
 				const render = new SpriteRenderer(entity);
 				render.render(renderingContext);
@@ -71,6 +74,10 @@ export class RenderSystem extends System {
 				const render = new ColliderRenderer(entity);
 				render.render(renderingContext);
 			});
+			debugLines.forEach((_) => {
+				const render = new DebugShapesRenderer(entity);
+				render.render(renderingContext);
+			})
 			const uiRenderer = new UIRenderer(entity);
 			uiRenderer.render(renderingContext);
 		}
