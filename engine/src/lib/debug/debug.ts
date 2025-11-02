@@ -1,14 +1,20 @@
+export enum DebugTypes{
+    ALL = 'all',
+    TRANSFORMS = 'transforms',
+    COLLIDERS = 'colliders',
+    SHAPES = 'shapes'
+}
 export class DebugMode{
    
 
-    private static  _currentMode: 'all' | 'transforms' | 'colliders' = 'all';
+    private static  _currentMode:DebugTypes = DebugTypes.ALL;
     static enabled = false;
 
     static get currentMode(){
         return DebugMode._currentMode
     }
 
-   static check(debug:'all' | 'transforms' | 'colliders'){
+   static check(debug:DebugTypes){
         DebugMode._currentMode = debug;
     }
 }
