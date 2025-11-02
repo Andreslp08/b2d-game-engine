@@ -98,11 +98,11 @@ export class WorldCamera extends Camera {
 		const totalScale = this.calculateScale(this.renderingContext);
 		const cameraPosition = this.calculateCameraPosition();
 
-		// Remover el offset (barras negras)
-		const screenX = screenPosition.x - offset.x;
-		const screenY = screenPosition.y - offset.y;
 
-		// Remover el escalado
+		const dpr = window.devicePixelRatio || 1;
+		const screenX = screenPosition.x * dpr - offset.x;
+		const screenY = screenPosition.y * dpr - offset.y;
+
 		const worldX = screenX / totalScale.x + cameraPosition.x;
 		const worldY = screenY / totalScale.y + cameraPosition.y;
 
