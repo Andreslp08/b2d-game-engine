@@ -17,6 +17,7 @@ export class SpriteAnimationSystem extends System {
 
 	updateAnimations(spriteAnimation: SpriteAnimation) {
 		const anim = spriteAnimation;
+		const sprites = anim.reverse? anim.spritesheet.sprites.toReversed() : anim.spritesheet.sprites;
 		// Animación frame update
 		anim.currentTime += Time.deltaTime;
 
@@ -26,12 +27,12 @@ export class SpriteAnimationSystem extends System {
 			anim.currentTime = 0;
 			anim.currentFrame++;
 
-			if (anim.currentFrame >= anim.spritesheet.sprites.length) {
-				anim.currentFrame = anim.loop ? 0 : anim.spritesheet.sprites.length - 1;
+			if (anim.currentFrame >= sprites.length) {
+				anim.currentFrame = anim.loop ? 0 : sprites.length - 1;
 			}
 		}
 
-		const nextFrameSprite = anim.spritesheet.sprites[anim.currentFrame];
+		const nextFrameSprite = sprites[anim.currentFrame];
 		anim.currentSprite = nextFrameSprite;
 		// console.log(anim.currentSprite.id)
 	}
