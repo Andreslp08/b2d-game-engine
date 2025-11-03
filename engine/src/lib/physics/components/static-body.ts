@@ -5,9 +5,8 @@ import { BodyType } from "../enum/body-type";
 
 export class StaticBody extends Component {
 	private _bodyType: BodyType = BodyType.Static;
-	constructor(object: GameObject) {
+	constructor() {
 		super();
-		this.setEntity(object);
 	}
 
 	get bodyType(): BodyType {

@@ -3,11 +3,9 @@ import { Entity } from "../ecs/entity";
 
 export class ScriptComponent extends Component {
 
-	constructor(entity: Entity) {
+	constructor() {
 		super();
 		this.unique = false;
-		entity.addComponent(this);
-		this.setEntity(entity);
 	}
 
 	onCollisionEnter(entity: Entity): void {}

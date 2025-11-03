@@ -1,5 +1,4 @@
 import { GameObject } from "engine/common/entities/game-object";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { BasicMovement } from "../script-components/basic-movement";
@@ -14,6 +13,8 @@ import { PlayerSpriteController } from "../script-components/sprite-controller";
 import { Loot, LootType } from "../script-components/loot";
 import { LootInputController } from "../script-components/loot-input-controller";
 import { PlayerLifeController } from "../script-components/player-life-controller";
+import { AimingController } from "../script-components/aiming-controller";
+import { PlayerAimingArm } from "../script-components/player-aiming-arm";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
@@ -22,24 +23,26 @@ export const createPlayer = (position: Vector2): GameObject => {
 		size: new Vector2(0.8,1.8),
 	});
 	entity.addTag("player");
-	entity.addComponent(new PlayerSpriteController(entity));
-	entity.addComponent(new DynamicBody(entity));
+	entity.addComponent(new PlayerSpriteController());
+	entity.addComponent(new DynamicBody());
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
-	entity.addComponent(new PlayerController(entity));
-	entity.addComponent(new HealthComponent(entity, 100, 100, false));
-	entity.addComponent(new ShieldComponent(entity));
-	entity.addComponent(new FallDamage(entity));
-	entity.addComponent(new PlayerHud(entity));
-	entity.addComponent(new PlayerLifeController(entity));
-	const loot = new Loot(entity);
+	entity.addComponent(new PlayerController());
+	entity.addComponent(new HealthComponent( 100, 100, false));
+	entity.addComponent(new ShieldComponent());
+	entity.addComponent(new FallDamage());
+	entity.addComponent(new PlayerHud());
+	entity.addComponent(new PlayerLifeController());
+	entity.addComponent(new PlayerAimingArm())
+	const loot = new Loot();
 	loot.setSlot(0, { type: LootType.HAND, data: null }, true);
 	loot.setSlot(1, { type: LootType.WEAPON, data: {a:2} }, false);
 	loot.setSlot(2, { type: LootType.WEAPON, data: null }, false);
-	entity.addComponent(new LootInputController(entity));
+	entity.addComponent(new LootInputController());
+	entity.addComponent(new AimingController());
 	
 	entity.addComponent(loot);
-	entity.addComponent(new WeaponHolder(entity));
+	entity.addComponent(new WeaponHolder());
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(DynamicBody);
 	const playerMovement = entity.getComponent(BasicMovement);

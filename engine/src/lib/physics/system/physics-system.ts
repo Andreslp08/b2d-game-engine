@@ -137,7 +137,17 @@ export class PhysicsSystem extends System {
 		}
 	}
 
-	private kinematicCollisionResolver(targetEntity: Entity, entities: Entity[]) {}
+	private kinematicCollisionResolver(targetEntity: Entity, entities: Entity[]) {
+		const transform = targetEntity.getComponent(Transform);
+		const collider = targetEntity.getComponent(Collider);
+		if (!collider || !transform || !collider.collidable) return;
+
+		for (const entity of entities) {
+			if (entity === targetEntity) continue;
+			if (!this.isCollision(targetEntity, entity)) continue;
+			this.notifyCollision(targetEntity, entity);
+		}
+	}
 	private staticCollisionResolver(targetEntity: Entity, entities: Entity[]) {}
 
 	private notifyCollision(entity1: Entity, entity2: Entity) {
@@ -182,7 +192,11 @@ export class PhysicsSystem extends System {
 	}
 
 	private calculatePhysics(deltaTime: number) {
-		const entities = this.getScene().getEntitiesByQuery({all:[Transform, Collider], any:[DynamicBody, KinematicBody, StaticBody], none: [Culling]});
+		const entities = this.getScene().getEntitiesByQuery({
+			all: [Transform, Collider],
+			any: [DynamicBody, KinematicBody, StaticBody],
+			none: [Culling],
+		});
 		for (const entity of entities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const dynamicBody = entity.getComponent(DynamicBody);

@@ -6,11 +6,12 @@ import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BulletController, createBullet } from "../prefabs/bullet";
-import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { Time } from "engine/common/interfaces/time";
+import { PlayerAimingArm } from "./player-aiming-arm";
+import { AimingController } from "./aiming-controller";
+import { KinematicBody } from "engine/physics/components/kinematic-body";
 
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
@@ -36,10 +37,9 @@ export class WeaponHolder extends ScriptComponent {
 
 export class WeaponController extends ScriptComponent {
 	weaponHolder: GameObject | null = null;
-	weaponPosition = new Vector2(0, 0);
 	shooting: boolean = false;
-	currentAimAngle: number = 0;
 	fireCooldown: number = 0;
+	enableController: boolean = true;
 
 	onStart(): void {}
 	setWeaponHolder(weaponHolder: GameObject) {
@@ -49,103 +49,107 @@ export class WeaponController extends ScriptComponent {
 		this.weaponHolder = weaponHolder;
 	}
 
-	private attachmentOffset: Vector2 = new Vector2(0.1, 0);
+shot() {
+	if (this.shooting) return;
+	if (!this.weaponHolder) return;
 
-	setAttachmentOffset(offset: Vector2) {
-		this.attachmentOffset = offset;
-	}
+	const weaponObject = this.entity as GameObject;
+	const weaponTransform = weaponObject.getComponent(Transform);
+	if (!weaponTransform) return;
 
-	shot() {
-		// if(!this.weaponHolder) return;
-		if (this.shooting) return;
-		const directionX = this.weaponHolder?.getComponent(DynamicBody)?.direction.x ?? 1;
-		const rotatedOffset = this.attachmentOffset.clone().rotate(this.currentAimAngle);
-		const spawnPosition = this.weaponPosition
-			.clone()
-			.add(rotatedOffset.multiply(new Vector2(directionX, 1)));
+	const holderGameObject = this.weaponHolder as GameObject;
+	const aimingController = holderGameObject.getComponent(AimingController);
+	const angle = aimingController.getAngleInDeg()
+	if (!aimingController) return;
 
-		const obj = createBullet(spawnPosition, MathUtil.radToDeg(this.currentAimAngle ), { x: directionX, y: 1 });
-		const bulletController = obj.getComponent(BulletController);
-		obj.setZindex(-1);
-		const collider = obj.getComponent(Collider);
-		collider.ignoreZIndex = true;
-		collider.ignoreEntity(this.entity);
-		collider.ignoreEntity(this.weaponHolder);
-		const holderCollider = this.weaponHolder?.getComponent(Collider);
-		if (holderCollider) {
-			holderCollider.ignoreEntity(obj);
-		}
-		const scene = this.entity.getScene();
-		if (scene) {
-			this.entity.getScene()?.addEntity(obj);
-			const dynamicBody = obj.getComponent(DynamicBody);
-			dynamicBody.gravity = 0.5;
-			dynamicBody.mass = 7;
-			dynamicBody.friction = 0.1;
-			dynamicBody.dragScale = 0;
-			const force = new Vector2(1, 0)
-				.rotate(this.currentAimAngle)
-				.multiply(new Vector2(directionX, 1))
-				.multiplyBy(10000);
-			dynamicBody.addForce(force);
-			if (bulletController) {
-				bulletController.setShooted(true);
-			}
-		}
-	}
+	const holderBody = holderGameObject.getComponent(DynamicBody);
+	const holderVelocity = holderBody?.velocity ?? new Vector2(0, 0);
+
+	// Dirección del disparo
+	const directionX = aimingController.getAimingDirection().x;
+	const aimDir = new Vector2(
+		Math.cos(MathUtil.degToRad(directionX * weaponTransform.rotation + 45)),
+		Math.sin(MathUtil.degToRad(directionX * weaponTransform.rotation + 45))
+
+	).normalize();	
+
+
+	// 💡 Compensar posición inicial con el movimiento del jugador
+	// Si el jugador se mueve hacia la derecha, la bala nacerá unos píxeles más adelante
+	const compensation = holderVelocity.clone().multiplyBy(Time.deltaTime);
+	const spawnPosition = weaponTransform.position.clone().add(compensation);
+
+	// Crear bala con cuerpo Kinematic
+	const bullet = createBullet(spawnPosition);
+	bullet.setZindex(0)
+	bullet.getComponent(Transform).rotation = directionX == 1? angle: angle - 180;
+	const bulletController = bullet.getComponent(BulletController);
+	bulletController.setWeapon(this.entity as GameObject);
+	const kinematic = bullet.getComponent(KinematicBody)
+	const bulletSpeed = 20;
+	kinematic.velocity = aimDir.multiply(new Vector2(directionX * bulletSpeed, bulletSpeed));
+
+	// Colisiones
+	const collider = bullet.getComponent(Collider);
+	collider.ignoreZIndex = true;
+	collider.ignoreEntity(this.weaponHolder);
+	const holderCollider = this.weaponHolder.getComponent(Collider);
+	if (holderCollider) holderCollider.ignoreEntity(bullet);
+
+	// Añadir al mundo
+	const scene = this.entity.getScene();
+	if (scene) scene.addEntity(bullet);
+
+	const sprite = bullet.getComponent(Sprite);
+	if (sprite) sprite.setDirection({ x: directionX, y: 1 });
+	bulletController.setShooted(true);
+}
 
 	onLateUpdate(): void {
 		if (!this.weaponHolder) return;
 		const weaponObject = this.entity as GameObject;
 		const weaponTransform = weaponObject.getComponent(Transform);
 		if (!weaponTransform) return;
-		if (!weaponTransform) return;
 		const holderGameObject = this.weaponHolder as GameObject;
+		if (!holderGameObject) return;
 		const holderTransform = holderGameObject.getComponent(Transform);
 		if (!holderTransform) return;
-		const holderBody = holderGameObject.getComponent(DynamicBody);
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
-		weaponSprite.setDirection({
-			x: holderBody.direction.x,
-			y: 1,
-		});
-		const base = holderTransform.position.clone();
-		const offsetX = Math.abs(
-			holderTransform.size.x / 2 - weaponTransform.size.x / 2 + this.attachmentOffset.x
-		);
-		const offsetY =
-			holderTransform.size.y / 2 - weaponTransform.size.y + this.attachmentOffset.y;
+		const arm = holderGameObject.getComponent(PlayerAimingArm)?.arm;
+		if (!arm) return;
+		const armTransform = arm.getComponent(Transform);
+		const aimingController = holderGameObject.getComponent(AimingController);
+		if (!aimingController) return;
+		const isAiming = aimingController.isAiming();
 
-		weaponTransform.position = base.add(
-			new Vector2(holderBody.direction.x * offsetX, offsetY)
-		);
-
-		const mousePos = MouseManager.getPosition(); // ← posición en PANTALLA
-		const mouseWorldPos = (
-			WorldCameras.currentCamera as WorldCamera
-		).getWorldPositionFromScreenPosition(mousePos);
-		if (!mouseWorldPos) {
-			return;
+		if (!isAiming) {
+			this.enableController = false;
+			weaponSprite.setVisible(false);
+		}else{
+			this.enableController = true;
+			weaponSprite.setVisible(true);
 		}
-		// Diferencia entre mouse y centro
-		const dir = mouseWorldPos.clone().substract(weaponTransform.position).normalize();
-		// Ángulo en radianes, luego a grados
-		let angleRad = Math.atan2(dir.y, dir.x * holderBody.direction.x);
-		// Limitar a ±90 grados (es decir, entre -PI/2 y +PI/2 radianes)
-		const minAngle = -Math.PI / 2;
-		const maxAngle = Math.PI / 2;
-		angleRad = Math.max(minAngle, Math.min(maxAngle, angleRad));
-		const angleDeg = MathUtil.radToDeg(angleRad);
 
-		// Asignar rotación
-		weaponTransform.rotation = angleDeg;
-		this.weaponPosition = weaponTransform.position.clone();
-		this.currentAimAngle = angleRad;
+		const aimingDirectionInX = aimingController.getAimingDirection().x;
 
+		// Offset local de la mano (en el espacio del brazo)
+		const handOffset = new Vector2(0.4 * aimingDirectionInX, 0.4); // ajusta visualmente
+
+		// Rota el offset según la rotación actual del brazo
+		const rotatedOffset = handOffset.rotate(MathUtil.degToRad(armTransform.rotation));
+
+		// Aplica posición y rotación finales
+		weaponTransform.position = armTransform.position.clone().add(rotatedOffset);
+		weaponTransform.rotation = armTransform.rotation;
+		weaponSprite.setDirection({ x: aimingDirectionInX, y: 1 });
+		weaponSprite.setRotation(45 * aimingDirectionInX);
+		weaponSprite.setPivot(new Vector2(0.5, 0.2));
+		weaponObject.setZindex(1);
 	}
 
 	onFixedUpdate(): void {
+		if (!this.enableController) return;
 		const fireRate = 0.4;
 		this.fireCooldown -= Time.fixedDeltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {

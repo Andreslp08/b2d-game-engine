@@ -28,8 +28,8 @@ export class Loot extends ScriptComponent {
 	private currentSlot: number = 0;
 	private currentLoot: Map<number, SlootItem> = new Map<number, SlootItem>();
 
-	constructor(entity: Entity) {
-		super(entity);
+	constructor() {
+		super();
 	}
 
 	onStart(): void {

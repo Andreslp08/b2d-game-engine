@@ -90,8 +90,6 @@ export class Level1 extends GameScene {
 
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
-		const weaponController = weapon.getComponent(WeaponController);
-		weaponController.setAttachmentOffset(new Vector2(0.2, -0.1));
 		weapon.setZindex(-1);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier

@@ -1,13 +1,11 @@
-import  { Entity } from "engine/ecs/entity";
 import { ScriptComponent } from "engine/scripts/script-component";
 
 export class ShieldComponent extends ScriptComponent {
 	constructor(
-		entity: Entity,
 		private shield: number = 100,
 		private maxShield: number = 100,
 	) {
-		super(entity);
+		super();
 		this.shield = shield;
 	}
 

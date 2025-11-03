@@ -1,9 +1,8 @@
-import { Entity } from "engine/ecs/entity";
+
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BasicMovement } from "./basic-movement";
 import Vector2 from "engine/math/vector2";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
@@ -23,10 +22,6 @@ export class PlayerController extends ScriptComponent {
 	jumpDebounceTime = 0;
 	prevJump = false;
 	hasJumpedOnce = false;
-
-	constructor(entity: Entity) {
-		super(entity);
-	}
 
 	onStart(): void {
 		this.enabled = true;
@@ -94,7 +89,7 @@ export class PlayerController extends ScriptComponent {
 	private climbController() {
 		const entity = this.entity;
 		const dynamicBody = entity.getComponent(DynamicBody);
-		const gameObject = dynamicBody.gameObject;
+		const gameObject = dynamicBody.getEntity();
 		if (!entity.hasComponent(BasicMovement)) return;
 		const shift = KeyBoardManager.keyDown("shift");
 		isClimbKeyPressed = shift;
@@ -110,7 +105,7 @@ export class PlayerController extends ScriptComponent {
 private jumpController() {
 	const entity = this.entity;
 	const dynamicBody = entity.getComponent(DynamicBody);
-	const gameObject = dynamicBody.gameObject;
+	const gameObject = dynamicBody.getEntity() as GameObject;
 	const movement = gameObject.getComponent(BasicMovement);
 	const collider = entity.getComponent(Collider);
 	if (!entity.hasComponent(BasicMovement)) return;
@@ -157,7 +152,7 @@ private jumpController() {
 	private horizontalController() {
 		const entity = this.entity;
 		const dynamicBody = entity.getComponent(DynamicBody);
-		const gameObject = dynamicBody.gameObject;
+		const gameObject = dynamicBody.getEntity();
 		const movement = gameObject.getComponent(BasicMovement);
 
 		if (!entity.hasComponent(BasicMovement)) return;
@@ -169,19 +164,4 @@ private jumpController() {
 		else if (moveLeft) dynamicBody.addForce(new Vector2(-movement.forceX, 0));
 	}
 
-	private spriteAnimationsController() {
-		const entity = this.entity;
-		const dynamicBody = entity.getComponent(DynamicBody);
-		const gameObject = dynamicBody.gameObject;
-		const movement = gameObject.getComponent(BasicMovement);
-
-		if (!entity.hasComponent(BasicMovement)) return;
-		// Dirección (solo si velocidad supera un umbral)
-		if (Math.abs(dynamicBody.velocity.x) > 0.01) {
-			movement.direction.x = dynamicBody.velocity.x > 0 ? 1 : -1;
-		}
-		if (Math.abs(dynamicBody.velocity.y) > 0.01) {
-			movement.direction.y = dynamicBody.velocity.y > 0 ? 1 : -1;
-		}
-	}
 }

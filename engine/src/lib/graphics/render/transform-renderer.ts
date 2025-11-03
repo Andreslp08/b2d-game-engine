@@ -1,4 +1,5 @@
 import { Transform } from "../../common/components/transform";
+import { MathUtil } from "../../math/math-util";
 import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Renderer } from "./render";
 
@@ -12,6 +13,8 @@ export class TransformRenderer extends Renderer {
 		if (transform) {
 			renderingContext.beginPath();
 			renderingContext.save();
+			renderingContext.translate(transform.position.x, transform.position.y);
+			renderingContext.rotate(MathUtil.degToRad(transform.rotation));
 			renderingContext.strokeStyle = "#0f0";
 			renderingContext.lineWidth =
 				entity.renderLayer === RenderLayerTypes.Debug ||
@@ -19,8 +22,8 @@ export class TransformRenderer extends Renderer {
 					? 3
 					: 0.03;
 			renderingContext.strokeRect(
-				transform.position.x - transform.size.x / 2,
-				transform.position.y - transform.size.y / 2,
+				-transform.size.x / 2,
+				-transform.size.y / 2,
 				transform.size.x,
 				transform.size.y
 			);
@@ -30,12 +33,13 @@ export class TransformRenderer extends Renderer {
 					? 5
 					: 0.03;
 			renderingContext.fillStyle = "#0f0";
-			renderingContext.fillRect(
-				transform.position.x - size / 2,
-				transform.position.y - size / 2,
-				size,
-				size
-			);
+			renderingContext.fillRect(-size / 2, -size / 2, size, size);
+			renderingContext.beginPath();
+			renderingContext.moveTo(0, 0);
+			renderingContext.lineTo(transform.size.x / 2, 0);
+			renderingContext.strokeStyle = "#0f0";
+			renderingContext.lineWidth = size;
+			renderingContext.stroke();
 			renderingContext.restore();
 		}
 		renderingContext.closePath();

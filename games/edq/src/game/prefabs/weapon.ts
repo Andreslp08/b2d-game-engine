@@ -20,6 +20,6 @@ export const createWeapon = (position: Vector2) => {
 		sprite
 	);
 	weapon.addTag("weapon");
-	weapon.addComponent(new WeaponController(weapon));
+	weapon.addComponent(new WeaponController());
 	return weapon;
 };

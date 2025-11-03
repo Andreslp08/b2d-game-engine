@@ -1,7 +1,5 @@
 import { GameObject } from "engine/common/entities/game-object";
-import { Entity } from "engine/ecs/entity";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { UIComponent } from "engine/ui/components/ui-component";
 import { UIObject } from "engine/ui/entities/ui-object";
 import { HealthComponent } from "../script-components/health-component";
 import { SegmentBarUI } from "./components/segment-bar-ui";
@@ -51,8 +49,8 @@ class HudUI extends UIObject {
 export class PlayerHud extends ScriptComponent {
 	private hudUI: HudUI;
 
-	constructor(entity: Entity) {
-		super(entity);
+	constructor() {
+		super();
 		this.hudUI = new HudUI();
 	}
 

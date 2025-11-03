@@ -1,8 +1,6 @@
-import { PIXELS_PER_METER } from "engine/common/constants";
 import  { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
-import  { Entity } from "engine/ecs/entity";
 import { WorldCameras } from "engine/graphics/cameras/camera-managers";
 import  { WorldCamera } from "engine/graphics/cameras/world-camera";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
@@ -130,12 +128,11 @@ export class HealthUI extends UIObject {
 export class HealthComponent extends ScriptComponent {
 	protected healthUI: HealthUI;
 	constructor(
-		entity: Entity,
 		private health: number = 100,
 		private maxHealth: number = 100,
 		private showHealthBar: boolean = true
 	) {
-		super(entity);
+		super();
 		this.health = health;
 		this.healthUI = new HealthUI();
 	}

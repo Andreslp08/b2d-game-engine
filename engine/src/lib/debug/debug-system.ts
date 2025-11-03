@@ -9,7 +9,7 @@ import { DebugMode, DebugTypes } from "./debug";
 
 export class DebugSystem extends System{
     update(): void {
-        const entities = this.getScene().getEntitiesByQuery({all:[Transform, Collider, DrawDebugLine], none: [Culling]});
+        const entities = this.getScene().getEntitiesByQuery({all:[], any:[Transform, Collider,DrawDebugLine], none: [Culling]});
         if(DebugMode.enabled === false) return
         entities.forEach((entity) => {
             if(DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.TRANSFORMS){

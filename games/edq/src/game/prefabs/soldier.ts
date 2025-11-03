@@ -21,12 +21,12 @@ export const createSoldier = (position: Vector2) => {
 		size: size,
 	});
 	soldier.addComponent(new SpriteAnimation(PlayerIdle, soldier, true, 0.07));
-	const dynamicbody = new KinematicBody(soldier);
+	const dynamicbody = new KinematicBody();
 	const collider = new Collider(
 		new Vector2(0, -0.02),
 		size.clone().multiply(new Vector2(0.8, 0.8))
 	);
-	const health = new HealthComponent(soldier, 100, 100, true);
+	const health = new HealthComponent(100, 100, true);
 	// const spriteAnim = new SpriteAnimation(SoldierIdleSequence, soldier, true, 0.07);
 	// spriteAnim.setAnimation(SoldierIdleSequence, true);
 	// soldier.addComponent(spriteAnim);
