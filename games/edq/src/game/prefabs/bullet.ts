@@ -12,6 +12,7 @@ import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { Transform } from "engine/common/components/transform";
 import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
+import { GameSound } from "engine/common/assets-manager/game-sound";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
@@ -19,7 +20,7 @@ export class BulletController extends ScriptComponent {
 	private shouldDestroy = false;
 	private collisionStartTime = 0;
 	private collisionDetected = false;
-	private weapon:GameObject;
+	private weapon: GameObject;
 
 	setShooted(shooted: boolean) {
 		this.shooted = shooted;
@@ -29,10 +30,14 @@ export class BulletController extends ScriptComponent {
 		return this.shooted;
 	}
 
-	setWeapon(weapon:GameObject){
+	setWeapon(weapon: GameObject) {
 		this.weapon = weapon;
 	}
-	onStart(): void {}
+	onStart(): void {
+		const shootSound = AssetsManager.getSoundByName("sound:desert-eagle");
+		shootSound.volume(1);
+		shootSound.play("shot");
+	}
 
 	private destroyBullet() {
 		const scene = this.entity.getScene();
@@ -83,9 +88,7 @@ export class BulletController extends ScriptComponent {
 	}
 }
 
-export const createBullet = (
-	position: Vector2,
-) => {
+export const createBullet = (position: Vector2) => {
 	const sprite = new Sprite({
 		image: AssetsManager.getImageByName("spritesheet:desert-eagle-bullet"),
 		framePosition: new Vector2(0, 0),

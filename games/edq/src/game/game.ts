@@ -1,6 +1,6 @@
 import { Engine } from "engine";
 import Vector2 from "engine/math/vector2";
-import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preloaded-assets";
+import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preload/preloaded-assets";
 import { Screen } from "engine/graphics/screen/screen";
 import { useGameStore } from "../store/store";
 import { GameSceneLoader } from "./scene-loader";

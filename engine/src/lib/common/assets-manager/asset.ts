@@ -3,12 +3,11 @@ import { IAsset, AssetEventListener } from "../interfaces/assets";
 export abstract class Asset<T> implements IAsset<T> {
     protected _name: string;
     protected _path: string;
-    protected _loaded: boolean;
+    protected _loaded: boolean = false;
 
     constructor(name: string, path: string) {
         this._name = name;
         this._path = path;
-        this._loaded = true;
     }
 
     abstract onLoad: AssetEventListener;

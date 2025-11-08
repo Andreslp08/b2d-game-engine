@@ -1,8 +1,13 @@
-import { AssetToPreload, AssetsPreloaderListener, GameAssetsTypes } from "../interfaces/assets";
+import {
+	AssetToPreload,
+	AssetsPreloaderListener,
+	GameAssetsTypes,
+	SoundAssetOptions,
+} from "../interfaces/assets";
 import { Asset } from "./asset";
 import { GameAtlas } from "./game-atlas";
 import { GameImage } from "./game-image";
-
+import { GameSound } from "./game-sound";
 export interface PreloadedAsset {
 	type: GameAssetsTypes;
 	name: string;
@@ -16,7 +21,10 @@ export class AssetsPreloader {
 		return AssetsPreloader._assets;
 	}
 
-	static set(assets: AssetToPreload[], callback: AssetsPreloaderListener): void {
+	static set(
+		assets: AssetToPreload<any | SoundAssetOptions>[],
+		callback: AssetsPreloaderListener
+	): void {
 		let progress = 0;
 		let loadedNum = 0;
 		callback({ finished: false, progress: progress });
@@ -31,6 +39,13 @@ export class AssetsPreloader {
 					newAsset = new GameImage(name, path);
 				} else if (type === GameAssetsTypes.Atlas) {
 					newAsset = new GameAtlas(name, path);
+				} else if (type === GameAssetsTypes.Sound) {
+					const params: SoundAssetOptions = asset.params;
+					newAsset = new GameSound(name, path, {
+						html5: params?.html5,
+						autoplay: params?.autoplay,
+						sprite: params?.sprite,
+					});
 				} else {
 					callback({ finished: false, progress: progress, currentAssetLoading: path });
 					reject(

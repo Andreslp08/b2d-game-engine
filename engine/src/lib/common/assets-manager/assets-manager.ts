@@ -1,7 +1,9 @@
-import { GameAssetsTypes } from "../interfaces/assets";
+import { HowlOptions } from "howler";
+import { GameAssetsTypes, SoundAssetOptions } from "../interfaces/assets";
 import { AssetsPreloader } from "./assets-preloader";
 import { GameAtlas } from "./game-atlas";
 import { GameImage } from "./game-image";
+import { GameSound } from "./game-sound";
 
 export class AssetsManager {
 	static getImageByPath(path: string): GameImage {
@@ -39,5 +41,26 @@ export class AssetsManager {
 		}
 		return atlas;
 	}
-	// static getSound(path: string): any {}
+	static getSoundByPath(path: string, options?: SoundAssetOptions): GameSound {
+		const type = GameAssetsTypes.Sound;
+		let gameSound: GameSound = null;
+		if (AssetsPreloader.hasAssetsByName(type, path)) {
+			const preloaded = AssetsPreloader.getByPath<GameSound>(type, path);
+			gameSound = new GameSound(preloaded.name, preloaded.path, options? options : preloaded.options);
+		}
+		if (AssetsPreloader.hasAssetByPath(type, path)) {
+			gameSound = AssetsPreloader.getByPath<GameSound>(type, path);
+		}
+		return gameSound;
+	}
+	static getSoundByName(name: string, options?: SoundAssetOptions): GameSound {
+		const type = GameAssetsTypes.Sound;
+		let gameSound: GameSound = null;
+		if (AssetsPreloader.hasAssetsByName(type, name)) {
+			const preloaded = AssetsPreloader.getByName<GameSound>(type, name);
+			
+				gameSound = new GameSound(preloaded.name, preloaded.path, options? options : preloaded.options);
+		}
+		return gameSound;
+	}
 }
