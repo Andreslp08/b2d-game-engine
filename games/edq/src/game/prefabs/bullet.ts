@@ -45,6 +45,7 @@ export class BulletController extends ScriptComponent {
 		this.shouldDestroy = true;
 	}
 	onCollisionEnter(entity: Entity): void {
+		if(this.collisionDetected) return
 		this.collisionStartTime = Time.time;
 		this.collisionDetected = true;
 		const shieldComponent = entity.getComponent(ShieldComponent);
