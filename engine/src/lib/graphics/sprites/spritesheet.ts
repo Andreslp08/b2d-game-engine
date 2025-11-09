@@ -15,7 +15,9 @@ export class SpriteSheet {
 	static genereateSpritesheetFromAtlas(
 		name: string,
 		atlas: GameAtlas,
-		image: GameImage
+		image: GameImage,
+		frameStartIndex?: number,
+		frameEndIndex?: number
 	): SpriteSheet {
 		const spritesheet = new SpriteSheet(name);
 		if (!atlas || !atlas.nativeElement) throw new Error(`Atlas ${name} not found`);
@@ -23,7 +25,7 @@ export class SpriteSheet {
 		if (!image) throw new Error(`Image ${name} not found`);
 		if (!image.loaded) throw new Error(`Image ${name} not loaded`);
 		const atlasData = atlas.nativeElement;
-		const frames = atlasData.frames;
+		const frames = Object.values(atlasData.frames).slice(frameStartIndex, frameEndIndex);
 		for (const key in frames) {
 			const frameContent = frames[key];
 			const frame = frameContent.frame;
