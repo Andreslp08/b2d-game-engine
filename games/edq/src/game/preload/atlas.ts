@@ -36,4 +36,9 @@ export const ATLAS_ASSETS:  AssetToPreload<any>[] = [
 		name: "atlas:player-jump-no-arm",
 		path: "/assets/atlas/player-jump-no-arm.json",
 	},
+	{
+		type: GameAssetsTypes.Atlas,
+		name: "atlas:spines-bug",
+		path: "/assets/atlas/spines-bug.json",
+	},
 ];

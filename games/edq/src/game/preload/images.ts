@@ -72,4 +72,9 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
         name: "spritesheet:block1",
         path: "/assets/textures/block1.png",
     },
+    {
+        type: GameAssetsTypes.Image,
+        name: "spritesheet:spines-bug",
+        path: "/assets/textures/spines-bug.png",
+    },
 ];
