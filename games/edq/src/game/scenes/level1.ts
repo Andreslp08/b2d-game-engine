@@ -14,13 +14,14 @@ import { createWeapon } from "../prefabs/weapon";
 import { WeaponController, WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
-import { DebugMode } from "engine/debug/debug";
+import { DebugMode, DebugTypes } from "engine/debug/debug";
 import {
 	BackgroundCameras,
 	UICameras,
 	WorldCameras,
 } from "engine/graphics/cameras/camera-managers";
 import { Collider } from "engine/physics/components/collider";
+import { createSpinesBug } from "../prefabs/spines-enemy";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -31,7 +32,7 @@ export class Level1 extends GameScene {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
-		// DebugMode.check("colliders");
+		DebugMode.check(DebugTypes.COLLIDERS);
 		this.loadBackground();
 		this.loadWorld();
 		// this.loadForeground();
@@ -82,7 +83,7 @@ export class Level1 extends GameScene {
 			this.addEntity(box);
 		}
 
-		const playerId = this.addEntity(createPlayer(new Vector2(0, -2)));
+		const playerId = this.addEntity(createPlayer(new Vector2(0, -4)));
 		this.player = this.getEntityById<GameObject>(playerId);
 		// setTimeout(() => {
 		// 	this.player.transform.position = new Vector2(0, -199);
@@ -93,8 +94,11 @@ export class Level1 extends GameScene {
 		weapon.setZindex(-1);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
-		const soldier = createSoldier(new Vector2(3, -3));
-		this.addEntity(soldier);
+		// const soldier = createSoldier(new Vector2(3, -3));
+		// this.addEntity(soldier);
+
+		const spinesBug = createSpinesBug(new Vector2(-5, -3));
+		this.addEntity(spinesBug);
 
 		// // // TEST DE RENDIMIENTO
 		// const go = Array.from({ length: 10000 }, (_, index) => {
