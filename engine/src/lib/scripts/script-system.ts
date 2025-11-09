@@ -29,11 +29,11 @@ export class ScriptSystem extends System {
 					this.startedScripts.add(script);
 				}
 
-				if (typeof script.onUpdate === "function") {
+				if (typeof script.onUpdate === "function" && this.startedScripts.has(script)) {
 					script.onUpdate();
 				}
 
-				if (typeof script.onLateUpdate === "function") {
+				if (typeof script.onLateUpdate === "function" && this.startedScripts.has(script)) {
 					script.onLateUpdate();
 				}
 			}
@@ -51,7 +51,7 @@ export class ScriptSystem extends System {
 			const scripts = entity.getComponents(ScriptComponent);
 
 			for (const script of scripts) {
-				if (typeof script.onFixedUpdate === "function") {
+				if (typeof script.onFixedUpdate === "function" && this.startedScripts.has(script)) {
 					script.onFixedUpdate();
 				}
 			}
