@@ -11,8 +11,7 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "../health-component";
 import { Collider } from "engine/physics/components/collider";
-import  { CollisionDirection } from "engine/physics/enum/collision-direction";
-import { ShieldComponent } from "../shield-component";
+import { CollisionDirection } from "engine/physics/enum/collision-direction";
 import { PlayerLifeController } from "../player-life-controller";
 
 export class SpinesBugController extends ScriptComponent {
@@ -24,11 +23,16 @@ export class SpinesBugController extends ScriptComponent {
 	patrolDetectionRadius = 1.2;
 	waiting = true;
 	waitingStartTime = 0;
+
+	damageShaderDuration = 0.3;
+	damageShaderTime = 0;
+	shouldEnableDamageShader = false;
+
 	private idleSpriteSheet: SpriteSheet;
 	private moveSpriteSheet: SpriteSheet;
 	private spinesVisibleSS: SpriteSheet;
 	private spinesHiddenSS: SpriteSheet;
-	private ANIMATION_SPEED = 0.1;
+	private readonly ANIMATION_SPEED = 0.1;
 
 	onStart(): void {
 		const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
@@ -66,10 +70,11 @@ export class SpinesBugController extends ScriptComponent {
 		this.endPatrolPosition = this.entity
 			.getComponent(Transform)
 			.position.clone()
-			.add(new Vector2(3, 0));
+			.add(new Vector2(6, 0));
 	}
 	onUpdate(): void {
 		this.updateSpriteAnimations();
+		this.damageShader();
 	}
 
 	onFixedUpdate(): void {
@@ -103,8 +108,7 @@ export class SpinesBugController extends ScriptComponent {
 				this.spriteState = "MOVE";
 				body.addForce(new Vector2(direction.x * 5000, 0));
 				if (Math.abs(direction.x) < 0.1) {
-					this.patrolPoint =
-						this.patrolPoint === "START" ? "END" : "START";
+					this.patrolPoint = this.patrolPoint === "START" ? "END" : "START";
 					this.waiting = true;
 					this.waitingStartTime = Time.time;
 				}
@@ -137,26 +141,48 @@ export class SpinesBugController extends ScriptComponent {
 		}
 	}
 
-   handleDamage(entity: Entity): void {
-    
-    const healthC = this.entity.getComponent(HealthComponent);
-    if(!healthC) return;
-    const health = healthC.getHealth();
+	damageShader() {
+		const gameObject = this.entity as GameObject;
+		if (!gameObject) return;
+		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
+		if (!spriteAnimation) return;
+		const damageFilter = "sepia(1) hue-rotate(-50deg) saturate(6) brightness(1.1)";
 
-    if (health <= 0) {
-      this.entity.destroy()
-    }
-   }
+		if (this.shouldEnableDamageShader) {
+			const delta = Time.time - this.damageShaderTime;
+			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter(damageFilter));
+			
+			if (delta > this.damageShaderDuration) {
+				this.shouldEnableDamageShader = false;
+				this.damageShaderTime = Time.time;
+			}
+		} else {
+			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter("none"));
+		}
+	}
+
+	handleDamage(entity: Entity): void {
+		const healthC = this.entity.getComponent(HealthComponent);
+		if (!healthC) return;
+		const health = healthC.getHealth();
+
+		if (health <= 0) {
+			this.entity.destroy();
+		}
+	}
 
 	onCollisionEnter(entity: Entity): void {
-        this.handleDamage(entity);
+		this.handleDamage(entity);
+		if (entity.hasTag("bullet")) {
+			this.shouldEnableDamageShader = true;
+			this.damageShaderTime = Time.time;
+		}
 		if (entity.hasTag("player")) {
-            console.log('collision with enemy')
-            const playerLife = entity.getComponent(PlayerLifeController);
+			const playerLife = entity.getComponent(PlayerLifeController);
 			if (playerLife) {
 				playerLife.setDamage(50);
-                const collider = this.entity.getComponent(Collider);
-                const colDirection = collider.collisionDirection
+				const collider = this.entity.getComponent(Collider);
+				const colDirection = collider.collisionDirection;
 				const playerBody = entity.getComponent(DynamicBody);
 				const enemyPos = this.entity.getComponent(Transform).position;
 				const playerPos = entity.getComponent(Transform).position;
@@ -164,20 +190,21 @@ export class SpinesBugController extends ScriptComponent {
 				// vector del enemigo al jugador
 				const knockDir = playerPos.clone().substract(enemyPos).normalize();
 
+				if (
+					colDirection.x === CollisionDirection.RIGHT ||
+					colDirection.x === CollisionDirection.LEFT
+				) {
+					playerBody.addForce(new Vector2(knockDir.x * 120000, 0));
+				}
 
-                if(colDirection.x === CollisionDirection.RIGHT || colDirection.x === CollisionDirection.LEFT){
-                    playerBody.addForce( new Vector2(knockDir.x * 120000, 0));
-                }
-
-                if(colDirection.y === CollisionDirection.TOP){
-                    playerBody.addForce( new Vector2(0, -100000));
-                }
-
+				if (colDirection.y === CollisionDirection.TOP) {
+					playerBody.addForce(new Vector2(0, -100000));
+				}
 			}
 		}
 	}
 
-     onDestroy(): void {
-        console.log("render particle");
-    }
+	onDestroy(): void {
+		console.log("render particle");
+	}
 }

@@ -3,6 +3,8 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "./health-component";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Transform } from "engine/common/components/transform";
+import { PlayerLifeController } from "./player-life-controller";
+import { Time } from "engine/common/interfaces/time";
 
 export class FallDamage extends ScriptComponent {
 	private wasOnGround: boolean = false;
@@ -16,6 +18,7 @@ export class FallDamage extends ScriptComponent {
 		const gameObject = this.entity as GameObject;
 		if (!gameObject) return;
 		const healthComponent = gameObject.getComponent(HealthComponent);
+		const playerLife = gameObject.getComponent(PlayerLifeController);
 		const dynamicBody = gameObject.getComponent(DynamicBody);
 		if (!healthComponent || !dynamicBody) return;
 		const currentPosition = gameObject.transform.position;
@@ -25,6 +28,8 @@ export class FallDamage extends ScriptComponent {
 			if (fallDistance > 6) {
 				const damage = fallDistance * 2.5;
 				healthComponent.setHealth(healthComponent.getHealth() - damage);
+				playerLife.shouldEnableDamageShader = true;
+				playerLife.damageShaderStartTime = Time.time;
 			}
 		}
 		if (!isOnground && this.wasOnGround == true) {
