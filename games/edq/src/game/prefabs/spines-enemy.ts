@@ -34,6 +34,7 @@ export const createSpinesBug = (position: Vector2) => {
 	entity.addComponent(collider);
 	entity.addComponent(health);
 	entity.addTag("spines-bug");
+	entity.addTag("enemy");
 
 	body.gravity = 60;
 		body.mass = 140;
