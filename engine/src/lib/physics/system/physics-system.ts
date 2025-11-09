@@ -64,8 +64,6 @@ export class PhysicsSystem extends System {
 			for (const entity of entities) {
 				if (!this.isCollision(targetEntity, entity)) continue;
 				collided = true;
-				targetCollider.isColliding = true;
-				this.notifyCollision(targetEntity, entity);
 
 				const colliderA = targetCollider;
 				const colliderB = entity.getComponent(Collider);
@@ -77,6 +75,18 @@ export class PhysicsSystem extends System {
 				if (penetrationX !== 0) {
 					targetTransform.position.x -= stepX;
 					const normalX = penetrationX > 0 ? Vector2.RIGHT : Vector2.LEFT;
+
+					// Asignar direcciones a ambos colliders antes del evento
+					targetCollider.collisionDirection.x =
+						normalX.x > 0 ? CollisionDirection.RIGHT : CollisionDirection.LEFT;
+
+					if (colliderB) {
+						colliderB.collisionDirection.x =
+							normalX.x > 0 ? CollisionDirection.LEFT : CollisionDirection.RIGHT;
+					}
+
+					this.notifyCollision(targetEntity, entity);
+
 					if (
 						(penetrationX > 0 && targetDynamicBody.velocity.x > 0) ||
 						(penetrationX < 0 && targetDynamicBody.velocity.x < 0)
@@ -100,8 +110,6 @@ export class PhysicsSystem extends System {
 			for (const entity of entities) {
 				if (!this.isCollision(targetEntity, entity)) continue;
 				collided = true;
-				targetCollider.isColliding = true;
-				this.notifyCollision(targetEntity, entity);
 
 				const colliderA = targetCollider;
 				const colliderB = entity.getComponent(Collider);
@@ -113,6 +121,18 @@ export class PhysicsSystem extends System {
 				if (penetrationY !== 0) {
 					targetTransform.position.y -= stepY;
 					const normalY = penetrationY > 0 ? Vector2.DOWN : Vector2.UP;
+
+					// Asignar direcciones a ambos colliders antes del evento
+					targetCollider.collisionDirection.y =
+						normalY.y > 0 ? CollisionDirection.BOTTOM : CollisionDirection.TOP;
+
+					if (colliderB) {
+						colliderB.collisionDirection.y =
+							normalY.y > 0 ? CollisionDirection.TOP : CollisionDirection.BOTTOM;
+					}
+
+					this.notifyCollision(targetEntity, entity);
+
 					if (
 						(penetrationY > 0 && targetDynamicBody.velocity.y > 0) ||
 						(penetrationY < 0 && targetDynamicBody.velocity.y < 0)
@@ -126,9 +146,6 @@ export class PhysicsSystem extends System {
 
 					if (penetrationY > 0) {
 						targetDynamicBody.isOnGround = true;
-						targetCollider.collisionDirection.y = CollisionDirection.BOTTOM;
-					} else {
-						targetCollider.collisionDirection.y = CollisionDirection.TOP;
 					}
 					break;
 				}
@@ -195,10 +212,15 @@ export class PhysicsSystem extends System {
 		const entities = this.getScene().getEntitiesByQuery({
 			all: [Transform, Collider],
 			any: [DynamicBody, KinematicBody, StaticBody],
-			none: [Culling],
+			// none: [Culling],
 		});
 		for (const entity of entities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
+			const collider = entity.getComponent(Collider);
+			if (collider) {
+				collider.collisionDirection.x = CollisionDirection.UNKNOWN;
+				collider.collisionDirection.y = CollisionDirection.UNKNOWN;
+			}
 			const dynamicBody = entity.getComponent(DynamicBody);
 			const kinematicBody = entity.getComponent(KinematicBody);
 			const staticBody = entity.getComponent(StaticBody);
