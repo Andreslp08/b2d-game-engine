@@ -88,14 +88,16 @@ export class RenderSystem extends System {
 		const scene = this.getScene();
 		if (!scene) return;
 
+		const isValidFilters = (filters: string) => filters && filters !== "none";
+
 		renderingContext.save();
 		const filters = scene.getRenderFilters();
-		if (filters) renderingContext.filter = filters;
+		if (isValidFilters(filters)) renderingContext.filter = filters;
 		// BACKGROUND
 		if (BackgroundCameras.currentCamera) {
 			renderingContext.save();
 			const filters = BackgroundCameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			BackgroundCameras.currentCamera.render(renderingContext);
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Background);
 			this.fadeCameraHandler(renderingContext, BackgroundCameras.currentCamera);
@@ -105,7 +107,7 @@ export class RenderSystem extends System {
 		if (WorldCameras.currentCamera) {
 			renderingContext.save();
 			const filters = WorldCameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			WorldCameras.currentCamera.render(renderingContext);
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.World);
 			this.fadeCameraHandler(renderingContext, WorldCameras.currentCamera);
@@ -115,7 +117,7 @@ export class RenderSystem extends System {
 		if (ForegroundCameras.currentCamera) {
 			renderingContext.save();
 			const filters = ForegroundCameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			ForegroundCameras.currentCamera.render(renderingContext);
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Foreground);
 			this.fadeCameraHandler(renderingContext, ForegroundCameras.currentCamera);
@@ -128,7 +130,7 @@ export class RenderSystem extends System {
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Effects);
 			this.fadeCameraHandler(renderingContext, EffectsCameras.currentCamera);
 			const filters = EffectsCameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			renderingContext.restore();
 		}
 
@@ -136,7 +138,7 @@ export class RenderSystem extends System {
 		if (UICameras.currentCamera) {
 			renderingContext.save();
 			const filters = UICameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			UICameras.currentCamera.render(renderingContext);
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.UI);
 			this.fadeCameraHandler(renderingContext, UICameras.currentCamera);
@@ -146,7 +148,7 @@ export class RenderSystem extends System {
 		if (DebugCameras.currentCamera) {
 			renderingContext.save();
 			const filters = DebugCameras.currentCamera.getRenderFilters();
-			if (filters) renderingContext.filter = filters;
+			if (isValidFilters(filters)) renderingContext.filter = filters;
 			DebugCameras.currentCamera.render(renderingContext);
 			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Debug);
 			this.fadeCameraHandler(renderingContext, DebugCameras.currentCamera);

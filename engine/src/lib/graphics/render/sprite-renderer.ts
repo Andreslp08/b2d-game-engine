@@ -30,7 +30,8 @@ export class SpriteRenderer extends Renderer {
 		renderingContext.shadowOffsetX = shadowOffsetX;
 		renderingContext.shadowOffsetY = shadowOffsetY;
 		renderingContext.shadowBlur = shadowBlur;
-		renderingContext.filter = filter;
+		if(filter && filter !== "none") renderingContext.filter = filter;
+	
 		this.renderWorldTransform(renderingContext, sprite);
 		if (image && image.loaded) {
 			this.renderImage(renderingContext, sprite);
