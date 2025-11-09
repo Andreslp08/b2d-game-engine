@@ -141,6 +141,10 @@ export class Entity {
 		return this.scene;
 	}
 
+	destroy() {
+		if (this.scene) this.scene.destroyEntity(this);
+	}
+
 	static isBeingCulling(entity: Entity, targets: CullingTarget[]) {
 		const culling = entity.getComponent(Culling);
 		const cullingConfig = entity.getComponent(CullingConfigComponent);
