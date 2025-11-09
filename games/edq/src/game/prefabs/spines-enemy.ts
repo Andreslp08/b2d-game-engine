@@ -27,8 +27,9 @@ export const createSpinesBug = (position: Vector2) => {
 	const body = new DynamicBody();
 	const collider = new Collider(
 		new Vector2(0, 0),
-		size.clone().multiply(new Vector2(0.8, 0.9))
+		size.clone().multiply(new Vector2(0.7, 0.7))
 	);
+	collider.setOffsetPosition(new Vector2(0, 0.15));
 	const health = new HealthComponent(50, 50, true);
 	entity.addComponent(body);
 	entity.addComponent(collider);
