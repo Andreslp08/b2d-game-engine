@@ -13,7 +13,7 @@ import { SpinesBugController } from "../script-components/spines-bug/spines-bug-
 export const createSpinesBug = (position: Vector2) => {
 	const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
 	const idleAtlas = AssetsManager.getAtlasByName("atlas:spines-bug");
-	const idle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage,0, 1);
+	const idle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage, 0, 1);
 
 	const size = new Vector2(1.5, 1.5);
 	const entity = new GameObject({
@@ -25,10 +25,7 @@ export const createSpinesBug = (position: Vector2) => {
 	const controller = new SpinesBugController();
 	entity.addComponent(controller);
 	const body = new DynamicBody();
-	const collider = new Collider(
-		new Vector2(0, 0),
-		size.clone().multiply(new Vector2(0.7, 0.7))
-	);
+	const collider = new Collider(new Vector2(0, 0), size.clone().multiply(new Vector2(0.7, 0.7)));
 	collider.setOffsetPosition(new Vector2(0, 0.15));
 	const health = new HealthComponent(50, 50, true);
 	entity.addComponent(body);
@@ -38,10 +35,10 @@ export const createSpinesBug = (position: Vector2) => {
 	entity.addTag("enemy");
 
 	body.gravity = 60;
-		body.mass = 140;
-		body.friction = 1800;
-		body.dragScale = 109;
-		body.bounciness = new Vector2(0, 0);
+	body.mass = 140;
+	body.friction = 1800;
+	body.dragScale = 109;
+	body.bounciness = new Vector2(0, 0);
 
 	return entity;
 };
