@@ -23,6 +23,8 @@ import { CullingTarget } from "../../performance/enum/culling-type";
 import { Culling } from "../../performance/culling";
 import { DrawDebugLine } from "../../debug/components/draw-line";
 import { DebugShapesRenderer } from "./debug-shapes-renderer";
+import { ParticleEmitter } from "../../particle-system/component/particle-emitter";
+import { ParticleRenderer } from "./particle-renderer";
 
 export class RenderSystem extends System {
 	constructor(scene: Scene) {
@@ -51,13 +53,14 @@ export class RenderSystem extends System {
 	renderLayerEntities = (
 		renderingContext: CanvasRenderingContext2D,
 		entities: Entity[],
-		layer: RenderLayerTypes
+		layer: RenderLayerTypes,
 	) => {
 		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
 		for (const entity of worldEntities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.RENDER])) continue;
 			const spriteComponents = entity.getComponents(Sprite);
 			const spriteAnimations = entity.getComponents(SpriteAnimation);
+			const particleEmitters = entity.getComponents(ParticleEmitter);
 			const allSprites = [...spriteComponents, ...spriteAnimations];
 			const colliderComponents = entity.getComponents(Collider);
 			const transformComponents = entity.getComponents(Transform);
@@ -66,6 +69,10 @@ export class RenderSystem extends System {
 				const render = new SpriteRenderer(entity);
 				render.render(renderingContext);
 			});
+			if (particleEmitters.length > 0) {
+				const render = new ParticleRenderer(entity);
+				render.render(renderingContext);
+			}
 			transformComponents.forEach((_) => {
 				const render = new TransformRenderer(entity);
 				render.render(renderingContext);
@@ -77,14 +84,16 @@ export class RenderSystem extends System {
 			debugLines.forEach((_) => {
 				const render = new DebugShapesRenderer(entity);
 				render.render(renderingContext);
-			})
+			});
 			const uiRenderer = new UIRenderer(entity);
 			uiRenderer.render(renderingContext);
 		}
 	};
 
 	render(renderingContext: CanvasRenderingContext2D): void {
-		const entities = this.getScene().getEntitiesByQuery({ all:[],  none: [Culling] }).sort((a, b) => a.getZindex() - b.getZindex());
+		const entities = this.getScene()
+			.getEntitiesByQuery({ all: [], none: [Culling] })
+			.sort((a, b) => a.getZindex() - b.getZindex());
 		const scene = this.getScene();
 		if (!scene) return;
 
