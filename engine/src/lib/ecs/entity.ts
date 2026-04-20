@@ -86,8 +86,11 @@ export class Entity {
 	}
 
 	deleteAllComponents(): void {
+		const componentClasses = this.getAllComponents().map(
+			(component) => component.constructor as ComponentClass<Component>
+		);
 		this.components = new Set();
-		if(this.scene) this.scene.unindexEntity(this);
+		if (this.scene) this.scene.unindexEntity(this, componentClasses);
 	}
 
 	deleteallComponentsByClass<T extends Component>(component: ComponentClass<T>): void {
