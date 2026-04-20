@@ -12,7 +12,8 @@ import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { Transform } from "engine/common/components/transform";
 import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
-import { GameSound } from "engine/common/assets-manager/game-sound";
+import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
+import { ParticleRenderType } from "engine/particle-system/enum/enum";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
@@ -41,7 +42,38 @@ export class BulletController extends ScriptComponent {
 
 	private destroyBullet() {
 		const scene = this.entity.getScene();
-		if (scene) scene.destroyEntity(this.entity);
+		if (!scene) return;
+		const flashEntity = new GameObject({
+			position: this.entity.getComponent(Transform).position.clone(),
+			rotation: this.entity.getComponent(Transform).rotation,
+			size: new Vector2(1, 1),
+		});
+		const emitter = new ParticleEmitter();
+		emitter.particleRenderType = ParticleRenderType.CIRCLE;
+		emitter.maxParticles = 5;
+		emitter.burstCount = emitter.maxParticles;
+		emitter.duration = 1;
+		emitter.loop = false;
+		emitter.playing = true;
+		emitter.localSpace = true;
+		emitter.destroyOnComplete = true;
+		emitter.positionOffset = new Vector2(0, 0);
+		emitter.lifetime = { min: 0.1, max: 1 };
+		emitter.speed = { min: 0.25, max: 0.8 };
+		emitter.angle = { min: 0, max: 360 };
+		emitter.gravity = new Vector2(0, 2);
+		emitter.size = {
+			startMin: new Vector2(0.08, 0.08),
+			startMax: new Vector2(0.2, 0.2),
+			endMin: new Vector2(0.01, 0.01),
+			endMax: new Vector2(0.04, 0.04),
+		};
+		emitter.opacity = { start: 1, end: 0 };
+		emitter.startColors = ["#fff2a8"];
+		emitter.endColors = ["#ff3b1f"];
+		flashEntity.addComponent(emitter);
+		scene.addEntity(flashEntity);
+		scene.destroyEntity(this.entity);
 		this.shouldDestroy = true;
 	}
 	onCollisionEnter(entity: Entity): void {
