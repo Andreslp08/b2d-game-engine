@@ -68,7 +68,7 @@ export class BulletController extends ScriptComponent {
 			endMin: new Vector2(0.01, 0.01),
 			endMax: new Vector2(0.04, 0.04),
 		};
-		emitter.opacity = { start: 1, end: 0 };
+		emitter.opacity = { start: 1, end: 1 };
 		emitter.startColors = ["#fff2a8"];
 		emitter.endColors = ["#ff3b1f"];
 		flashEntity.addComponent(emitter);
