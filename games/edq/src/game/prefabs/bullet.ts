@@ -14,33 +14,23 @@ import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
+import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
-	private shootStartTime = 0;
-	private shouldDestroy = false;
-	private collisionStartTime = 0;
+	private startPosition = new Vector2(0,0);
 	private collisionDetected = false;
-	private weapon: GameObject;
 
-	setShooted(shooted: boolean) {
-		this.shooted = shooted;
-	}
 
-	isShooted() {
-		return this.shooted;
-	}
-
-	setWeapon(weapon: GameObject) {
-		this.weapon = weapon;
-	}
 	onStart(): void {
 		const shootSound = AssetsManager.getSoundByName("sound:desert-eagle");
 		shootSound.volume(1);
 		shootSound.play("shot");
+		this.startPosition = this.entity.getComponent(Transform).position.clone();
+		this.shooted = true;
 	}
 
-	private destroyBullet() {
+	private emitFlashParticle(){
 		const scene = this.entity.getScene();
 		if (!scene) return;
 		const flashEntity = new GameObject({
@@ -50,7 +40,7 @@ export class BulletController extends ScriptComponent {
 		});
 		const emitter = new ParticleEmitter();
 		emitter.particleRenderType = ParticleRenderType.CIRCLE;
-		emitter.maxParticles = 5;
+		emitter.maxParticles = 10;
 		emitter.burstCount = emitter.maxParticles;
 		emitter.duration = 1;
 		emitter.loop = false;
@@ -63,22 +53,28 @@ export class BulletController extends ScriptComponent {
 		emitter.angle = { min: 0, max: 360 };
 		emitter.gravity = new Vector2(0, 2);
 		emitter.size = {
-			startMin: new Vector2(0.08, 0.08),
-			startMax: new Vector2(0.2, 0.2),
-			endMin: new Vector2(0.01, 0.01),
-			endMax: new Vector2(0.04, 0.04),
+			startMin: new Vector2(0, 0),
+			startMax: new Vector2(0.07, 0.07),
+			endMin: new Vector2(0.005, 0.005),
+			endMax: new Vector2(0.01, 0.01),
 		};
 		emitter.opacity = { start: 1, end: 1 };
 		emitter.startColors = ["#fff2a8"];
 		emitter.endColors = ["#ff3b1f"];
 		flashEntity.addComponent(emitter);
 		scene.addEntity(flashEntity);
+	
+	}
+
+	private destroyBullet() {
+		const scene = this.entity.getScene();
+		if (!scene) return;
 		scene.destroyEntity(this.entity);
-		this.shouldDestroy = true;
 	}
 	onCollisionEnter(entity: Entity): void {
 		if(this.collisionDetected) return
-		this.collisionStartTime = Time.time;
+		this.emitFlashParticle();
+		this.destroyBullet()
 		this.collisionDetected = true;
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		const healthComponent = entity.getComponent(HealthComponent);
@@ -104,19 +100,10 @@ export class BulletController extends ScriptComponent {
 		const body = bullet.getComponent(KinematicBody);
 		if (!transform || !body) return;
 		transform.position = body.move(transform.position, Time.fixedDeltaTime);
-
-		if (this.shouldDestroy) {
+		const distance = Vector2.distance(this.startPosition, transform.position);
+		const MAX_DISTANCE = VIEWPORT_WIDTH_IN_METERS;
+		if (distance > MAX_DISTANCE) {
 			this.destroyBullet();
-		}
-
-		if (this.shooted) {
-			this.shootStartTime += Time.fixedDeltaTime;
-		}
-		if (this.collisionDetected) {
-			this.collisionStartTime += Time.fixedDeltaTime;
-		}
-		if (this.collisionStartTime > 1.8 || this.shootStartTime > 5) {
-			this.shouldDestroy = true;
 		}
 	}
 }
