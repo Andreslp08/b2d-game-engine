@@ -83,8 +83,6 @@ shot() {
 	const bullet = createBullet(spawnPosition);
 	bullet.setZindex(0)
 	bullet.getComponent(Transform).rotation = directionX == 1? angle: angle - 180;
-	const bulletController = bullet.getComponent(BulletController);
-	bulletController.setWeapon(this.entity as GameObject);
 	const kinematic = bullet.getComponent(KinematicBody)
 	const bulletSpeed = 20;
 	kinematic.velocity = aimDir.multiply(new Vector2(directionX * bulletSpeed, bulletSpeed));
@@ -102,7 +100,6 @@ shot() {
 
 	const sprite = bullet.getComponent(Sprite);
 	if (sprite) sprite.setDirection({ x: directionX, y: 1 });
-	bulletController.setShooted(true);
 }
 
 	onLateUpdate(): void {
