@@ -43,15 +43,26 @@ export class CullingSystem extends System {
 	): boolean => {
 		const cameraPosition = this.getEffectiveCameraPosition(entity);
 		if (!cameraPosition) return false;
-		const xDistance = Vector2.distance(
-			new Vector2(cameraPosition.x, 0),
-			new Vector2(entity.getComponent(Transform).position.x, 0)
+		const transform = entity.getComponent(Transform);
+		if (!transform) return false;
+
+		const halfWidth = transform.size.x / 2;
+		const halfHeight = transform.size.y / 2;
+		const entityLeft = transform.position.x - halfWidth;
+		const entityRight = transform.position.x + halfWidth;
+		const entityTop = transform.position.y - halfHeight;
+		const entityBottom = transform.position.y + halfHeight;
+		const viewportLeft = cameraPosition.x - xRadius;
+		const viewportRight = cameraPosition.x + xRadius;
+		const viewportTop = cameraPosition.y - yRadius;
+		const viewportBottom = cameraPosition.y + yRadius;
+
+		return (
+			entityRight >= viewportLeft &&
+			entityLeft <= viewportRight &&
+			entityBottom >= viewportTop &&
+			entityTop <= viewportBottom
 		);
-		const yDistance = Vector2.distance(
-			new Vector2(0, cameraPosition.y),
-			new Vector2(0, entity.getComponent(Transform).position.y)
-		);
-		return xDistance <= xRadius && yDistance <= yRadius;
 	};
 
 	update(): void {

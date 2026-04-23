@@ -5,7 +5,7 @@ import { CullingTarget, CullingType } from "./enum/culling-type";
 
 export class CullingConfigComponent extends Component {
 	cullingType: CullingType = CullingType.FRUSTRUM;
-	distanceRadius: Vector2 = new Vector2(VIEWPORT_WIDTH_IN_METERS/1.8, VIEWPORT_HEIGHT_IN_METERS/1.8);
+	distanceRadius: Vector2 = new Vector2(VIEWPORT_WIDTH_IN_METERS, VIEWPORT_HEIGHT_IN_METERS);
 	frustrumStrict: boolean = false;
 	cullingTarget: CullingTarget = CullingTarget.ALL;
 }

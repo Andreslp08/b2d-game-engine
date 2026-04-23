@@ -19,6 +19,7 @@ import { Collider } from "engine/physics/components/collider";
 import { createSpinesBug } from "../prefabs/spines-enemy";
 import { Parallax } from "engine/graphics/components/parallax";
 import { RenderLayers } from "engine/graphics/render/render-layers";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -28,13 +29,15 @@ export class Level1 extends GameScene {
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
-		DebugMode.enabled = true;
+		// DebugMode.enabled = true;
 		DebugMode.check(DebugTypes.ALL);
+		Cameras.currentCamera.setFieldOfView(1)
+
 		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
 		this.loadBackground();
 		this.loadWorld();
-		this.loadForeground();
-		this.loadEffects();
+		// this.loadForeground();
+		// this.loadEffects();
 		// this.loadUI();
 		// this.loadDebug();
 	}
@@ -157,8 +160,23 @@ export class Level1 extends GameScene {
 			);
 			bg.addTag("background");
 			bg.renderLayer = RenderLayerTypes.Background;
-
 			this.addEntity(bg);
+			const bg2 = new GameObject(
+				{
+					position: new Vector2(x + i * w + i * 0.5, y+0.5),
+					rotation: 0,
+					size: new Vector2(w, h),
+				},
+				new Sprite({
+					image: AssetsManager.getImageByName("spritesheet:city"),
+					framePosition: new Vector2(0, 0),
+					frameSize: { w: 5000, h: 5000 },
+				})
+			);
+			bg2.addComponent(new Parallax(0.8));
+			bg2.addTag("background2");
+			bg2.renderLayer = RenderLayerTypes.Background;
+			this.addEntity(bg2);
 		}
 	}
 
