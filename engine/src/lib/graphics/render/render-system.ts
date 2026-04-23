@@ -5,16 +5,6 @@ import { Sprite } from "../sprites/components/sprite";
 import { SpriteRenderer } from "./sprite-renderer";
 import { TransformRenderer } from "./transform-renderer";
 import { ColliderRenderer } from "./collider-renderer";
-import {
-	BackgroundCameras,
-	DebugCameras,
-	EffectsCameras,
-	ForegroundCameras,
-	UICameras,
-	WorldCameras,
-} from "../cameras/camera-managers";
-import { RenderLayerTypes } from "../enum/render-layer-types.enum";
-import { Camera } from "../cameras/camera";
 import { Entity } from "../../ecs/entity";
 import { Collider } from "../../physics/components/collider";
 import { UIRenderer } from "./ui-renderer";
@@ -25,8 +15,14 @@ import { DrawDebugLine } from "../../debug/components/draw-line";
 import { DebugShapesRenderer } from "./debug-shapes-renderer";
 import { ParticleEmitter } from "../../particle-system/component/particle-emitter";
 import { ParticleRenderer } from "./particle-renderer";
+import { Parallax } from "../components/parallax";
+import { OrthographicCamera } from "../cameras/orthographic-camera";
+import { RenderLayer } from "./render-layer";
+import { RenderLayers } from "./render-layers";
 
 export class RenderSystem extends System {
+	private readonly warnedParallaxColliderEntities = new Set<string>();
+
 	constructor(scene: Scene) {
 		super(scene);
 		this.setName("RenderSystem");
@@ -34,30 +30,47 @@ export class RenderSystem extends System {
 	update(): void {}
 	fixedUpdate(): void {}
 
-	fadeCameraHandler(context: CanvasRenderingContext2D, camera: Camera) {
-		const fade = camera.isFade;
-		const alpha = camera.fadeAlpha;
-		const color = camera.fadeColor;
-		if (!fade) return;
+	fadeLayerHandler(context: CanvasRenderingContext2D, layer: RenderLayer) {
+		if (!layer.isFade) return;
 		context.save();
-		context.globalAlpha = alpha;
-		context.fillStyle = color;
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		context.globalAlpha = layer.fadeAlpha;
+		context.fillStyle = layer.fadeColor;
 		const sizeX = context.canvas.width;
 		const sizeY = context.canvas.height;
-		const position = camera.getPosition();
-		context.fillRect(position.x - sizeX / 2, position.y - sizeY / 2, sizeX, sizeY);
+		context.fillRect(0, 0, sizeX, sizeY);
 		context.globalAlpha = 1;
 		context.restore();
+	}
+
+	private applyEntityParallax(
+		renderingContext: CanvasRenderingContext2D,
+		entity: Entity,
+		layer: RenderLayer
+	): void {
+		const parallax = entity.getComponent(Parallax);
+		if (!parallax || !(layer.camera instanceof OrthographicCamera)) return;
+		if (entity.hasComponent(Collider) && !this.warnedParallaxColliderEntities.has(entity.id)) {
+			console.warn(
+				`Entity ${entity.id} has both Parallax and Collider. Parallax only changes render position; physics and collision keep using the real world position.`
+			);
+			this.warnedParallaxColliderEntities.add(entity.id);
+		}
+
+		const offset = layer.camera.getParallaxRenderOffset(layer.parallax, parallax.getFactor());
+		renderingContext.translate(offset.x, offset.y);
 	}
 
 	renderLayerEntities = (
 		renderingContext: CanvasRenderingContext2D,
 		entities: Entity[],
-		layer: RenderLayerTypes,
+		layer: RenderLayer
 	) => {
-		const worldEntities = entities.filter((entity) => entity.renderLayer === layer);
-		for (const entity of worldEntities) {
+		const filteredEntities = entities.filter((entity) => entity.renderLayer === layer.type);
+		for (const entity of filteredEntities) {
 			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.RENDER])) continue;
+			renderingContext.save();
+			this.applyEntityParallax(renderingContext, entity, layer);
 			const spriteComponents = entity.getComponents(Sprite);
 			const spriteAnimations = entity.getComponents(SpriteAnimation);
 			const particleEmitters = entity.getComponents(ParticleEmitter);
@@ -87,6 +100,7 @@ export class RenderSystem extends System {
 			});
 			const uiRenderer = new UIRenderer(entity);
 			uiRenderer.render(renderingContext);
+			renderingContext.restore();
 		}
 	};
 
@@ -102,67 +116,18 @@ export class RenderSystem extends System {
 		renderingContext.save();
 		const filters = scene.getRenderFilters();
 		if (isValidFilters(filters)) renderingContext.filter = filters;
-		// BACKGROUND
-		if (BackgroundCameras.currentCamera) {
+
+		for (const layer of RenderLayers.getOrderedLayers()) {
+			if (!layer.visible || !layer.camera) continue;
 			renderingContext.save();
-			const filters = BackgroundCameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
-			BackgroundCameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Background);
-			this.fadeCameraHandler(renderingContext, BackgroundCameras.currentCamera);
-			renderingContext.restore();
-		}
-		//WORLD
-		if (WorldCameras.currentCamera) {
-			renderingContext.save();
-			const filters = WorldCameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
-			WorldCameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.World);
-			this.fadeCameraHandler(renderingContext, WorldCameras.currentCamera);
-			renderingContext.restore();
-		}
-		//FOREGROUND
-		if (ForegroundCameras.currentCamera) {
-			renderingContext.save();
-			const filters = ForegroundCameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
-			ForegroundCameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Foreground);
-			this.fadeCameraHandler(renderingContext, ForegroundCameras.currentCamera);
-			renderingContext.restore();
-		}
-		// //EFFECTS
-		if (EffectsCameras.currentCamera) {
-			renderingContext.save();
-			EffectsCameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Effects);
-			this.fadeCameraHandler(renderingContext, EffectsCameras.currentCamera);
-			const filters = EffectsCameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
+			const layerFilters = layer.getRenderFilters();
+			if (isValidFilters(layerFilters)) renderingContext.filter = layerFilters;
+			layer.camera.applyTransform(renderingContext, layer.parallax);
+			this.renderLayerEntities(renderingContext, entities, layer);
+			this.fadeLayerHandler(renderingContext, layer);
 			renderingContext.restore();
 		}
 
-		//UI
-		if (UICameras.currentCamera) {
-			renderingContext.save();
-			const filters = UICameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
-			UICameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.UI);
-			this.fadeCameraHandler(renderingContext, UICameras.currentCamera);
-			renderingContext.restore();
-		}
-		//DEBUG
-		if (DebugCameras.currentCamera) {
-			renderingContext.save();
-			const filters = DebugCameras.currentCamera.getRenderFilters();
-			if (isValidFilters(filters)) renderingContext.filter = filters;
-			DebugCameras.currentCamera.render(renderingContext);
-			this.renderLayerEntities(renderingContext, entities, RenderLayerTypes.Debug);
-			this.fadeCameraHandler(renderingContext, DebugCameras.currentCamera);
-			renderingContext.restore();
-		}
 		renderingContext.restore();
 	}
 }

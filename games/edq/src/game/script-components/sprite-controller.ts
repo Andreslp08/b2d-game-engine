@@ -6,8 +6,8 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import Vector2 from "engine/math/vector2";
 import { MouseManager } from "engine/input/mouse-manager";
-import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import  { WorldCamera } from "engine/graphics/cameras/world-camera";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 import { AimingController } from "./aiming-controller";
 
 export class PlayerSpriteController extends ScriptComponent {
@@ -93,7 +93,7 @@ export class PlayerSpriteController extends ScriptComponent {
 
 		const mousePos = MouseManager.getPosition(); // ← posición en PANTALLA
 		const mouseWorldPos = (
-			WorldCameras.currentCamera as WorldCamera
+			Cameras.currentCamera as OrthographicCamera
 		).getWorldPositionFromScreenPosition(mousePos);
 		if (!mouseWorldPos) {
 			return;

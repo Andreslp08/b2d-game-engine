@@ -6,8 +6,8 @@ import { DrawDebugLine } from "engine/debug/components/draw-line";
 import { GameObject } from "engine/common/entities/game-object";
 import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
-import { WorldCamera } from "engine/graphics/cameras/world-camera";
-import { WorldCameras } from "engine/graphics/cameras/camera-managers";
+import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { DebugMode, DebugTypes } from "engine/debug/debug";
 
 export class AimingController extends ScriptComponent {
@@ -46,8 +46,8 @@ export class AimingController extends ScriptComponent {
             MouseManager.showCursor(false)
         }
 		const mousePos = MouseManager.getPosition(); // ← posición en PANTALLA
-		const mouseWorldPos = WorldCameras.currentCamera
-			? (WorldCameras.currentCamera as WorldCamera).getWorldPositionFromScreenPosition(
+		const mouseWorldPos = Cameras.currentCamera
+			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
 					mousePos
 			  )
 			: new Vector2(0, 0);
@@ -81,7 +81,7 @@ export class AimingController extends ScriptComponent {
 		this.debugAngleX.end = transform.position.clone().add(new Vector2(1, 0));
 		const mousePos = MouseManager.getPosition(); // ← posición en PANTALLA
 		const mouseWorldPos = (
-			WorldCameras.currentCamera as WorldCamera
+			Cameras.currentCamera as OrthographicCamera
 		).getWorldPositionFromScreenPosition(mousePos);
 		if (!mouseWorldPos) {
 			return;

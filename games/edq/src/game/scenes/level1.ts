@@ -15,13 +15,10 @@ import { WeaponController, WeaponHolder } from "../script-components/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode, DebugTypes } from "engine/debug/debug";
-import {
-	BackgroundCameras,
-	UICameras,
-	WorldCameras,
-} from "engine/graphics/cameras/camera-managers";
 import { Collider } from "engine/physics/components/collider";
 import { createSpinesBug } from "../prefabs/spines-enemy";
+import { Parallax } from "engine/graphics/components/parallax";
+import { RenderLayers } from "engine/graphics/render/render-layers";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -31,15 +28,15 @@ export class Level1 extends GameScene {
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
-		// DebugMode.enabled = true;
-		DebugMode.check(DebugTypes.COLLIDERS);
+		DebugMode.enabled = true;
+		DebugMode.check(DebugTypes.ALL);
+		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
 		this.loadBackground();
 		this.loadWorld();
-		// this.loadForeground();
-		// this.loadEffects();
+		this.loadForeground();
+		this.loadEffects();
 		// this.loadUI();
 		// this.loadDebug();
-		WorldCameras.currentCamera.setFieldOfView(1);
 	}
 
 	loadEffects() {
@@ -48,6 +45,7 @@ export class Level1 extends GameScene {
 			rotation: 0,
 			size: new Vector2(4, 4),
 		});
+		effect.addComponent(new Parallax(0.8));
 		effect.renderLayer = RenderLayerTypes.Effects;
 
 		this.addEntity(effect);
@@ -113,7 +111,17 @@ export class Level1 extends GameScene {
 		// go.forEach((g) => this.addEntity(g));
 	}
 
-	loadForeground() {}
+	loadForeground() {
+		const parallaxObject = new GameObject({
+			position: new Vector2(0, 0),
+			rotation: 0,
+			size: new Vector2(2, 2),
+		}, null)
+		parallaxObject.renderLayer = RenderLayerTypes.Foreground;
+		parallaxObject.addComponent(new Parallax(0.5));
+		parallaxObject.addComponent(new Collider(new Vector2(0, 0), new Vector2(2, 2)));
+		this.addEntity(parallaxObject);
+	}
 
 	loadDebug() {
 		const d = new GameObject({
@@ -155,8 +163,12 @@ export class Level1 extends GameScene {
 	}
 
 	testMouse() {
-		const mouseX = MouseManager.getWorldPosition(this).x;
-		const mouseY = MouseManager.getWorldPosition(this).y;
+		const mouseWorldPosition = this.camera.getWorldPositionFromScreenPosition(
+			MouseManager.getPosition()
+		);
+		if (!mouseWorldPosition) return;
+		const mouseX = mouseWorldPosition.x;
+		const mouseY = mouseWorldPosition.y;
 
 		// console.log('mouse ',MouseManager.getPosition())
 		// console.log("mouse world", MouseManager.getWorldPosition(this));

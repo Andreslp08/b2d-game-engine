@@ -5,7 +5,7 @@ import { BasicMovement } from "./basic-movement";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
-import { WorldCameras } from "engine/graphics/cameras/camera-managers";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { MathUtil } from "engine/math/math-util";
 import { GameObject } from "engine/common/entities/game-object";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
@@ -31,7 +31,7 @@ export class PlayerController extends ScriptComponent {
 		if (!this.enabled) {
 			return;
 		}
-		const camera = WorldCameras.currentCamera;
+		const camera = Cameras.currentCamera;
 		const targetGameObject = this.entity as GameObject;
 		const cameraFOV = camera.getFieldOfView();
 

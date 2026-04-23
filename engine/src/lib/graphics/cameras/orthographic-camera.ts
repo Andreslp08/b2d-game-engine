@@ -5,17 +5,21 @@ import {
 } from "../../common/constants";
 import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
-import { RenderLayerTypes } from "../enum/render-layer-types.enum";
 import { Scene } from "../../scenes/scene";
 import { Screen } from "../screen/screen";
 import { Camera } from "./camera";
 
-export class WorldCamera extends Camera {
-	parallax: Vector2 = new Vector2(1, 1);
+export type OrthographicCameraSpace = "world" | "screen";
+
+export class OrthographicCamera extends Camera {
 	private renderingContext: CanvasRenderingContext2D = null;
-	constructor(initialPosition: Vector2, scene: Scene) {
+
+	constructor(
+		initialPosition: Vector2,
+		scene: Scene,
+		private readonly space: OrthographicCameraSpace = "world"
+	) {
 		super(initialPosition, scene);
-		this.renderLayer = RenderLayerTypes.World;
 		this.position = initialPosition;
 		this.setFieldOfView(1);
 		this.scene = scene;
@@ -27,13 +31,11 @@ export class WorldCamera extends Camera {
 		const canvasWidth = canvas.width;
 		const canvasHeight = canvas.height;
 
-		// Escala basada en aspect ratio y tamaño lógico del viewport
 		const scaleX = canvasWidth / (VIEWPORT_WIDTH_IN_METERS * PPM);
 		const scaleY = canvasHeight / (VIEWPORT_HEIGHT_IN_METERS * PPM);
 		const uniformScale = Math.min(scaleX, scaleY);
 		const baseScale = PPM * uniformScale;
 
-		// Aplica zoom personalizado de cámara
 		const totalScaleX = baseScale * this._fieldOfView;
 		const totalScaleY = baseScale * this._fieldOfView;
 
@@ -45,59 +47,63 @@ export class WorldCamera extends Camera {
 		const canvasWidth = canvas.width;
 		const canvasHeight = canvas.height;
 		const totalScale = this.calculateScale(renderingContext);
-		// Calcular tamaño real del área renderizada con zoom aplicado
 		const renderWidth = VIEWPORT_WIDTH_IN_METERS * totalScale.x;
 		const renderHeight = VIEWPORT_HEIGHT_IN_METERS * totalScale.y;
-		// Compensar con offset para centrar (barras negras si es necesario)
 		const offsetX = (canvasWidth - renderWidth) / 2;
 		const offsetY = (canvasHeight - renderHeight) / 2;
 
 		return new Vector2(offsetX, offsetY);
 	}
 
-	protected calculateOriginalCameraPosition() {
-		return this.position;
-	}
-
-	protected calculateCameraPosition() {
-		const originalCameraPosition = this.calculateOriginalCameraPosition();
-		const cameraX = originalCameraPosition.x * this.parallax.x - VIEWPORT_WIDTH_IN_METERS / 2;
-		const cameraY = originalCameraPosition.y * this.parallax.y - VIEWPORT_HEIGHT_IN_METERS / 2;
+	protected calculateCameraPositionWithParallax(parallax: Vector2) {
+		const cameraX = this.position.x * parallax.x - VIEWPORT_WIDTH_IN_METERS / 2;
+		const cameraY = this.position.y * parallax.y - VIEWPORT_HEIGHT_IN_METERS / 2;
 		return new Vector2(cameraX, cameraY);
 	}
 
-	render(renderingContext: CanvasRenderingContext2D): void {
+	getParallaxRenderOffset(layerParallax: Vector2, componentParallax: Vector2): Vector2 {
+		const layerCameraPosition = this.calculateCameraPositionWithParallax(layerParallax);
+		const componentCameraPosition = this.calculateCameraPositionWithParallax(componentParallax);
+		return Vector2.substract(layerCameraPosition, componentCameraPosition);
+	}
+
+	applyTransform(renderingContext: CanvasRenderingContext2D, parallax = new Vector2(1, 1)): void {
 		this.renderingContext = renderingContext;
+
+		if (this.space === "screen") {
+			this.applyScreenTransform(renderingContext);
+			return;
+		}
+
 		const offset = this.calculateOffset(renderingContext);
 		const totalScale = this.calculateScale(renderingContext);
-		const cameraPosition = this.calculateCameraPosition();
+		const cameraPosition = this.calculateCameraPositionWithParallax(parallax);
 
-		// 🔁 1. Offset para centrar en pantalla con barras negras
 		renderingContext.translate(offset.x, offset.y);
-
-		// 🔁 2. Escalado lógico
 		renderingContext.scale(totalScale.x, totalScale.y);
-
-		// 🔁 3. CENTRAR ORIGEN EN MEDIO DE LA VISTA LÓGICA
 		renderingContext.translate(VIEWPORT_WIDTH_IN_METERS / 2, VIEWPORT_HEIGHT_IN_METERS / 2);
-
-		// 🔁 4. Aplicar rotación
 		renderingContext.rotate(MathUtil.degToRad(this.getRotation()));
-
-		// 🔁 5. Volver a alejarse del centro
 		renderingContext.translate(-VIEWPORT_WIDTH_IN_METERS / 2, -VIEWPORT_HEIGHT_IN_METERS / 2);
-
-		// 🔁 6. Mover cámara como si no se hubiera rotado
 		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
 	}
 
-	getWorldPositionFromScreenPosition(screenPosition: Vector2) {
+	private applyScreenTransform(renderingContext: CanvasRenderingContext2D): void {
+		const screen = Screen.getInstance();
+		const baseRes = screen.baseResolution;
+		const canvasRes = screen.getResolution();
+		const scaleX = canvasRes.x / baseRes.x;
+		const scaleY = canvasRes.y / baseRes.y;
+		const uniformScale = Math.min(scaleX, scaleY);
+
+		renderingContext.scale(uniformScale, uniformScale);
+	}
+
+	getWorldPositionFromScreenPosition(screenPosition: Vector2, parallax = new Vector2(1, 1)) {
 		if (!this.renderingContext) return null;
 
 		const offset = this.calculateOffset(this.renderingContext);
 		const totalScale = this.calculateScale(this.renderingContext);
-		const cameraPosition = this.calculateCameraPosition();
-
+		const cameraPosition = this.calculateCameraPositionWithParallax(parallax);
 
 		const dpr = window.devicePixelRatio || 1;
 		const screenX = screenPosition.x * dpr - offset.x;
@@ -109,9 +115,12 @@ export class WorldCamera extends Camera {
 		return new Vector2(worldX, worldY);
 	}
 
-	getScreenPositionFromWorldPosition(worldPosition: Vector2): Vector2 {
+	getScreenPositionFromWorldPosition(
+		worldPosition: Vector2,
+		parallax = new Vector2(1, 1)
+	): Vector2 {
 		if (!this.renderingContext) return new Vector2(0, 0);
-		// MISMA LOGICA DE UI CAMERA PARA ESCALAR
+
 		const screen = Screen.getInstance();
 		const baseRes = screen.baseResolution;
 		const canvasRes = screen.getResolution();
@@ -119,10 +128,9 @@ export class WorldCamera extends Camera {
 		const scaleY = canvasRes.y / baseRes.y;
 		const uniformUIScale = Math.min(scaleX, scaleY);
 
-		// LÓGICA DE WORLD CAMERA
-		const scale = this.calculateScale(this.renderingContext); // PPM * zoom * min(scaleX, scaleY)
-		const offset = this.calculateOffset(this.renderingContext); // barras negras
-		const camera = this.calculateCameraPosition(); // esquina sup izquierda
+		const scale = this.calculateScale(this.renderingContext);
+		const offset = this.calculateOffset(this.renderingContext);
+		const camera = this.calculateCameraPositionWithParallax(parallax);
 
 		return new Vector2(
 			(worldPosition.x / uniformUIScale - camera.x / uniformUIScale) * scale.x + offset.x,

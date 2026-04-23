@@ -1,17 +1,7 @@
-import { UICamera } from "../graphics/cameras/ui-camera";
-import { BackgroundCamera } from "../graphics/cameras/background-camera";
-import { ForegroundCamera } from "../graphics/cameras/foreground-camera";
-import { DebugCamera } from "../graphics/cameras/debug-camera";
-import { EffectCamera } from "../graphics/cameras/effect-camera";
-import { WorldCamera } from "../graphics/cameras/world-camera";
-import {
-	BackgroundCameras,
-	DebugCameras,
-	EffectsCameras,
-	ForegroundCameras,
-	UICameras,
-	WorldCameras,
-} from "../graphics/cameras/camera-managers";
+import { Cameras } from "../graphics/cameras/camera-manager";
+import { OrthographicCamera } from "../graphics/cameras/orthographic-camera";
+import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
+import { RenderLayers } from "../graphics/render/render-layers";
 import { SpriteAnimationSystem } from "../graphics/sprites/system/sprite-animation-system";
 import { PhysicsSystem } from "../physics/system/physics-system";
 import { ScriptSystem } from "../scripts/script-system";
@@ -46,30 +36,13 @@ export class Scene implements Updatable {
 		this._renderer = Array.from(this.systems).find(
 			(s) => s instanceof RenderSystem && s.getName() === "RenderSystem"
 		) as RenderSystem;
-		BackgroundCameras.removeAllCameras();
-		WorldCameras.removeAllCameras();
-		ForegroundCameras.removeAllCameras();
-		EffectsCameras.removeAllCameras();
-		UICameras.removeAllCameras();
-		DebugCameras.removeAllCameras();
-		const backgroundCamera = new BackgroundCamera(this);
-		BackgroundCameras.addCamera(backgroundCamera);
-		BackgroundCameras.setCurrentCamera(backgroundCamera);
-		const worldCamera = new WorldCamera(new Vector2(0, 0), this);
-		WorldCameras.addCamera(worldCamera);
-		WorldCameras.setCurrentCamera(worldCamera);
-		const foregroundCamera = new ForegroundCamera(this);
-		ForegroundCameras.addCamera(foregroundCamera);
-		ForegroundCameras.setCurrentCamera(foregroundCamera);
-		const effectCamera = new EffectCamera(this);
-		EffectsCameras.addCamera(effectCamera);
-		EffectsCameras.setCurrentCamera(effectCamera);
-		const uiCamera = new UICamera(this);
-		UICameras.addCamera(uiCamera);
-		UICameras.setCurrentCamera(uiCamera);
-		const debugCamera = new DebugCamera(this);
-		DebugCameras.addCamera(debugCamera);
-		DebugCameras.setCurrentCamera(debugCamera);
+		RenderLayers.reset();
+		Cameras.removeAllCameras();
+		const worldCamera = new OrthographicCamera(new Vector2(0, 0), this, "world");
+		Cameras.setCurrentCamera(worldCamera);
+
+		const uiCamera = new OrthographicCamera(new Vector2(0, 0), this, "screen");
+		Cameras.setCurrentScreenCamera(uiCamera);
 	}
 
 	update(): void {
@@ -300,35 +273,35 @@ getEntitiesByQuery({
 		return this.indexedEntitiesByComponents;
 	}
 
-	get camera(): WorldCamera {
-		return WorldCameras.currentCamera as WorldCamera;
+	get camera(): OrthographicCamera {
+		return Cameras.currentCamera as OrthographicCamera;
 	}
 
-	setCamera(camera: WorldCamera) {
+	setCamera(camera: OrthographicCamera) {
 		// if not has camera add an then set it
-		const hasCamera = WorldCameras.hasCamera(camera);
+		const hasCamera = Cameras.hasCamera(camera);
 		if (!hasCamera) {
-			WorldCameras.addCamera(camera);
-			WorldCameras.setCurrentCamera(camera);
+			Cameras.addCamera(camera);
+			Cameras.setCurrentCamera(camera);
 		} else {
-			WorldCameras.setCurrentCamera(camera);
+			Cameras.setCurrentCamera(camera);
 		}
 	}
 
 	getCurrentCamera() {
-		return WorldCameras.currentCamera;
+		return Cameras.currentCamera;
 	}
 
 	getCameras() {
-		return WorldCameras.cameras;
+		return Cameras.cameras;
 	}
 
-	removeCamera(camera: WorldCamera) {
-		WorldCameras.removeCamera(camera);
+	removeCamera(camera: OrthographicCamera) {
+		Cameras.removeCamera(camera);
 	}
 
 	removeAllCameras() {
-		WorldCameras.removeAllCameras();
+		Cameras.removeAllCameras();
 	}
 
 	setRenderFilters(filters: string) {

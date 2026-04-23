@@ -1,18 +1,10 @@
 import { Transform } from "../common/components/transform";
-import { VIEWPORT_WIDTH_IN_METERS } from "../common/constants";
 import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
-import { Camera } from "../graphics/cameras/camera";
-import {
-	BackgroundCameras,
-	DebugCameras,
-	EffectsCameras,
-	ForegroundCameras,
-	UICameras,
-	WorldCameras,
-} from "../graphics/cameras/camera-managers";
-import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
-import { MathUtil } from "../math/math-util";
+import { OrthographicCamera } from "../graphics/cameras/orthographic-camera";
+import { Parallax } from "../graphics/components/parallax";
+import { RenderLayer } from "../graphics/render/render-layer";
+import { RenderLayers } from "../graphics/render/render-layers";
 import Vector2 from "../math/vector2";
 import { Culling, CullingConfigComponent } from "./culling";
 import { CullingType } from "./enum/culling-type";
@@ -23,23 +15,24 @@ export class CullingSystem extends System {
 
 
 	}
-	getCamera(entity: Entity): Camera {
-		switch (entity.renderLayer) {
-			case RenderLayerTypes.Background:
-				return BackgroundCameras.currentCamera;
-			case RenderLayerTypes.World:
-				return WorldCameras.currentCamera;
-			case RenderLayerTypes.Foreground:
-				return ForegroundCameras.currentCamera;
-			case RenderLayerTypes.Effects:
-				return EffectsCameras.currentCamera;
-			case RenderLayerTypes.Debug:
-				return DebugCameras.currentCamera;
-			case RenderLayerTypes.UI:
-				return UICameras.currentCamera;
-			default:
-				return null;
+	getLayer(entity: Entity): RenderLayer {
+		return RenderLayers.getLayer(entity.renderLayer);
+	}
+
+	getEffectiveCameraPosition(entity: Entity): Vector2 {
+		const layer = this.getLayer(entity);
+		if (!layer?.camera) return null;
+
+		const cameraPosition = layer.camera.getPosition();
+		if (layer.camera instanceof OrthographicCamera && layer.cameraSpace === "world") {
+			const parallax = entity.getComponent(Parallax)?.getFactor() ?? layer.parallax;
+			return new Vector2(
+				cameraPosition.x * parallax.x,
+				cameraPosition.y * parallax.y
+			);
 		}
+
+		return cameraPosition;
 	}
 
 	IsInViewport = (
@@ -48,14 +41,14 @@ export class CullingSystem extends System {
 		yRadius: number,
 		strictFrustrum: boolean
 	): boolean => {
-		const currentCamera = this.getCamera(entity);
-		if (!currentCamera) return false;
+		const cameraPosition = this.getEffectiveCameraPosition(entity);
+		if (!cameraPosition) return false;
 		const xDistance = Vector2.distance(
-			new Vector2(currentCamera.getPosition().x, 0),
+			new Vector2(cameraPosition.x, 0),
 			new Vector2(entity.getComponent(Transform).position.x, 0)
 		);
 		const yDistance = Vector2.distance(
-			new Vector2(0, currentCamera.getPosition().y),
+			new Vector2(0, cameraPosition.y),
 			new Vector2(0, entity.getComponent(Transform).position.y)
 		);
 		return xDistance <= xRadius && yDistance <= yRadius;

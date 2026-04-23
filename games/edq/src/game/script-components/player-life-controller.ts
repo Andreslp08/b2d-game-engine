@@ -1,11 +1,6 @@
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "./health-component";
-import {
-	BackgroundCameras,
-	EffectsCameras,
-	ForegroundCameras,
-	WorldCameras,
-} from "engine/graphics/cameras/camera-managers";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { MathUtil } from "engine/math/math-util";
 import { Time } from "engine/common/interfaces/time";
 import { PlayerController } from "./player-controller";
@@ -35,18 +30,12 @@ export class PlayerLifeController extends ScriptComponent {
 		this.cameraShakeTimer = 0;
 	}
 
-	private changeAllCamerasFOV(fov: number) {
-		WorldCameras.currentCamera.setFieldOfView(fov);
-		BackgroundCameras.currentCamera.setFieldOfView(fov);
-		ForegroundCameras.currentCamera.setFieldOfView(fov);
-		EffectsCameras.currentCamera.setFieldOfView(fov);
+	private changeCameraFOV(fov: number) {
+		Cameras.currentCamera.setFieldOfView(fov);
 	}
 
-	private changeAllCamerasRotation(rotation: number) {
-		WorldCameras.currentCamera.setRotation(rotation);
-		BackgroundCameras.currentCamera.setRotation(rotation);
-		ForegroundCameras.currentCamera.setRotation(rotation);
-		EffectsCameras.currentCamera.setRotation(rotation);
+	private changeCameraRotation(rotation: number) {
+		Cameras.currentCamera.setRotation(rotation);
 	}
 
 	private damageShader() {
@@ -143,7 +132,7 @@ export class PlayerLifeController extends ScriptComponent {
 			const shake =
 				Math.sin((this.cameraShakeTimer * shakeSpeed * Math.PI) / 2) * shakeAmount;
 
-			this.changeAllCamerasRotation(shake);
+			this.changeCameraRotation(shake);
 			this.grayscaleValue = MathUtil.lerp(
 				this.grayscaleValue,
 				100,
@@ -162,7 +151,7 @@ export class PlayerLifeController extends ScriptComponent {
 			// FOV zoom suave
 			if (this.fov <= 3 && this.grayscaleValue >= 20) {
 				this.fov += 0.3 * Time.unscaledDeltaTime;
-				this.changeAllCamerasFOV(this.fov);
+				this.changeCameraFOV(this.fov);
 			}
 		}
 		this.handleDamageCoolDown();

@@ -1,8 +1,8 @@
 import  { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
-import { WorldCameras } from "engine/graphics/cameras/camera-managers";
-import  { WorldCamera } from "engine/graphics/cameras/world-camera";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import type { ITranform } from "engine/input/interfaces/transform.interface";
 import { MathUtil } from "engine/math/math-util";
@@ -50,7 +50,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 	}
 
 	render(context: CanvasRenderingContext2D): void {
-		const cameraFOV = WorldCameras.currentCamera.getFieldOfView();
+		const cameraFOV = Cameras.currentCamera.getFieldOfView();
 		const position = this.transform.position.multiplyBy(cameraFOV);
 		const size = this.transform.size;
 		if (!this.visible) return;
@@ -186,10 +186,10 @@ export class HealthComponent extends ScriptComponent {
 		this.healthUI.setHealth(this.health);
 		this.healthUI.setMaxHealth(this.maxHealth);
 		const gameObj = this.entity as GameObject;
-		const currentCamera = WorldCameras.currentCamera as WorldCamera;
+		const currentCamera = Cameras.currentCamera as OrthographicCamera;
 		if (currentCamera) {
 			const gameObj = this.entity as GameObject;
-			const currentCamera = WorldCameras.currentCamera as WorldCamera;
+			const currentCamera = Cameras.currentCamera as OrthographicCamera;
 
 			if (currentCamera) {
 				// Posición ideal para centrar la barra arriba del objeto
