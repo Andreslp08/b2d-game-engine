@@ -30,7 +30,7 @@ export class Level1 extends GameScene {
 		super("Delivery 1", GameSceneLevel.EASY);
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
-		DebugMode.check(DebugTypes.ALL);
+		DebugMode.setMode(DebugTypes.ALL);
 		Cameras.currentCamera.setFieldOfView(1);
 
 		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
