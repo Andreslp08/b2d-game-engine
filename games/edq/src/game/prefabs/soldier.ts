@@ -11,6 +11,7 @@ import { Damageable } from "../script-components/shared/damageable";
 import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
 import { ContactDamage } from "../script-components/shared/contact-damage";
 import { DeathParticleEffect } from "../script-components/shared/death-particle-effect";
+import { SoliderIA } from "../script-components/soldier/ia";
 
 export const createSoldier = (position: Vector2) => {
 	const idleImage = AssetsManager.getImageByName("spritesheet:soldier-idle");
@@ -37,6 +38,7 @@ export const createSoldier = (position: Vector2) => {
 	soldier.addComponent(dynamicbody);
 	soldier.addComponent(collider);
 	soldier.addComponent(health);
+	soldier.addComponent(new SoliderIA())
 	soldier.addTag("soldier");
 
 	return soldier;
