@@ -11,7 +11,7 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { createVerticalBounds } from "../prefabs/vertical-bounds";
 import { createWeapon } from "../prefabs/weapon";
-import { WeaponController, WeaponHolder } from "../script-components/weapon";
+import { WeaponController, WeaponHolder } from "../script-components/weapon/weapon";
 import { Engine } from "engine";
 import { createSoldier } from "../prefabs/soldier";
 import { DebugMode, DebugTypes } from "engine/debug/debug";
@@ -31,7 +31,7 @@ export class Level1 extends GameScene {
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
 		// DebugMode.enabled = true;
 		DebugMode.check(DebugTypes.ALL);
-		Cameras.currentCamera.setFieldOfView(1)
+		Cameras.currentCamera.setFieldOfView(1);
 
 		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
 		this.loadBackground();
@@ -58,19 +58,18 @@ export class Level1 extends GameScene {
 		const leftWallId = this.addEntity(
 			createVerticalBounds(
 				{ position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0 },
-				"left"
-			)
+				"left",
+			),
 		);
 		const leftWall = this.getEntityById<GameObject>(leftWallId);
 
 		const rightWallId = this.addEntity(
 			createVerticalBounds(
 				{ position: new Vector2(2000, 0), size: new Vector2(3, 1000), rotation: 0 },
-				"right"
-			)
+				"right",
+			),
 		);
 		const rightWall = this.getEntityById<GameObject>(rightWallId);
-
 
 		for (let i = 0; i < 50; i++) {
 			for (let j = 0; j < 5; j++) {
@@ -79,7 +78,7 @@ export class Level1 extends GameScene {
 		}
 
 		for (let i = 0; i < 200; i++) {
-			const box = createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1))
+			const box = createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1));
 			box.getComponent(Collider).ignoreZIndex = true;
 			this.addEntity(box);
 		}
@@ -95,8 +94,8 @@ export class Level1 extends GameScene {
 		weapon.setZindex(-1);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
-		// const soldier = createSoldier(new Vector2(3, -3));
-		// this.addEntity(soldier);
+		const soldier = createSoldier(new Vector2(3, -3));
+		this.addEntity(soldier);
 
 		const spinesBug = createSpinesBug(new Vector2(-5, -3));
 		this.addEntity(spinesBug);
@@ -115,11 +114,14 @@ export class Level1 extends GameScene {
 	}
 
 	loadForeground() {
-		const parallaxObject = new GameObject({
-			position: new Vector2(0, 0),
-			rotation: 0,
-			size: new Vector2(2, 2),
-		}, null)
+		const parallaxObject = new GameObject(
+			{
+				position: new Vector2(0, 0),
+				rotation: 0,
+				size: new Vector2(2, 2),
+			},
+			null,
+		);
 		parallaxObject.renderLayer = RenderLayerTypes.Foreground;
 		parallaxObject.addComponent(new Parallax(0.5));
 		parallaxObject.addComponent(new Collider(new Vector2(0, 0), new Vector2(2, 2)));
@@ -156,14 +158,14 @@ export class Level1 extends GameScene {
 					image: AssetsManager.getImageByName("spritesheet:city"),
 					framePosition: new Vector2(0, 0),
 					frameSize: { w: 5000, h: 5000 },
-				})
+				}),
 			);
 			bg.addTag("background");
 			bg.renderLayer = RenderLayerTypes.Background;
 			this.addEntity(bg);
 			const bg2 = new GameObject(
 				{
-					position: new Vector2(x + i * w + i * 0.5, y+0.5),
+					position: new Vector2(x + i * w + i * 0.5, y + 0.5),
 					rotation: 0,
 					size: new Vector2(w, h),
 				},
@@ -171,7 +173,7 @@ export class Level1 extends GameScene {
 					image: AssetsManager.getImageByName("spritesheet:city"),
 					framePosition: new Vector2(0, 0),
 					frameSize: { w: 5000, h: 5000 },
-				})
+				}),
 			);
 			bg2.addComponent(new Parallax(0.8));
 			bg2.addTag("background2");
@@ -182,7 +184,7 @@ export class Level1 extends GameScene {
 
 	testMouse() {
 		const mouseWorldPosition = this.camera.getWorldPositionFromScreenPosition(
-			MouseManager.getPosition()
+			MouseManager.getPosition(),
 		);
 		if (!mouseWorldPosition) return;
 		const mouseX = mouseWorldPosition.x;

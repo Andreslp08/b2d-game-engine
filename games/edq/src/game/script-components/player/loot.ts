@@ -1,5 +1,5 @@
 import { ScriptComponent } from "engine/scripts/script-component";
-import type { WeaponDefinition } from "./weapon-definition";
+import type { WeaponDefinition } from "../weapon/weapon-definition";
 import type { Entity } from "engine/ecs/entity";
 
 export enum LootType {

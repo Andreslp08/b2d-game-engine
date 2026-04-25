@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { GameState } from "../game/enum/interfaces/store";
+import type { GameState } from "../game/interfaces/store";
 import { produce } from "immer";
 
 export const useGameStore = create<GameState>((set) => ({

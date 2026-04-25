@@ -8,34 +8,37 @@ import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { HealthComponent } from "../health-component";
-import { Collider } from "engine/physics/components/collider";
-import { CollisionDirection } from "engine/physics/enum/collision-direction";
-import { PlayerLifeController } from "../player-life-controller";
-import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
-import { ParticleRenderType } from "engine/particle-system/enum/enum";
-import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 
 export class SpinesBugController extends ScriptComponent {
 	spriteState: "IDLE" | "MOVE" | "ATTACK_SPINES_VISIBLE" | "ATTACK_SPINES_HIDDEN" = "IDLE";
 	startPatrolPosition: Vector2;
 	endPatrolPosition: Vector2;
 	patrolPoint: "START" | "END" = "START";
-	patrolWaitDuration = 2;
-	patrolDetectionRadius = 1.2;
+	patrolWaitDuration = 3;
+	patrolDetectionRadius = 1;
 	waiting = true;
 	waitingStartTime = 0;
 
-	damageShaderDuration = 0.3;
-	damageShaderTime = 0;
-	shouldEnableDamageShader = false;
-
+	private hidingSpines = false;
+	private hidingSpinesStartTime = 0;
+	private attackingWithSpines = false;
+	private attackSpinesStartTime = 0;
+	private returningToOppositePosition = false;
+	private chasingAggressor = false;
 	private idleSpriteSheet: SpriteSheet;
 	private moveSpriteSheet: SpriteSheet;
 	private spinesVisibleSS: SpriteSheet;
 	private spinesHiddenSS: SpriteSheet;
 	private readonly ANIMATION_SPEED = 0.1;
+	private readonly SPINES_ANIMATION_SPEED = 0.03;
+	private readonly SPINES_ATTACK_DURATION = 1.5;
+	private readonly PATROL_FORCE = 5000;
+	private readonly AGGRESSOR_PATROL_FORCE = this.PATROL_FORCE*2;
+	private readonly SPINES_ATTACK_SPEED = 30;
+	private readonly SPINES_CONTACT_DAMAGE = 50;
+	private readonly CHASING_CONTACT_DAMAGE = 20;
 
 	onStart(): void {
 		const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
@@ -45,28 +48,28 @@ export class SpinesBugController extends ScriptComponent {
 			atlas,
 			idleImage,
 			0,
-			5
+			5,
 		);
 		this.moveSpriteSheet = SpriteSheet.genereateSpritesheetFromAtlas(
 			"",
 			atlas,
 			idleImage,
 			6,
-			11
+			11,
 		);
 		this.spinesHiddenSS = SpriteSheet.genereateSpritesheetFromAtlas(
 			"spines-hidden",
 			atlas,
 			idleImage,
 			12,
-			17
+			17,
 		);
 		this.spinesVisibleSS = SpriteSheet.genereateSpritesheetFromAtlas(
 			"spines-visible",
 			atlas,
 			idleImage,
 			12,
-			17
+			17,
 		);
 
 		this.startPatrolPosition = this.entity.getComponent(Transform).position.clone();
@@ -77,7 +80,6 @@ export class SpinesBugController extends ScriptComponent {
 	}
 	onUpdate(): void {
 		this.updateSpriteAnimations();
-		this.damageShader();
 	}
 
 	onFixedUpdate(): void {
@@ -92,6 +94,26 @@ export class SpinesBugController extends ScriptComponent {
 		const position = transform.position;
 		const body = this.entity.getComponent(DynamicBody);
 
+		if (this.attackingWithSpines) {
+			this.updateSpinesAttack();
+			return;
+		}
+
+		if (this.hidingSpines) {
+			this.playHideSpinesAnimation();
+			return;
+		}
+
+		if (distance <= this.patrolDetectionRadius) {
+			this.startSpinesAttack(player, position, body);
+			return;
+		}
+
+		if (this.returningToOppositePosition) {
+			this.updatePatrol(position, body);
+			return;
+		}
+
 		if (distance > this.patrolDetectionRadius) {
 			this.spriteState = "ATTACK_SPINES_HIDDEN";
 			if (this.waiting) {
@@ -102,28 +124,108 @@ export class SpinesBugController extends ScriptComponent {
 					this.waitingStartTime = 0;
 				}
 			} else {
-				this.spriteState = "MOVE";
-				const targetPosition =
-					this.patrolPoint === "START"
-						? this.endPatrolPosition
-						: this.startPatrolPosition;
-				const direction = targetPosition.clone().substract(position).normalize();
-				this.spriteState = "MOVE";
-				body.addForce(new Vector2(direction.x * 5000, 0));
-				if (Math.abs(direction.x) < 0.1) {
-					this.patrolPoint = this.patrolPoint === "START" ? "END" : "START";
-					this.waiting = true;
-					this.waitingStartTime = Time.time;
-				}
+				this.updatePatrol(position, body);
 			}
-		} else {
-			this.spriteState = "ATTACK_SPINES_VISIBLE";
-			this.waiting = true;
-			this.waitingStartTime = Time.time;
 		}
 	}
 
 	onLateUpdate(): void {}
+
+	private startSpinesAttack(player: GameObject, position: Vector2, body: DynamicBody) {
+		this.hidingSpines = false;
+		this.returningToOppositePosition = false;
+		this.chasingAggressor = false;
+		this.waiting = true;
+		this.waitingStartTime = Time.time;
+		this.attackingWithSpines = true;
+		this.attackSpinesStartTime = Time.time;
+		this.spriteState = "ATTACK_SPINES_VISIBLE";
+
+		const playerPosition = player.getComponent(Transform).position;
+		const direction = playerPosition.clone().substract(position).normalize();
+		body.velocity.x = direction.x * this.SPINES_ATTACK_SPEED;
+	}
+
+	private updateSpinesAttack() {
+		this.spriteState = "ATTACK_SPINES_VISIBLE";
+
+		const elapsedTime = Time.time - this.attackSpinesStartTime;
+		if (elapsedTime < this.SPINES_ATTACK_DURATION) return;
+
+		this.attackingWithSpines = false;
+		this.playHideSpinesAnimation();
+	}
+
+	private playHideSpinesAnimation() {
+		if (!this.hidingSpines) {
+			this.hidingSpines = true;
+			this.hidingSpinesStartTime = Time.time;
+		}
+
+		this.spriteState = "ATTACK_SPINES_HIDDEN";
+
+		const totalAnimationTime =
+			(this.spinesHiddenSS?.sprites.length ?? 1) * this.SPINES_ANIMATION_SPEED;
+		const elapsedTime = Time.time - this.hidingSpinesStartTime;
+
+		if (elapsedTime >= totalAnimationTime) {
+			this.hidingSpines = false;
+			this.returningToOppositePosition = true;
+			this.chasingAggressor = false;
+			this.waiting = false;
+			this.spriteState = "MOVE";
+		}
+	}
+
+	private updatePatrol(position: Vector2, body: DynamicBody) {
+		const targetPosition =
+			this.patrolPoint === "START" ? this.endPatrolPosition : this.startPatrolPosition;
+		const direction = targetPosition.clone().substract(position).normalize();
+		const patrolForce = this.chasingAggressor ? this.AGGRESSOR_PATROL_FORCE : this.PATROL_FORCE;
+		this.spriteState = "MOVE";
+		body.addForce(new Vector2(direction.x * patrolForce, 0));
+		if (Math.abs(direction.x) < 0.1) {
+			this.patrolPoint = this.patrolPoint === "START" ? "END" : "START";
+			this.waiting = true;
+			this.returningToOppositePosition = false;
+			this.chasingAggressor = false;
+			this.waitingStartTime = Time.time;
+		}
+	}
+
+	private patrolTowardsAggressor(aggressor: Entity) {
+		const aggressorDirectionX = this.getAggressorDirectionX(aggressor);
+		if (aggressorDirectionX === 0) return;
+
+		this.patrolPoint = aggressorDirectionX > 0 ? "START" : "END";
+		this.attackingWithSpines = false;
+		this.hidingSpines = false;
+		this.returningToOppositePosition = true;
+		this.chasingAggressor = true;
+		this.waiting = false;
+		this.spriteState = "MOVE";
+	}
+
+	private getAggressorDirectionX(aggressor: Entity): number {
+		const aggressorBody = aggressor.getComponent(KinematicBody);
+		if (aggressorBody && Math.abs(aggressorBody.velocity.x) > 0.01) {
+			return -Math.sign(aggressorBody.velocity.x);
+		}
+
+		const aggressorTransform = aggressor.getComponent(Transform);
+		const transform = this.entity.getComponent(Transform);
+		if (!aggressorTransform || !transform) return 0;
+
+		const directionX = aggressorTransform.position.x - transform.position.x;
+		if (Math.abs(directionX) < 0.01) return 0;
+
+		return Math.sign(directionX);
+	}
+
+	private getContactDamage(): number {
+		if (this.spriteState === "ATTACK_SPINES_VISIBLE") return this.SPINES_CONTACT_DAMAGE;
+		return this.CHASING_CONTACT_DAMAGE;
+	}
 
 	updateSpriteAnimations() {
 		if (!this.entity) return;
@@ -138,112 +240,28 @@ export class SpinesBugController extends ScriptComponent {
 		} else if (this.spriteState === "MOVE") {
 			spriteAnimation.setAnimation(this.moveSpriteSheet, true, this.ANIMATION_SPEED);
 		} else if (this.spriteState === "ATTACK_SPINES_VISIBLE") {
-			spriteAnimation.setAnimation(this.spinesVisibleSS, false, 0.01, false);
+			spriteAnimation.setAnimation(
+				this.spinesVisibleSS,
+				false,
+				this.SPINES_ANIMATION_SPEED,
+				false,
+			);
 		} else if (this.spriteState === "ATTACK_SPINES_HIDDEN") {
-			spriteAnimation.setAnimation(this.spinesHiddenSS, false, 0.01, true);
+			spriteAnimation.setAnimation(
+				this.spinesHiddenSS,
+				false,
+				this.SPINES_ANIMATION_SPEED,
+				true,
+			);
 		}
 	}
 
-	damageShader() {
-		const gameObject = this.entity as GameObject;
-		if (!gameObject) return;
-		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
-		if (!spriteAnimation) return;
-		const damageFilter = "sepia(1) hue-rotate(-50deg) saturate(6) brightness(1.1)";
 
-		if (this.shouldEnableDamageShader) {
-			const delta = Time.time - this.damageShaderTime;
-			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter(damageFilter));
-			
-			if (delta > this.damageShaderDuration) {
-				this.shouldEnableDamageShader = false;
-				this.damageShaderTime = Time.time;
-			}
-		} else {
-			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter("none"));
-		}
-	}
-
-	handleDamage(entity: Entity): void {
-		const healthC = this.entity.getComponent(HealthComponent);
-		if (!healthC) return;
-		const health = healthC.getHealth();
-
-		if (health <= 0) {
-			this.entity.destroy();
-		}
-	}
 
 	onCollisionEnter(entity: Entity): void {
-		this.handleDamage(entity);
 		if (entity.hasTag("bullet")) {
-			this.shouldEnableDamageShader = true;
-			this.damageShaderTime = Time.time;
+			if (this.attackingWithSpines) return;
+			this.patrolTowardsAggressor(entity);
 		}
-		if (entity.hasTag("player")) {
-			const playerLife = entity.getComponent(PlayerLifeController);
-			if (playerLife) {
-				playerLife.setDamage(50);
-				const collider = this.entity.getComponent(Collider);
-				const colDirection = collider.collisionDirection;
-				const playerBody = entity.getComponent(DynamicBody);
-				const enemyPos = this.entity.getComponent(Transform).position;
-				const playerPos = entity.getComponent(Transform).position;
-
-				// vector del enemigo al jugador
-				const knockDir = playerPos.clone().substract(enemyPos).normalize();
-
-				if (
-					colDirection.x === CollisionDirection.RIGHT ||
-					colDirection.x === CollisionDirection.LEFT
-				) {
-					playerBody.addForce(new Vector2(knockDir.x * 120000, 0));
-				}
-
-				if (colDirection.y === CollisionDirection.TOP) {
-					playerBody.addForce(new Vector2(0, -100000));
-				}
-			}
-		}
-	}
-
-	onDestroy(): void {
-		const scene = this.entity.getScene();
-		const transform = this.entity.getComponent(Transform);
-		if (!scene || !transform) return;
-
-		const explosion = new GameObject({
-			position: transform.position.clone(),
-			rotation: 0,
-			size: new Vector2(1, 1),
-		});
-		explosion.renderLayer = RenderLayerTypes.World;
-
-		const emitter = new ParticleEmitter();
-		emitter.particleRenderType = ParticleRenderType.CIRCLE;
-		emitter.maxParticles = 48;
-		emitter.burstCount = 48;
-		emitter.duration = 2;
-		emitter.loop = false;
-		emitter.playing = true;
-		emitter.localSpace = true;
-		emitter.destroyOnComplete = true;
-		emitter.positionOffset = new Vector2(0, 0);
-		emitter.lifetime = { min: 0.25, max: 2 };
-		emitter.speed = { min: 2.5, max: 7.5 };
-		emitter.angle = { min: 0, max: 360 };
-		emitter.gravity = new Vector2(0, 8);
-		emitter.size = {
-			startMin: new Vector2(0.08, 0.08),
-			startMax: new Vector2(0.22, 0.22),
-			endMin: new Vector2(0.01, 0.01),
-			endMax: new Vector2(0.04, 0.04),
-		};
-		emitter.opacity = { start: 1, end: 0 };
-		emitter.startColors = ["#fff2a8", "#ffd447", "#ff3b1f"];
-		emitter.endColors = ["#ff3b1f", "#8f1208", "#2b0500"];
-
-		explosion.addComponent(emitter);
-		scene.addEntity(explosion);
 	}
 }

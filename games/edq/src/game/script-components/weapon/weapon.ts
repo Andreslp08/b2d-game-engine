@@ -5,12 +5,12 @@ import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { BulletController, createBullet } from "../prefabs/bullet";
+import { BulletController, createBullet } from "../../prefabs/bullet";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { Time } from "engine/common/interfaces/time";
-import { PlayerAimingArm } from "./player-aiming-arm";
-import { AimingController } from "./aiming-controller";
+import { PlayerAimingArm } from "../player/player-aiming-arm";
+import { AimingController } from "../player/aiming-controller";
 import { KinematicBody } from "engine/physics/components/kinematic-body";
 
 export class WeaponHolder extends ScriptComponent {
@@ -49,58 +49,56 @@ export class WeaponController extends ScriptComponent {
 		this.weaponHolder = weaponHolder;
 	}
 
-shot() {
-	if (this.shooting) return;
-	if (!this.weaponHolder) return;
+	shot() {
+		if (this.shooting) return;
+		if (!this.weaponHolder) return;
 
-	const weaponObject = this.entity as GameObject;
-	const weaponTransform = weaponObject.getComponent(Transform);
-	if (!weaponTransform) return;
+		const weaponObject = this.entity as GameObject;
+		const weaponTransform = weaponObject.getComponent(Transform);
+		if (!weaponTransform) return;
 
-	const holderGameObject = this.weaponHolder as GameObject;
-	const aimingController = holderGameObject.getComponent(AimingController);
-	const angle = aimingController.getAngleInDeg()
-	if (!aimingController) return;
+		const holderGameObject = this.weaponHolder as GameObject;
+		const aimingController = holderGameObject.getComponent(AimingController);
+		const angle = aimingController.getAngleInDeg();
+		if (!aimingController) return;
 
-	const holderBody = holderGameObject.getComponent(DynamicBody);
-	const holderVelocity = holderBody?.velocity ?? new Vector2(0, 0);
+		const holderBody = holderGameObject.getComponent(DynamicBody);
+		const holderVelocity = holderBody?.velocity ?? new Vector2(0, 0);
 
-	// Dirección del disparo
-	const directionX = aimingController.getAimingDirection().x;
-	const aimDir = new Vector2(
-		Math.cos(MathUtil.degToRad(directionX * weaponTransform.rotation + 45)),
-		Math.sin(MathUtil.degToRad(directionX * weaponTransform.rotation + 45))
+		// Dirección del disparo
+		const directionX = aimingController.getAimingDirection().x;
+		const aimDir = new Vector2(
+			Math.cos(MathUtil.degToRad(directionX * weaponTransform.rotation + 45)),
+			Math.sin(MathUtil.degToRad(directionX * weaponTransform.rotation + 45)),
+		).normalize();
 
-	).normalize();	
+		// 💡 Compensar posición inicial con el movimiento del jugador
+		// Si el jugador se mueve hacia la derecha, la bala nacerá unos píxeles más adelante
+		const compensation = holderVelocity.clone().multiplyBy(Time.deltaTime);
+		const spawnPosition = weaponTransform.position.clone().add(compensation);
 
+		// Crear bala con cuerpo Kinematic
+		const bullet = createBullet(spawnPosition);
+		bullet.setZindex(0);
+		bullet.getComponent(Transform).rotation = directionX == 1 ? angle : angle - 180;
+		const kinematic = bullet.getComponent(KinematicBody);
+		const bulletSpeed = 20;
+		kinematic.velocity = aimDir.multiply(new Vector2(directionX * bulletSpeed, bulletSpeed));
 
-	// 💡 Compensar posición inicial con el movimiento del jugador
-	// Si el jugador se mueve hacia la derecha, la bala nacerá unos píxeles más adelante
-	const compensation = holderVelocity.clone().multiplyBy(Time.deltaTime);
-	const spawnPosition = weaponTransform.position.clone().add(compensation);
+		// Colisiones
+		const collider = bullet.getComponent(Collider);
+		collider.ignoreZIndex = true;
+		collider.ignoreEntity(this.weaponHolder);
+		const holderCollider = this.weaponHolder.getComponent(Collider);
+		if (holderCollider) holderCollider.ignoreEntity(bullet);
 
-	// Crear bala con cuerpo Kinematic
-	const bullet = createBullet(spawnPosition);
-	bullet.setZindex(0)
-	bullet.getComponent(Transform).rotation = directionX == 1? angle: angle - 180;
-	const kinematic = bullet.getComponent(KinematicBody)
-	const bulletSpeed = 20;
-	kinematic.velocity = aimDir.multiply(new Vector2(directionX * bulletSpeed, bulletSpeed));
+		// Añadir al mundo
+		const scene = this.entity.getScene();
+		if (scene) scene.addEntity(bullet);
 
-	// Colisiones
-	const collider = bullet.getComponent(Collider);
-	collider.ignoreZIndex = true;
-	collider.ignoreEntity(this.weaponHolder);
-	const holderCollider = this.weaponHolder.getComponent(Collider);
-	if (holderCollider) holderCollider.ignoreEntity(bullet);
-
-	// Añadir al mundo
-	const scene = this.entity.getScene();
-	if (scene) scene.addEntity(bullet);
-
-	const sprite = bullet.getComponent(Sprite);
-	if (sprite) sprite.setDirection({ x: directionX, y: 1 });
-}
+		const sprite = bullet.getComponent(Sprite);
+		if (sprite) sprite.setDirection({ x: directionX, y: 1 });
+	}
 
 	onLateUpdate(): void {
 		if (!this.weaponHolder) return;
@@ -123,7 +121,7 @@ shot() {
 		if (!isAiming) {
 			this.enableController = false;
 			weaponSprite.setVisible(false);
-		}else{
+		} else {
 			this.enableController = true;
 			weaponSprite.setVisible(true);
 		}

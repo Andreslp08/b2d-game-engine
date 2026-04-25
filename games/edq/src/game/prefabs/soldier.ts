@@ -2,12 +2,15 @@ import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { HealthComponent } from "../script-components/health-component";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { HealthComponent } from "../script-components/shared/health-component";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
+import { Damageable } from "../script-components/soldier/enemy";
+
+import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
+import { ContactDamage } from "../script-components/shared/contact-damage";
+import { DeathParticleEffect } from "../script-components/shared/death-particle-effect";
 
 export const createSoldier = (position: Vector2) => {
 	const idleImage = AssetsManager.getImageByName("spritesheet:soldier-idle");
@@ -21,16 +24,16 @@ export const createSoldier = (position: Vector2) => {
 		size: size,
 	});
 	soldier.addComponent(new SpriteAnimation(PlayerIdle, soldier, true, 0.07));
-	const dynamicbody = new KinematicBody();
+	const dynamicbody = new DynamicBody();
 	const collider = new Collider(
-		new Vector2(0, -0.02),
-		size.clone().multiply(new Vector2(0.8, 0.8))
+		new Vector2(0, 0.1),
+		size.clone().multiply(new Vector2(0.6, 0.9)),
 	);
 	const health = new HealthComponent(100, 100, true);
-	// const spriteAnim = new SpriteAnimation(SoldierIdleSequence, soldier, true, 0.07);
-	// spriteAnim.setAnimation(SoldierIdleSequence, true);
-	// soldier.addComponent(spriteAnim);
-	// dynamicbody.bounciness = new Vector2(0.6, 0.6);
+	soldier.addComponent(new DeathParticleEffect());
+	soldier.addComponent(new DamageFlashEffect());
+	soldier.addComponent(new Damageable());
+	soldier.addComponent(new ContactDamage({ targetTags: ["player"], damage: 50 }));
 	soldier.addComponent(dynamicbody);
 	soldier.addComponent(collider);
 	soldier.addComponent(health);

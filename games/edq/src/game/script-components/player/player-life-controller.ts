@@ -1,10 +1,10 @@
 import { ScriptComponent } from "engine/scripts/script-component";
-import { HealthComponent } from "./health-component";
+import { HealthComponent } from "../shared/health-component";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { MathUtil } from "engine/math/math-util";
 import { Time } from "engine/common/interfaces/time";
 import { PlayerController } from "./player-controller";
-import { ShieldComponent } from "./shield-component";
+import { ShieldComponent } from "../shared/shield-component";
 import { GameObject } from "engine/common/entities/game-object";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { Entity } from "engine/ecs/entity";
@@ -78,6 +78,8 @@ export class PlayerLifeController extends ScriptComponent {
 		} else if (!shieldComponent && healthComponent) {
 			healthComponent.setDamage(damage);
 		}
+		this.shouldEnableDamageShader = true;
+		this.damageShaderStartTime = Time.time;
 	}
 
 	handleDamageCoolDown() {
@@ -136,7 +138,7 @@ export class PlayerLifeController extends ScriptComponent {
 			this.grayscaleValue = MathUtil.lerp(
 				this.grayscaleValue,
 				100,
-				Time.unscaledDeltaTime * 2
+				Time.unscaledDeltaTime * 2,
 			);
 			this.grayscaleValue = Math.min(this.grayscaleValue, 100);
 			scene.setRenderFilters(`grayscale(${this.grayscaleValue}%)`);
@@ -156,12 +158,5 @@ export class PlayerLifeController extends ScriptComponent {
 		}
 		this.handleDamageCoolDown();
 		this.damageShader();
-	}
-
-	onCollisionEnter(entity: Entity): void {
-		if (entity.hasTag("enemy") ) {
-			this.shouldEnableDamageShader = true;
-			this.damageShaderStartTime = Time.time;
-		}
 	}
 }

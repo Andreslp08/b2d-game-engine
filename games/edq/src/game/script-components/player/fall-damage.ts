@@ -1,6 +1,6 @@
 import { GameObject } from "engine/common/entities/game-object";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { HealthComponent } from "./health-component";
+import { HealthComponent } from "../shared/health-component";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Transform } from "engine/common/components/transform";
 import { PlayerLifeController } from "./player-life-controller";

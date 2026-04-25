@@ -2,13 +2,15 @@ import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { HealthComponent } from "../script-components/health-component";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { HealthComponent } from "../script-components/shared/health-component";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
 import { SpinesBugController } from "../script-components/spines-bug/spines-bug-controller";
+import { Damageable } from "../script-components/soldier/enemy";
+import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
+import { DeathParticleEffect } from "../script-components/shared/death-particle-effect";
+import { ContactDamage } from "../script-components/shared/contact-damage";
 
 export const createSpinesBug = (position: Vector2) => {
 	const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
@@ -31,6 +33,10 @@ export const createSpinesBug = (position: Vector2) => {
 	entity.addComponent(body);
 	entity.addComponent(collider);
 	entity.addComponent(health);
+	entity.addComponent(new Damageable());
+	entity.addComponent(new DamageFlashEffect());
+	entity.addComponent(new DeathParticleEffect());
+	entity.addComponent(new ContactDamage({ targetTags: ["player"] }));
 	entity.addTag("spines-bug");
 	entity.addTag("enemy");
 

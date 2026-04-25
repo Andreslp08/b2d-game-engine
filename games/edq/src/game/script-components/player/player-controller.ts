@@ -1,4 +1,3 @@
-
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { BasicMovement } from "./basic-movement";
@@ -60,7 +59,7 @@ export class PlayerController extends ScriptComponent {
 		// Lerp final
 		const newCameraPos = new Vector2(
 			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
-			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * Time.deltaTime)
+			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * Time.deltaTime),
 		);
 
 		// Mantén tus límites laterales si lo necesitas
@@ -102,52 +101,57 @@ export class PlayerController extends ScriptComponent {
 		}
 	}
 
-private jumpController() {
-	const entity = this.entity;
-	const dynamicBody = entity.getComponent(DynamicBody);
-	const gameObject = dynamicBody.getEntity() as GameObject;
-	const movement = gameObject.getComponent(BasicMovement);
-	const collider = entity.getComponent(Collider);
-	if (!entity.hasComponent(BasicMovement)) return;
-	const y = gameObject.transform.position.y;
+	private jumpController() {
+		const entity = this.entity;
+		const dynamicBody = entity.getComponent(DynamicBody);
+		const gameObject = dynamicBody.getEntity() as GameObject;
+		const movement = gameObject.getComponent(BasicMovement);
+		const collider = entity.getComponent(Collider);
+		if (!entity.hasComponent(BasicMovement)) return;
+		const y = gameObject.transform.position.y;
 
-	if (this.hasJumpedOnce && !movement.isJumping && dynamicBody.isOnGround && !this.debouncingJump) {
-		this.debouncingJump = true;
-		this.jumpDebounceStartTime = Time.time;
-	}
-
-	if (this.debouncingJump) {
-		const delta = Time.time - this.jumpDebounceStartTime;
-		if (delta >= this.jumpDebounce) {
-			this.debouncingJump = false;
-			this.jumpDebounceStartTime = 0;
-			this.hasJumpedOnce = false;
+		if (
+			this.hasJumpedOnce &&
+			!movement.isJumping &&
+			dynamicBody.isOnGround &&
+			!this.debouncingJump
+		) {
+			this.debouncingJump = true;
+			this.jumpDebounceStartTime = Time.time;
 		}
-	}
 
-	// Salto
-	if (KeyBoardManager.keyDown(movement.inputKeys.up) && !this.debouncingJump) {
-		if (dynamicBody.isOnGround && !movement.isJumping) {
-			movement.isJumping = true;
-			movement.jumpStartY = y;
-			this.hasJumpedOnce = true; // 🔹 marca que ya saltó al menos una vez
+		if (this.debouncingJump) {
+			const delta = Time.time - this.jumpDebounceStartTime;
+			if (delta >= this.jumpDebounce) {
+				this.debouncingJump = false;
+				this.jumpDebounceStartTime = 0;
+				this.hasJumpedOnce = false;
+			}
+		}
+
+		// Salto
+		if (KeyBoardManager.keyDown(movement.inputKeys.up) && !this.debouncingJump) {
+			if (dynamicBody.isOnGround && !movement.isJumping) {
+				movement.isJumping = true;
+				movement.jumpStartY = y;
+				this.hasJumpedOnce = true; // 🔹 marca que ya saltó al menos una vez
+			}
+			if (
+				movement.jumpStartY !== null &&
+				movement.jumpStartY - y < movement.maxJumpHeight &&
+				movement.isJumping &&
+				collider.collisionDirection.y !== CollisionDirection.TOP
+			) {
+				dynamicBody.addForce(new Vector2(0, -movement.forceY));
+			}
 		}
 		if (
-			movement.jumpStartY !== null &&
-			movement.jumpStartY - y < movement.maxJumpHeight &&
 			movement.isJumping &&
-			collider.collisionDirection.y !== CollisionDirection.TOP
+			(!KeyBoardManager.keyDown(movement.inputKeys.up) || dynamicBody.velocity.y > 0)
 		) {
-			dynamicBody.addForce(new Vector2(0, -movement.forceY));
+			movement.isJumping = false;
 		}
 	}
-	if (
-		movement.isJumping &&
-		(!KeyBoardManager.keyDown(movement.inputKeys.up) || dynamicBody.velocity.y > 0)
-	) {
-		movement.isJumping = false;
-	}
-}
 
 	private horizontalController() {
 		const entity = this.entity;
@@ -163,5 +167,4 @@ private jumpController() {
 		if (moveRight) dynamicBody.addForce(new Vector2(movement.forceX, 0));
 		else if (moveLeft) dynamicBody.addForce(new Vector2(-movement.forceX, 0));
 	}
-
 }

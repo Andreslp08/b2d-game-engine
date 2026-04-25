@@ -5,8 +5,8 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { HealthComponent } from "../script-components/health-component";
-import { ShieldComponent } from "../script-components/shield-component";
+import { HealthComponent } from "../script-components/shared/health-component";
+import { ShieldComponent } from "../script-components/shared/shield-component";
 import { Time } from "engine/common/interfaces/time";
 import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { Transform } from "engine/common/components/transform";
@@ -15,12 +15,12 @@ import { CullingType } from "engine/performance/enum/culling-type";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { Damageable } from "../script-components/soldier/enemy";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;
-	private startPosition = new Vector2(0,0);
+	private startPosition = new Vector2(0, 0);
 	private collisionDetected = false;
-
 
 	onStart(): void {
 		const shootSound = AssetsManager.getSoundByName("sound:desert-eagle");
@@ -30,7 +30,7 @@ export class BulletController extends ScriptComponent {
 		this.shooted = true;
 	}
 
-	private emitFlashParticle(){
+	private emitFlashParticle() {
 		const scene = this.entity.getScene();
 		if (!scene) return;
 		const flashEntity = new GameObject({
@@ -63,7 +63,6 @@ export class BulletController extends ScriptComponent {
 		emitter.endColors = ["#ff3b1f"];
 		flashEntity.addComponent(emitter);
 		scene.addEntity(flashEntity);
-	
 	}
 
 	private destroyBullet() {
@@ -72,24 +71,12 @@ export class BulletController extends ScriptComponent {
 		scene.destroyEntity(this.entity);
 	}
 	onCollisionEnter(entity: Entity): void {
-		if(this.collisionDetected) return
+		if (this.collisionDetected) return;
 		this.emitFlashParticle();
-		this.destroyBullet()
-		this.collisionDetected = true;
-		const shieldComponent = entity.getComponent(ShieldComponent);
-		const healthComponent = entity.getComponent(HealthComponent);
-		const damage = 10;
-		if (shieldComponent && healthComponent) {
-			if (shieldComponent.getShield() > 0) {
-				shieldComponent.setDamage(damage);
-			} else {
-				healthComponent.setDamage(damage);
-			}
-		} else if (shieldComponent && !healthComponent) {
-			shieldComponent.setDamage(damage);
-		} else if (!shieldComponent && healthComponent) {
-			healthComponent.setDamage(damage);
-		}
+		this.destroyBullet();
+		const damageable = entity.getComponent(Damageable);
+		if (!damageable) return;
+		damageable.applyDamage({ damage: 10, source: this.entity, type: "bullet" });
 	}
 
 	onFixedUpdate(): void {
@@ -121,7 +108,7 @@ export const createBullet = (position: Vector2) => {
 			size: new Vector2(0.2, 0.2),
 			rotation: 0,
 		},
-		sprite
+		sprite,
 	);
 	obj.addTag("bullet");
 	obj.addComponent(new BulletController());

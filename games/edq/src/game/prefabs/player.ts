@@ -1,26 +1,26 @@
 import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { BasicMovement } from "../script-components/basic-movement";
-import { PlayerController } from "../script-components/player-controller";
-import { HealthComponent } from "../script-components/health-component";
-import { FallDamage } from "../script-components/fall-damage";
+import { BasicMovement } from "../script-components/player/basic-movement";
+import { PlayerController } from "../script-components/player/player-controller";
+import { HealthComponent } from "../script-components/shared/health-component";
+import { FallDamage } from "../script-components/player/fall-damage";
 import { PlayerHud } from "../hud/hud";
-import { ShieldComponent } from "../script-components/shield-component";
-import { WeaponHolder } from "../script-components/weapon";
+import { ShieldComponent } from "../script-components/shared/shield-component";
+import { WeaponHolder } from "../script-components/weapon/weapon";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { PlayerSpriteController } from "../script-components/sprite-controller";
-import { Loot, LootType } from "../script-components/loot";
-import { LootInputController } from "../script-components/loot-input-controller";
-import { PlayerLifeController } from "../script-components/player-life-controller";
-import { AimingController } from "../script-components/aiming-controller";
-import { PlayerAimingArm } from "../script-components/player-aiming-arm";
+import { PlayerSpriteController } from "../script-components/player/sprite-controller";
+import { Loot, LootType } from "../script-components/player/loot";
+import { LootInputController } from "../script-components/player/loot-input-controller";
+import { PlayerLifeController } from "../script-components/player/player-life-controller";
+import { AimingController } from "../script-components/player/aiming-controller";
+import { PlayerAimingArm } from "../script-components/player/player-aiming-arm";
 
 export const createPlayer = (position: Vector2): GameObject => {
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
-		size: new Vector2(0.8,1.8),
+		size: new Vector2(0.8, 1.8),
 	});
 	entity.addTag("player");
 	entity.addComponent(new PlayerSpriteController());
@@ -28,19 +28,19 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
 	entity.addComponent(new PlayerController());
-	entity.addComponent(new HealthComponent( 100, 100, false));
+	entity.addComponent(new HealthComponent(100, 100, false));
 	entity.addComponent(new ShieldComponent());
 	entity.addComponent(new FallDamage());
 	entity.addComponent(new PlayerHud());
 	entity.addComponent(new PlayerLifeController());
-	entity.addComponent(new PlayerAimingArm())
+	entity.addComponent(new PlayerAimingArm());
 	const loot = new Loot();
 	loot.setSlot(0, { type: LootType.HAND, data: null }, true);
-	loot.setSlot(1, { type: LootType.WEAPON, data: {a:2} }, false);
+	loot.setSlot(1, { type: LootType.WEAPON, data: { a: 2 } }, false);
 	loot.setSlot(2, { type: LootType.WEAPON, data: null }, false);
 	entity.addComponent(new LootInputController());
 	entity.addComponent(new AimingController());
-	
+
 	entity.addComponent(loot);
 	entity.addComponent(new WeaponHolder());
 	const collider = entity.getComponent(Collider);
