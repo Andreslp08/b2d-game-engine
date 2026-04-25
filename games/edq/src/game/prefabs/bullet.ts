@@ -15,7 +15,7 @@ import { CullingType } from "engine/performance/enum/culling-type";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
-import { Damageable } from "../script-components/soldier/enemy";
+import { Damageable } from "../script-components/shared/damageable";
 
 export class BulletController extends ScriptComponent {
 	private shooted = false;

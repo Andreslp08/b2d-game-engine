@@ -1,10 +1,10 @@
 import { GameEvent } from "engine/common/events/game-event";
 import type { Entity } from "engine/ecs/entity";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { ShieldComponent } from "../shared/shield-component";
-import { HealthComponent } from "../shared/health-component";
-import { DeathParticleEffect } from "../shared/death-particle-effect";
-import { DamageFlashEffect } from "../shared/damage-flash-effect";
+import { ShieldComponent } from "./shield-component";
+import { HealthComponent } from "./health-component";
+import { DeathParticleEffect } from "./death-particle-effect";
+import { DamageFlashEffect } from "./damage-flash-effect";
 
 interface DamageResolver {
 	resolve(payload: DamagePayload, entity: Entity): number;

@@ -6,7 +6,7 @@ import { HealthComponent } from "../script-components/shared/health-component";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
-import { Damageable } from "../script-components/soldier/enemy";
+import { Damageable } from "../script-components/shared/damageable";
 
 import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
 import { ContactDamage } from "../script-components/shared/contact-damage";

@@ -7,7 +7,7 @@ import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
 import { SpinesBugController } from "../script-components/spines-bug/spines-bug-controller";
-import { Damageable } from "../script-components/soldier/enemy";
+import { Damageable } from "../script-components/shared/damageable";
 import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
 import { DeathParticleEffect } from "../script-components/shared/death-particle-effect";
 import { ContactDamage } from "../script-components/shared/contact-damage";
