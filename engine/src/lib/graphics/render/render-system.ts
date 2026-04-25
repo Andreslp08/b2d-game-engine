@@ -5,8 +5,10 @@ import { Sprite } from "../sprites/components/sprite";
 import { SpriteRenderer } from "./sprite-renderer";
 import { TransformRenderer } from "./transform-renderer";
 import { ColliderRenderer } from "./collider-renderer";
+import { TriggerAreaRenderer } from "./trigger-area-renderer";
 import { Entity } from "../../ecs/entity";
 import { Collider } from "../../physics/components/collider";
+import { TriggerArea } from "../../trigger-area/components/trigger-area";
 import { UIRenderer } from "./ui-renderer";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { CullingTarget } from "../../performance/enum/culling-type";
@@ -76,6 +78,7 @@ export class RenderSystem extends System {
 			const particleEmitters = entity.getComponents(ParticleEmitter);
 			const allSprites = [...spriteComponents, ...spriteAnimations];
 			const colliderComponents = entity.getComponents(Collider);
+			const triggerAreaComponents = entity.getComponents(TriggerArea);
 			const transformComponents = entity.getComponents(Transform);
 			const debugLines = entity.getComponents(DrawDebugLine);
 			allSprites.forEach((_) => {
@@ -92,6 +95,10 @@ export class RenderSystem extends System {
 			});
 			colliderComponents.forEach((_) => {
 				const render = new ColliderRenderer(entity);
+				render.render(renderingContext);
+			});
+			triggerAreaComponents.forEach((_) => {
+				const render = new TriggerAreaRenderer(entity);
 				render.render(renderingContext);
 			});
 			debugLines.forEach((_) => {

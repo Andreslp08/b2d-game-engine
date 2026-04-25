@@ -1,6 +1,5 @@
 import { Cameras } from "../graphics/cameras/camera-manager";
 import { OrthographicCamera } from "../graphics/cameras/orthographic-camera";
-import { RenderLayerTypes } from "../graphics/enum/render-layer-types.enum";
 import { RenderLayers } from "../graphics/render/render-layers";
 import { SpriteAnimationSystem } from "../graphics/sprites/system/sprite-animation-system";
 import { PhysicsSystem } from "../physics/system/physics-system";
@@ -14,8 +13,8 @@ import { RenderSystem } from "../graphics/render/render-system";
 import Vector2 from "../math/vector2";
 import { ScriptComponent } from "../scripts/script-component";
 import { CullingSystem } from "../performance/culling-system";
-import { TileMapSystem } from "../tiles/tilemap-system";
 import { ParticleSystem } from "../particle-system/system";
+import { TriggerAreaSystem } from "../trigger-area/system/trigger-area-system";
 
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
@@ -28,6 +27,7 @@ export class Scene implements Updatable {
 		this.addSystem(new CullingSystem(this));
 		this.addSystem(new ScriptSystem(this));
 		this.addSystem(new PhysicsSystem(this));
+		this.addSystem(new TriggerAreaSystem(this));
 		this.addSystem(new SpriteAnimationSystem(this));
 		this.addSystem(new DebugSystem(this));
 		this.addSystem(new ParticleSystem(this));

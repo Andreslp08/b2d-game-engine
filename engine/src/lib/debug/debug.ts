@@ -2,6 +2,7 @@ export enum DebugTypes{
     ALL = 'all',
     TRANSFORMS = 'transforms',
     COLLIDERS = 'colliders',
+    TRIGGER_AREAS = 'trigger-areas',
     SHAPES = 'shapes'
 }
 export class DebugMode{

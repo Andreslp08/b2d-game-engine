@@ -8,13 +8,13 @@ export class ScriptComponent extends Component {
 		this.unique = false;
 	}
 
-	onCollisionEnter(entity: Entity): void {}
+	onCollisionEnter(_entity: Entity): void {}
 
-	onTriggerEnter(entity: Entity): void {}
+	onTriggerEnter(_entity: Entity): void {}
 
-	onTriggerExit(entity: Entity): void {}
+	onTriggerExit(_entity: Entity): void {}
 
-	onTriggerStay(entity: Entity): void {}
+	onTriggerStay(_entity: Entity): void {}
 
 	onStart(): void {}
 	onUpdate(): void {}
