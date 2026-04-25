@@ -94,7 +94,7 @@ export class Level1 extends GameScene {
 		weapon.setZindex(-1);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
-		const soldier = createSoldier(new Vector2(3, -3));
+		const soldier = createSoldier(new Vector2(20, -3));
 		this.addEntity(soldier);
 
 		const spinesBug = createSpinesBug(new Vector2(-5, -3));
