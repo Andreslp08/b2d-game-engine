@@ -17,6 +17,11 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     },
     {
         type: GameAssetsTypes.Image,
+        name: "spritesheet:virus",
+        path: "/assets/textures/Virus.png",
+    },
+    {
+        type: GameAssetsTypes.Image,
         name: "spritesheet:desert-eagle",
         path: "/assets/textures/desert-eagle.png",
     },
