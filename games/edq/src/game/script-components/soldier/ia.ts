@@ -41,11 +41,11 @@ export class SoliderIA extends ScriptComponent {
 	private lastShotTime = 0;
 
 	private readonly patrolDistance = 4;
-	private readonly detectionRange = 4;
+	private readonly detectionRange = 3.5;
 	private readonly attackRange = 1.2;
 	private readonly loseTargetRange = 7;
 	private readonly patrolForce = 1500;
-	private readonly chaseForce = 5000;
+	private readonly chaseForce = 3500;
 	private readonly attackDuration = 3;
 	private readonly attackShotInterval = 1;
 
