@@ -89,8 +89,6 @@ export class WeaponController extends ScriptComponent {
 		const collider = bullet.getComponent(Collider);
 		collider.ignoreZIndex = true;
 		collider.ignoreEntity(this.weaponHolder);
-		const holderCollider = this.weaponHolder.getComponent(Collider);
-		if (holderCollider) holderCollider.ignoreEntity(bullet);
 
 		// Añadir al mundo
 		const scene = this.entity.getScene();
