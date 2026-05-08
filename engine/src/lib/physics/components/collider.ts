@@ -44,6 +44,9 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	}
 
 	ignoreEntity(entity: Entity) {
+		if (!entity) return;
+		this._ignoreEntities = this._ignoreEntities.filter((e) => e?.getScene?.() !== null);
+		if (this._ignoreEntities.some((e) => e?.id === entity.id)) return;
 		this._ignoreEntities.push(entity);
 	}
 
@@ -60,7 +63,8 @@ export class Collider extends Component implements CollisionDetectionStategy {
 	}
 
 	isIgnoringEntity(entity: Entity): boolean {
-		const _entity =this._ignoreEntities.find((e) => e?.id === entity?.id);
+		this._ignoreEntities = this._ignoreEntities.filter((e) => e?.getScene?.() !== null);
+		const _entity = this._ignoreEntities.find((e) => e?.id === entity?.id);
 		return _entity !== undefined;
 	}
 
