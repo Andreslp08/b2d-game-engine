@@ -1,0 +1,59 @@
+﻿{"frames": {
+
+"player-idle0000":
+{
+	"frame": {"x":0,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+},
+"player-idle0001":
+{
+	"frame": {"x":254,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+},
+"player-idle0002":
+{
+	"frame": {"x":508,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+},
+"player-idle0003":
+{
+	"frame": {"x":762,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+},
+"player-idle0004":
+{
+	"frame": {"x":1016,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+},
+"player-idle0005":
+{
+	"frame": {"x":1270,"y":0,"w":254,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":254,"h":637},
+	"sourceSize": {"w":254,"h":637}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "22.0.4.185",
+	"image": "player-dile.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":1024},
+	"scale": "1"
+}
+}
