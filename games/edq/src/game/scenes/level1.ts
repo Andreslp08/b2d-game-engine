@@ -20,6 +20,7 @@ import { createSpinesBug } from "../prefabs/spines-enemy";
 import { Parallax } from "engine/graphics/components/parallax";
 import { RenderLayers } from "engine/graphics/render/render-layers";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
+import { PlayerSkin } from "../config/constants";
 
 export class Level1 extends GameScene {
 	player: GameObject;
@@ -83,7 +84,7 @@ export class Level1 extends GameScene {
 			this.addEntity(box);
 		}
 
-		const playerId = this.addEntity(createPlayer(new Vector2(0, -4)));
+		const playerId = this.addEntity(createPlayer({position:new Vector2(0, -4), skin: PlayerSkin.SKIN1}));
 		this.player = this.getEntityById<GameObject>(playerId);
 		// setTimeout(() => {
 		// 	this.player.transform.position = new Vector2(0, -199);
