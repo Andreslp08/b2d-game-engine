@@ -1,4 +1,5 @@
 import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
+import { PLAYER_IMAGES_ASSETS } from "./player/textures/images";
 
 export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     // UI
@@ -32,41 +33,7 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     },
     { type: GameAssetsTypes.Image, name: "spritesheet:box", path: "/assets/textures/Box.png" },
     { type: GameAssetsTypes.Image, name: "spritesheet:city", path: "/assets/textures/city.png" },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-idle",
-        path: "/assets/textures/player-idle.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-idle-no-arms",
-        path: "/assets/textures/player-idle-no-arms.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-right-arm",
-        path: "/assets/textures/player-right-arm.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-run",
-        path: "/assets/textures/player-run.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-run-no-arm",
-        path: "/assets/textures/player-run-no-arm.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-jump",
-        path: "/assets/textures/player-jump.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:player-jump-no-arm",
-        path: "/assets/textures/player-jump-no-arm.png",
-    },
+    ...PLAYER_IMAGES_ASSETS,
     {
         type: GameAssetsTypes.Image,
         name: "spritesheet:soldier-idle",
