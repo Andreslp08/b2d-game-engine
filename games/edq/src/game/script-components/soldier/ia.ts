@@ -67,7 +67,7 @@ export class SoliderIA extends ScriptComponent {
 
 		const distanceToPlayer = MathUtil.getDistanceBetweenEntities(this.entity, player);
 		const state = this.stateMachine.stateValue();
-		console.log("current stat", state.name);
+
 
 		if (state.name === "patrol") {
 			this.updatePatrol(transform, body);
