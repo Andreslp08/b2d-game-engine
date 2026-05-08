@@ -15,14 +15,22 @@ import { LootInputController } from "../script-components/player/loot-input-cont
 import { PlayerLifeController } from "../script-components/player/player-life-controller";
 import { AimingController } from "../script-components/player/aiming-controller";
 import { PlayerAimingArm } from "../script-components/player/player-aiming-arm";
+import { PlayerSkin } from "../config/constants";
+import { PlayerSkinComponent } from "../script-components/player/player-skin-component";
 
-export const createPlayer = (position: Vector2): GameObject => {
+type Params = {
+	position: Vector2;
+	skin?: PlayerSkin;
+};
+export const createPlayer = (params: Params): GameObject => {
+	const { position, skin = PlayerSkin.SKIN1 } = params;
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
 		size: new Vector2(0.8, 1.8),
 	});
 	entity.addTag("player");
+	entity.addComponent(new PlayerSkinComponent(skin));
 	entity.addComponent(new PlayerSpriteController());
 	entity.addComponent(new DynamicBody());
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
@@ -33,7 +41,7 @@ export const createPlayer = (position: Vector2): GameObject => {
 	entity.addComponent(new FallDamage());
 	entity.addComponent(new PlayerHud());
 	entity.addComponent(new PlayerLifeController());
-	entity.addComponent(new PlayerAimingArm());
+	entity.addComponent(new PlayerAimingArm(skin));
 	const loot = new Loot();
 	loot.setSlot(0, { type: LootType.HAND, data: null }, true);
 	loot.setSlot(1, { type: LootType.WEAPON, data: { a: 2 } }, false);
