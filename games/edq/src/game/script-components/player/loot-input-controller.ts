@@ -27,7 +27,6 @@ export class LootInputController extends ScriptComponent {
 		this.slots.forEach((slot) => {
 			if (KeyBoardManager.keyDown(slot.key)) {
 				loot.setCurrentSlot(slot.slot);
-				console.log(KeyBoardManager.keyDown(slot.key));
 			}
 		});
 	}
