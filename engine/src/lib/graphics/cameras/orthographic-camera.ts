@@ -115,19 +115,36 @@ export class OrthographicCamera extends Camera {
 		return new Vector2(worldX, worldY);
 	}
 
+	getScreenSpacePositionFromCanvasRelativePosition(canvasRelativePosition: Vector2): Vector2 {
+		const canvas = Screen.getInstance().getCanvasElement();
+		const canvasRect = canvas.getBoundingClientRect();
+		const screen = Screen.getInstance();
+		const baseResolution = screen.baseResolution;
+		const resolution = screen.getResolution();
+		const uiScale = Math.min(
+			resolution.x / baseResolution.x,
+			resolution.y / baseResolution.y
+		) || 1;
+		const canvasPixelRatioX = canvasRect.width > 0 ? canvas.width / canvasRect.width : 1;
+		const canvasPixelRatioY = canvasRect.height > 0 ? canvas.height / canvasRect.height : 1;
+
+		return new Vector2(
+			(canvasRelativePosition.x * canvasPixelRatioX) / uiScale,
+			(canvasRelativePosition.y * canvasPixelRatioY) / uiScale
+		);
+	}
+
 	getScreenPositionFromWorldPosition(
 		worldPosition: Vector2,
 		parallax = new Vector2(1, 1)
 	): Vector2 {
 		if (!this.renderingContext) return new Vector2(0, 0);
-
 		const screen = Screen.getInstance();
 		const baseRes = screen.baseResolution;
 		const canvasRes = screen.getResolution();
 		const scaleX = canvasRes.x / baseRes.x;
 		const scaleY = canvasRes.y / baseRes.y;
 		const uniformUIScale = Math.min(scaleX, scaleY);
-
 		const scale = this.calculateScale(this.renderingContext);
 		const offset = this.calculateOffset(this.renderingContext);
 		const camera = this.calculateCameraPositionWithParallax(parallax);
