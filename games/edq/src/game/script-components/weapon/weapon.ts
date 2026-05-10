@@ -90,14 +90,13 @@ export class WeaponController extends ScriptComponent {
 		}
 
 		const angle = MathUtil.radToDeg(angleInRads);
-		const directionX = aimDir.x >= 0 ? 1 : -1;
 
 		const bullet = createBullet(spawnPosition);
 		bullet.setZindex(0);
 		bullet.getComponent(Transform).rotation = angle;
 
 		const kinematic = bullet.getComponent(KinematicBody);
-		const bulletSpeed = 20;
+		const bulletSpeed = 2;
 		kinematic.velocity = aimDir.clone().multiplyBy(bulletSpeed);
 
 		const collider = bullet.getComponent(Collider);
@@ -108,7 +107,7 @@ export class WeaponController extends ScriptComponent {
 		if (scene) scene.addEntity(bullet);
 
 		const sprite = bullet.getComponent(Sprite);
-		if (sprite) sprite.setDirection({ x: directionX, y: 1 });
+		if (sprite) sprite.setRotation(angleInRads);
 	}
 
 	onLateUpdate(): void {
