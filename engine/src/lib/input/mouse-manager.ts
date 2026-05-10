@@ -1,4 +1,3 @@
-import { Scene } from "../scenes/scene";
 import { Screen } from "../graphics/screen/screen";
 import {
 	ClickEvent,
@@ -7,25 +6,30 @@ import {
 	WheelEventListener,
 } from "./interfaces/mouse.interface";
 import Vector2 from "../math/vector2";
-import { PIXELS_PER_METER } from "../common/constants";
+
+export type MouseCursorRenderMode = "system" | "hidden" | "custom";
 
 export class MouseManager {
-	private static _position: Vector2 = new Vector2(0, 0);
+	private static _canvasRelativePosition: Vector2 = new Vector2(0, 0);
+	private static _clientPosition: Vector2 = new Vector2(0, 0);
 	private static _positionOffset: Vector2 = new Vector2(0, 0);
-	private static cursorVisible: boolean = true;
+	private static _cursorInputEnabled: boolean = true;
+	private static _cursorRenderMode: MouseCursorRenderMode = "system";
 	private static clicksDown: object = {};
 
 	static listen() {
 		window.addEventListener("contextmenu", (e: Event) => {
 			e.preventDefault();
 		});
-		MouseManager._position = new Vector2(0, 0);
+		MouseManager._canvasRelativePosition = new Vector2(0, 0);
+		MouseManager._clientPosition = new Vector2(0, 0);
 		const onMouseMove = (e: MouseEvent) => {
 			const canvas = Screen.getInstance().getCanvasElement();
 			const canvasRect = canvas.getBoundingClientRect();
-			MouseManager._position = new Vector2(
+			MouseManager._clientPosition = new Vector2(e.clientX, e.clientY);
+			MouseManager._canvasRelativePosition = new Vector2(
 				e.clientX - canvasRect.left,
-				e.clientY - canvasRect.top
+				e.clientY - canvasRect.top,
 			);
 			MouseManager._positionOffset = new Vector2(e.offsetX, e.offsetY);
 		};
@@ -109,20 +113,44 @@ export class MouseManager {
 		return this.clicksDown["right"] === true ? true : false;
 	}
 
-	public static getPosition(): Vector2 {
-		return MouseManager._position;
+	public static setCursorInputEnabled(enabled: boolean): void {
+		MouseManager._cursorInputEnabled = enabled;
 	}
 
-	public static showCursor(visible: boolean): void {
-		MouseManager.cursorVisible = visible;
-		if (visible) {
-			document.body.style.cursor = "default";
-		} else {
-			document.body.style.cursor = "none";
-		}
+	public static isCursorInputEnabled(): boolean {
+		return MouseManager._cursorInputEnabled;
+	}
+
+	/**
+	 * Posicion del mouse relativa al canvas del juego.
+	 * Equivale a: `mouse client position - canvas.getBoundingClientRect()`.
+	 */
+	public static getRelativePosition(): Vector2 {
+		return MouseManager._canvasRelativePosition;
+	}
+
+
+	/**
+	 * Posicion real del mouse en coordenadas del viewport/ventana (`clientX`, `clientY`).
+	 */
+	public static getClientPosition(): Vector2 {
+		return MouseManager._clientPosition;
+	}
+
+	public static setCursorRenderMode(mode: MouseCursorRenderMode): void {
+		MouseManager._cursorRenderMode = mode;
+		document.body.style.cursor = mode === "system" ? "default" : "none";
+	}
+
+	public static getCursorRenderMode(): MouseCursorRenderMode {
+		return MouseManager._cursorRenderMode;
+	}
+
+	public static isSystemCursorVisible(): boolean {
+		return MouseManager._cursorRenderMode === "system";
 	}
 
 	public static isCursorVisible(): boolean {
-		return MouseManager.cursorVisible;
+		return MouseManager._cursorRenderMode !== "hidden";
 	}
 }
