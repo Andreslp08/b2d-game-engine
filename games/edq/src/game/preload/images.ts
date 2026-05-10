@@ -10,6 +10,9 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     },
     { type: GameAssetsTypes.Image, name: "ui:health-icon", path: "/assets/ui/health-icon.png" },
     { type: GameAssetsTypes.Image, name: "ui:shield-icon", path: "/assets/ui/shield-icon.png" },
+    { type: GameAssetsTypes.Image, name: "ui:crosshair", path: "/assets/ui/crosshair/main-crosshair.png" },
+    { type: GameAssetsTypes.Image, name: "ui:crosshair-main-circle", path: "/assets/ui/crosshair/main-circle.png" },
+    { type: GameAssetsTypes.Image, name: "ui:crosshair-secondary-circle", path: "/assets/ui/crosshair/secondary-circle.png" },
     // spritesheets
     {
         type: GameAssetsTypes.Image,

@@ -84,7 +84,9 @@ export class Level1 extends GameScene {
 			this.addEntity(box);
 		}
 
-		const playerId = this.addEntity(createPlayer({position:new Vector2(0, -4), skin: PlayerSkin.SKIN1}));
+		const playerId = this.addEntity(
+			createPlayer({ position: new Vector2(0, -4), skin: PlayerSkin.SKIN1 }),
+		);
 		this.player = this.getEntityById<GameObject>(playerId);
 		// setTimeout(() => {
 		// 	this.player.transform.position = new Vector2(0, -199);
@@ -185,7 +187,7 @@ export class Level1 extends GameScene {
 
 	testMouse() {
 		const mouseWorldPosition = this.camera.getWorldPositionFromScreenPosition(
-			MouseManager.getPosition(),
+			MouseManager.getRelativePosition(),
 		);
 		if (!mouseWorldPosition) return;
 		const mouseX = mouseWorldPosition.x;

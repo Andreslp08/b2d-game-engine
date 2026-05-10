@@ -43,7 +43,7 @@ export class PlayerLifeController extends ScriptComponent {
 		if (!gameObject) return;
 		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
 		if (!spriteAnimation) return;
-		const arm = gameObject.getComponent(PlayerAimingArm)?.arm;
+		const arm = gameObject.getComponent(PlayerAimingArm)?.getArm();
 		const armSprite = arm?.getComponent(Sprite);
 		const damageFilter = "sepia(1) hue-rotate(-50deg) saturate(6) brightness(1.1)";
 

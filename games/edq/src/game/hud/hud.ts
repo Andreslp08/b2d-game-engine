@@ -5,10 +5,13 @@ import { HealthComponent } from "../script-components/shared/health-component";
 import { SegmentBarUI } from "./components/segment-bar-ui";
 import Vector2 from "engine/math/vector2";
 import { ShieldComponent } from "../script-components/shared/shield-component";
+import { CrossHairUI } from "./components/crosshair-ui";
+import { AimingController } from "../script-components/player/aiming-controller";
 
 class HudUI extends UIObject {
 	private _healthUI: SegmentBarUI;
 	private _shieldUI: SegmentBarUI;
+	private _crosshair: CrossHairUI;
 	constructor() {
 		super();
 		const healthX = 10;
@@ -26,13 +29,18 @@ class HudUI extends UIObject {
 		);
 		this._shieldUI.setSegmentColor("#A7A7A7");
 		this.addComponent(this._shieldUI);
+
+		this._crosshair = new CrossHairUI();
+		this.addComponent(this._crosshair);
 	}
 
 	attachTo(entity: GameObject) {
+		this._crosshair.update();
 		this.updateHud(entity);
 	}
 
 	private updateHud(entity: GameObject) {
+		const isPlayer = entity.hasTag("player");
 		const healthComponent = entity.getComponent(HealthComponent);
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		if (healthComponent) {
@@ -42,6 +50,12 @@ class HudUI extends UIObject {
 		if (shieldComponent) {
 			this._shieldUI.setValue(shieldComponent.getShield());
 			this._shieldUI.setMaxValue(shieldComponent.getMaxShield());
+		}
+		if(isPlayer) {
+			const aimingController = entity.getComponent(AimingController);
+			if (aimingController) {
+				this._crosshair.setVisible(aimingController.isAiming());
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ import { currentGameInstance } from "./game/game";
 import { AnimatePresence, motion } from "framer-motion";
 import { InGameLayer } from "./ui/in-game-layers";
 import { GeneralLayer } from "./ui/general-layers";
+import { MouseManager } from "engine/input/mouse-manager";
 function App() {
 	const runningGame = useGameStore((state) => state.runningGame);
 	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
@@ -27,9 +28,11 @@ function App() {
 
 	useEffect(() => {
 		if (runningGame) {
+			MouseManager.setCursorRenderMode("hidden");
 			showGeneralLayer(false);
 			showInGameLayer(true);
 		} else {
+			MouseManager.setCursorRenderMode("system");
 			showGeneralLayer(true);
 			showInGameLayer(false);
 		}

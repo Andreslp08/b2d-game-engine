@@ -207,7 +207,7 @@ export class PlayerSpriteController extends ScriptComponent {
 		const epsilon = 0.01;
 		const isMoving = velocityX > epsilon;
 
-		const mousePos = MouseManager.getPosition();
+		const mousePos = MouseManager.getRelativePosition();
 		const mouseWorldPos = (
 			Cameras.currentCamera as OrthographicCamera
 		).getWorldPositionFromScreenPosition(mousePos);

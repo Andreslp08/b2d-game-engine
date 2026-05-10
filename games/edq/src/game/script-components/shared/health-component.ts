@@ -192,7 +192,7 @@ export class HealthComponent extends ScriptComponent {
 			const currentCamera = Cameras.currentCamera as OrthographicCamera;
 
 			if (currentCamera) {
-				// Posición ideal para centrar la barra arriba del objeto
+				// PosiciÃ³n ideal para centrar la barra arriba del objeto
 				const topCenter = gameObj.transform.position
 					.clone()
 					.substract(new Vector2(0, gameObj.transform.size.y / 2));

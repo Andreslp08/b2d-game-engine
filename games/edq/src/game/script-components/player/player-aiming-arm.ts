@@ -170,6 +170,10 @@ export class PlayerAimingArm extends ScriptComponent {
 
 	onFixedUpdate(): void {}
 
+	getArm(): GameObject | null {
+		return this.arm ?? null;
+	}
+
 	onUpdate(): void {
 		this.autoAddEntityToScene();
 		this.attachArmToPlayer();
