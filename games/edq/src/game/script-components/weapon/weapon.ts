@@ -96,7 +96,7 @@ export class WeaponController extends ScriptComponent {
 		bullet.getComponent(Transform).rotation = angle;
 
 		const kinematic = bullet.getComponent(KinematicBody);
-		const bulletSpeed = 2;
+		const bulletSpeed = 25;
 		kinematic.velocity = aimDir.clone().multiplyBy(bulletSpeed);
 
 		const collider = bullet.getComponent(Collider);
