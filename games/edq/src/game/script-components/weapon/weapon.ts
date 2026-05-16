@@ -14,6 +14,7 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { createBullet } from "../../prefabs/bullet";
 import { AimingController } from "../player/aiming-controller";
 import { PlayerAimingArm } from "../player/player-aiming-arm";
+import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
@@ -38,11 +39,21 @@ export class WeaponHolder extends ScriptComponent {
 
 export class WeaponController extends ScriptComponent {
 	weaponHolder: GameObject | null = null;
-	shooting = false;
 	fireCooldown = 0;
 	enableController = true;
+	private weaponEffectDuration = 0.1;
+	private weaponEffectRemainingTime = 0;
+	weaponEffectSprite:Sprite = new Sprite({
+		image: AssetsManager.getImageByName("spritesheet:gunfire-effect1"),
+		framePosition: new Vector2(0, 0),
+		frameSize: { w: 951, h: 616 },
+		scale: new Vector2(0.7, 0.7),
+	});
 
-	onStart(): void {}
+	onStart(): void {
+		this.entity.addComponent(this.weaponEffectSprite);
+		this.weaponEffectSprite.setVisible(false);
+	}
 
 	setWeaponHolder(weaponHolder: GameObject) {
 		if (weaponHolder.hasTag("weapon")) return;
@@ -52,7 +63,6 @@ export class WeaponController extends ScriptComponent {
 	}
 
 	shot() {
-		if (this.shooting) return;
 		if (!this.weaponHolder) return;
 
 		const weaponObject = this.entity as GameObject;
@@ -108,6 +118,19 @@ export class WeaponController extends ScriptComponent {
 
 		const sprite = bullet.getComponent(Sprite);
 		if (sprite) sprite.setRotation(angleInRads);
+
+		this.weaponEffectRemainingTime = this.weaponEffectDuration;
+		this.weaponEffectSprite.setVisible(true);
+	}
+
+	onUpdate(): void {
+		if (this.weaponEffectRemainingTime <= 0) return;
+
+		this.weaponEffectRemainingTime -= Time.deltaTime;
+		if (this.weaponEffectRemainingTime <= 0) {
+			this.weaponEffectRemainingTime = 0;
+			this.weaponEffectSprite.setVisible(false);
+		}
 	}
 
 	onLateUpdate(): void {
@@ -131,6 +154,8 @@ export class WeaponController extends ScriptComponent {
 		if (!isAiming) {
 			this.enableController = false;
 			weaponSprite.setVisible(false);
+			this.weaponEffectRemainingTime = 0;
+			this.weaponEffectSprite.setVisible(false);
 		} else {
 			this.enableController = true;
 			weaponSprite.setVisible(true);
@@ -146,6 +171,9 @@ export class WeaponController extends ScriptComponent {
 		weaponSprite.setRotation(45 * aimingDirectionInX);
 		weaponSprite.setPivot(new Vector2(0.5, 0.2));
 		weaponObject.setZindex(1);
+		this.weaponEffectSprite.setDirection({ x: aimingDirectionInX, y: 1 });
+		this.weaponEffectSprite.setRotation(45 * aimingDirectionInX);
+		this.weaponEffectSprite.setPivot(new Vector2(-0.4, 0.6));
 	}
 
 	onFixedUpdate(): void {

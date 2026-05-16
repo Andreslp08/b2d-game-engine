@@ -34,6 +34,11 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
         name: "spritesheet:desert-eagle-bullet",
         path: "/assets/textures/desert-eagle-bullet.png",
     },
+    {
+        type: GameAssetsTypes.Image,
+        name: "spritesheet:gunfire-effect1",
+        path: "/assets/textures/weapon-effects/gunfire-effect1.png",
+    },
     { type: GameAssetsTypes.Image, name: "spritesheet:box", path: "/assets/textures/Box.png" },
     { type: GameAssetsTypes.Image, name: "spritesheet:city", path: "/assets/textures/city.png" },
     ...PLAYER_IMAGES_ASSETS,
