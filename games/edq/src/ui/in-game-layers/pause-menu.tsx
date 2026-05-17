@@ -1,15 +1,19 @@
 import { motion, type Variants } from "framer-motion";
 import { useGameStore } from "../../store/store";
 import { currentGameInstance } from "../../game/game";
+import { Button } from "../shared/components/button";
+import { FramedPanel } from "../shared/components/framed-panel";
 
-const backdropVariants:Variants = {
+const backdropVariants: Variants = {
 	hidden: {
 		opacity: 0,
 		backgroundColor: "rgba(0, 0, 0, 0)",
+		backdropFilter: "blur(0px)",
 	},
 	visible: {
 		opacity: 1,
 		backgroundColor: "rgba(0, 0, 0, 0.5)",
+		backdropFilter: "blur(10px)",
 		transition: {
 			duration: 0.3,
 			when: "beforeChildren" as const,
@@ -19,6 +23,7 @@ const backdropVariants:Variants = {
 	exit: {
 		opacity: 0,
 		backgroundColor: "rgba(0, 0, 0, 0)",
+		backdropFilter: "blur(0px)",
 		transition: {
 			duration: 0.3,
 			when: "afterChildren" as const,
@@ -26,7 +31,7 @@ const backdropVariants:Variants = {
 	},
 };
 
-const modalVariants:Variants = {
+const modalVariants: Variants = {
 	hidden: {
 		opacity: 0,
 		y: -24,
@@ -57,10 +62,7 @@ type PauseMenuLayerProps = {
 	onRequestResume?: () => void;
 };
 
-export const PauseMenuLayer = ({
-	onEnterComplete,
-	onRequestResume,
-}: PauseMenuLayerProps) => {
+export const PauseMenuLayer = ({ onEnterComplete, onRequestResume }: PauseMenuLayerProps) => {
 	const setVisible = useGameStore((state) => state.uiLayers.inGameLayer.pauseMenu.setVisible);
 	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
 	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
@@ -99,14 +101,16 @@ export const PauseMenuLayer = ({
 						onEnterComplete?.();
 					}
 				}}
-				className="w-50 h-50 flex flex-col items-center justify-center bg-black rounded-lg p-4"
 			>
-				<button onClick={resumeGame} className="text-white">
-					Resume
-				</button>
-				<button onClick={mainMenu} className="text-white">
-					Main menu
-				</button>
+				<FramedPanel>
+					<div className="flex flex-col items-center justify-center xl:w-[500px]">
+						<h1 className="modal-title">Paused</h1>
+						<div className="grid grid-cols-1 gap-3">
+							<Button onClick={resumeGame} text="Resume" />
+							<Button onClick={mainMenu} text="Main menu" />
+						</div>
+					</div>
+				</FramedPanel>
 			</motion.div>
 		</motion.div>
 	);
