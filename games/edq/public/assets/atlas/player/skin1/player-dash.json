@@ -1,0 +1,27 @@
+﻿{"frames": {
+
+"player-dash10000":
+{
+	"frame": {"x":0,"y":0,"w":414,"h":624},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":414,"h":624},
+	"sourceSize": {"w":414,"h":624}
+},
+"player-dash10001":
+{
+	"frame": {"x":414,"y":0,"w":414,"h":624},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":414,"h":624},
+	"sourceSize": {"w":414,"h":624}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "22.0.4.185",
+	"image": "skin1.png",
+	"format": "RGBA8888",
+	"size": {"w":1024,"h":1024},
+	"scale": "1"
+}
+}

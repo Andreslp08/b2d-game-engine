@@ -36,4 +36,9 @@ export const PLAYER_SKIN2_ASSETS:  AssetToPreload<any>[] = [
         name: "spritesheet:player-skin2-jump-no-arm",
         path: "/assets/textures/player/skin2/player-jump-no-arm.png",
     },
+        {
+        type: GameAssetsTypes.Image,
+        name: "spritesheet:player-skin2-dash",
+        path: "/assets/textures/player/skin2/player-dash.png",
+    },
 ];

@@ -23,11 +23,6 @@ export const PLAYER_SKIN1_ATLAS_ASSETS:  AssetToPreload<any>[] = [
 	},
 	{
 		type: GameAssetsTypes.Atlas,
-		name: "atlas:soldier-idle",
-		path: "/assets/atlas/soldier-idle.json",
-	},
-	{
-		type: GameAssetsTypes.Atlas,
 		name: "atlas:player-skin1-jump",
 		path: "/assets/atlas/player/skin1/player-jump.json",
 	},
@@ -35,11 +30,6 @@ export const PLAYER_SKIN1_ATLAS_ASSETS:  AssetToPreload<any>[] = [
 		type: GameAssetsTypes.Atlas,
 		name: "atlas:player-skin1-jump-no-arm",
 		path: "/assets/atlas/player/skin1/player-jump-no-arm.json",
-	},
-	{
-		type: GameAssetsTypes.Atlas,
-		name: "atlas:spines-bug",
-		path: "/assets/atlas/spines-bug.json",
 	},
 	{
 		type: GameAssetsTypes.Atlas,
@@ -78,7 +68,7 @@ export const PLAYER_SKIN1_ATLAS_ASSETS:  AssetToPreload<any>[] = [
 	},
 	{
 		type: GameAssetsTypes.Atlas,
-		name: "atlas:spines-bug",
-		path: "/assets/atlas/spines-bug.json",
+		name: "atlas:player-skin1-dash",
+		path: "/assets/atlas/player/skin1/player-dash.json",
 	},
 ];

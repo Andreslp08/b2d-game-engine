@@ -8,6 +8,7 @@ import Vector2 from "engine/math/vector2";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { Loot, LootType } from "./loot";
+import { PlayerMovement } from "./player-movement";
 
 export class AimingController extends ScriptComponent {
 	private _isAiming = false;
@@ -35,9 +36,11 @@ export class AimingController extends ScriptComponent {
 		const currentSlot = loot.getCurrentSlot();
 		const dynamicBody = this.gameObject.getComponent(DynamicBody);
 		if (!dynamicBody) return;
+		const movement = this.gameObject.getComponent(PlayerMovement);
+		const isDashing = movement ? movement.isDashing : false;
 
-		this._isAiming = !dynamicBody.isOnGround
-			? false
+		this._isAiming = !dynamicBody.isOnGround || 
+			isDashing? false
 			: !!(currentSlot?.item && currentSlot.item.type === LootType.WEAPON);
 		MouseManager.setCursorInputEnabled(this._isAiming);
 

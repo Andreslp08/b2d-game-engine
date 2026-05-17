@@ -1,7 +1,7 @@
 import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
-import { BasicMovement } from "../script-components/player/basic-movement";
+import { PlayerMovement } from "../script-components/player/player-movement";
 import { PlayerController } from "../script-components/player/player-controller";
 import { PlayerCameraController } from "../script-components/player/player-camera-controller";
 import { HealthComponent } from "../script-components/shared/health-component";
@@ -35,7 +35,7 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new PlayerSpriteController());
 	entity.addComponent(new DynamicBody());
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
-	entity.addComponent(new BasicMovement());
+	entity.addComponent(new PlayerMovement());
 	entity.addComponent(new PlayerController());
 	entity.addComponent(new PlayerCameraController());
 	entity.addComponent(new HealthComponent(100, 100, false));
@@ -55,7 +55,7 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new WeaponHolder());
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(DynamicBody);
-	const playerMovement = entity.getComponent(BasicMovement);
+	const playerMovement = entity.getComponent(PlayerMovement);
 	playerMovement.direction.x = 1;
 	collider.setSize(new Vector2(0.5, entity.transform.size.y));
 	collider.setOffsetPosition(new Vector2(0, 0));
@@ -66,6 +66,10 @@ export const createPlayer = (params: Params): GameObject => {
 	playerMovement.forceX = 14000;
 	playerMovement.forceY = 16000;
 	playerMovement.maxJumpHeight = 1.2;
+	playerMovement.dashForceX = 17000;
+	playerMovement.dashMaxSpeedX = 13;
+	playerMovement.dashDuration = 0.16;
+	playerMovement.dashCooldown = 0.45;
 	playerBody.bounciness = new Vector2(0, 0);
 	return entity;
 };

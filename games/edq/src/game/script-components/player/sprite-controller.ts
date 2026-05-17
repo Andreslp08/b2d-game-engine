@@ -11,6 +11,7 @@ import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera"
 import { AimingController } from "./aiming-controller";
 import { PlayerSkinComponent } from "./player-skin-component";
 import { PlayerSkin } from "../../config/constants";
+import { PlayerMovement } from "./player-movement";
 
 export enum PlayerAnimationKey {
 	IDLE = "idle",
@@ -19,6 +20,7 @@ export enum PlayerAnimationKey {
 	RUN_NO_ARM = "run-no-arm",
 	JUMP = "jump",
 	JUMP_NO_ARM = "jump-no-arm",
+	DASH = "dash",
 }
 
 type PlayerSkinAssetDefinition = {
@@ -66,6 +68,12 @@ const PLAYER_SKIN_DEFINITIONS: Record<PlayerSkin, PlayerSkinDefinition> = {
 			atlasKey: "atlas:player-skin1-jump-no-arm",
 			scale: new Vector2(1.5, 1),
 		},
+		[PlayerAnimationKey.DASH]: {
+			animationName: "dash",
+			imageKey: "spritesheet:player-skin1-dash",
+			atlasKey: "atlas:player-skin1-dash",
+			scale: new Vector2(1.5, 1),
+		},
 	},
 
 	[PlayerSkin.SKIN2]: {
@@ -101,6 +109,12 @@ const PLAYER_SKIN_DEFINITIONS: Record<PlayerSkin, PlayerSkinDefinition> = {
 			animationName: "jump-no-arm",
 			imageKey: "spritesheet:player-skin2-jump-no-arm",
 			atlasKey: "atlas:player-skin2-jump-no-arm",
+			scale: new Vector2(1.5, 1),
+		},
+		[PlayerAnimationKey.DASH]: {
+			animationName: "dash",
+			imageKey: "spritesheet:player-skin2-dash",
+			atlasKey: "atlas:player-skin2-dash",
 			scale: new Vector2(1.5, 1),
 		},
 	},
@@ -191,6 +205,12 @@ export class PlayerSpriteController extends ScriptComponent {
 		const aimingController = this.gameObject.getComponent(AimingController);
 		if (!aimingController) return;
 
+		const playerMovement = this.gameObject.getComponent(PlayerMovement);
+		if (!playerMovement) return;
+		
+		const isDashing = playerMovement.isDashing;
+		console.log("isDashing", isDashing);
+
 		const isAiming = aimingController.isAiming();
 		const aimingDirection = aimingController.getAimingDirection();
 
@@ -201,6 +221,10 @@ export class PlayerSpriteController extends ScriptComponent {
 		if (!spriteAnimation) return;
 
 		spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
+		if(isDashing) {
+			spriteAnimation.setAnimation(this.spritesheets[PlayerAnimationKey.DASH], false, this.animationSpeed, false);
+			return
+		}
 
 		const { isOnGround } = dynamicBody;
 		const velocityX = Math.abs(dynamicBody.velocity.x);
