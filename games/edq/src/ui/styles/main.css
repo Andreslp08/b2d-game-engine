@@ -60,5 +60,49 @@
     opacity: 0.3;
     z-index: -1;
   }
+}
+@utility body-font{
+  font-family: var(--font-body);
+}
+@utility heading-font-variant{
+  font-family: var(--font-heading-variant);
+}
 
+
+@utility modal-title{
+  font-family: monospace;
+  @apply text-white uppercase heading-font-variant  text-2xl md:text-3xl lg:text-4xl xl:text-5xl my-6;
+}
+
+
+
+.stroke-content {
+  --stroke-width: 12px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: calc(1.25rem + var(--stroke-width));
+  background: #0a0c0f;
+  background: -webkit-linear-gradient(to bottom, #0a0c0f 0%, #16151c 40%, #16151c 50%, #15090c 75%, #150000 100%);
+  background: linear-gradient(to bottom, #0a0c0f 0%, #16151c 40%, #16151c 50%, #15090c 75%, #150000 100%);
+}
+
+.stroke-content::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: var(--stroke-width) solid transparent;
+  border-image-source: url("/assets/ui/stroke-shape.svg");
+  border-image-slice: 25;
+  border-image-width: 1;
+  border-image-repeat: stretch;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.stroke-content > * {
+  position: relative;
+  z-index: 1;
 }
