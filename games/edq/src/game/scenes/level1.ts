@@ -29,7 +29,8 @@ export class Level1 extends GameScene {
 
 	constructor() {
 		super("Delivery 1", GameSceneLevel.EASY);
-		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))";
+		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
+		Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
 		// DebugMode.enabled = true;
 		DebugMode.setMode(DebugTypes.ALL);
 		Cameras.currentCamera.setFieldOfView(1);
