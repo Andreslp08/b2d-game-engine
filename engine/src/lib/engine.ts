@@ -98,10 +98,16 @@ export class Engine {
 
 	public pause() {
 		Engine._isPaused = true;
+		this.accumulator = 0;
+		this.lastFrameTime = performance.now();
+		Time.setFixedUpdateAccumulator(0);
 	}
 
 	public resume() {
 		Engine._isPaused = false;
+		this.accumulator = 0;
+		this.lastFrameTime = performance.now();
+		Time.setFixedUpdateAccumulator(0);
 	}
 
 	public static get isRunning(): boolean {
@@ -150,20 +156,29 @@ export class Engine {
 		}
 		this.lastFrameTime = currentTime;
 
+		if (Engine._isPaused || Engine._sleeping) {
+			this.accumulator = 0;
+			Time.setFixedUpdateAccumulator(0);
+			this.clearCanvas();
+			if (this.scene?.renderer && !Engine._sleeping) {
+				this.scene.renderer.render(Engine._context);
+			}
+			requestAnimationFrame = window.requestAnimationFrame(this.loop);
+			return;
+		}
+
 		const dt = elapsed / 1000;
 		this.accumulator = Math.min(this.accumulator + dt, 0.25);
 
-		if (!Engine._isPaused && !Engine._sleeping) {
-			if (this.scene) {
-				while (this.accumulator >= this.fixedDelta * Time.timeScale) {
-					this.scene.fixedUpdate?.();
-					Time.fixedUpdate(this.fixedDelta);
-					this.accumulator -= this.fixedDelta;
-				}
-				Time.update(dt);
-				Time.setFixedUpdateAccumulator(this.accumulator);
-				this.scene.update();
+		if (this.scene) {
+			while (this.accumulator >= this.fixedDelta * Time.timeScale) {
+				this.scene.fixedUpdate?.();
+				Time.fixedUpdate(this.fixedDelta);
+				this.accumulator -= this.fixedDelta;
 			}
+			Time.update(dt);
+			Time.setFixedUpdateAccumulator(this.accumulator);
+			this.scene.update();
 		}
 
 		this.clearCanvas();
