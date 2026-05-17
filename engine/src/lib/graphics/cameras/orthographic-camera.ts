@@ -150,8 +150,8 @@ export class OrthographicCamera extends Camera {
 		const camera = this.calculateCameraPositionWithParallax(parallax);
 
 		return new Vector2(
-			(worldPosition.x / uniformUIScale - camera.x / uniformUIScale) * scale.x + offset.x,
-			(worldPosition.y / uniformUIScale - camera.y / uniformUIScale) * scale.y + offset.y
+			((worldPosition.x - camera.x) * scale.x + offset.x) / uniformUIScale,
+			((worldPosition.y - camera.y) * scale.y + offset.y) / uniformUIScale
 		);
 	}
 }
