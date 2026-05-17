@@ -50,8 +50,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 	}
 
 	render(context: CanvasRenderingContext2D): void {
-		const cameraFOV = Cameras.currentCamera.getFieldOfView();
-		const position = this.transform.position.multiplyBy(cameraFOV);
+		const position = this.transform.position;
 		const size = this.transform.size;
 		if (!this.visible) return;
 		if (!this.transform) return;
