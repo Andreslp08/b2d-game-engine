@@ -20,8 +20,9 @@ export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected indexedEntitiesByComponents: Map<ComponentClass<Component>, Entity[]> = new Map();
 	protected systems: Set<System> = new Set();
-	private _renderer: RenderSystem;
+	private _renderer: RenderSystem | null;
 	private renderFilters: string = "";
+	private destroyed = false;
 
 	constructor() {
 		this.addSystem(new CullingSystem(this));
@@ -51,6 +52,23 @@ export class Scene implements Updatable {
 
 	fixedUpdate(): void {
 		this.systems.forEach((system) => system.fixedUpdate());
+	}
+
+	destroy(): void {
+		if (this.destroyed) return;
+		this.destroyed = true;
+
+		const entities = Array.from(this.entities);
+		for (const entity of entities) {
+			this.destroyEntity(entity);
+		}
+
+		this.indexedEntitiesByComponents.clear();
+		this.systems.clear();
+		this._renderer = null;
+		this.renderFilters = "";
+		RenderLayers.reset();
+		Cameras.removeAllCameras();
 	}
 
 	get renderer() {

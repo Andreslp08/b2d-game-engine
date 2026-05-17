@@ -12,7 +12,7 @@ let requestAnimationFrame;
 export class Engine {
 	private static _canvas: HTMLCanvasElement;
 	private static _context: CanvasRenderingContext2D;
-	private scene: Scene;
+	private scene: Scene | null = null;
 	private static _isRunning: boolean = false;
 	static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
@@ -76,6 +76,8 @@ export class Engine {
 	public start() {
 		Engine._isRunning = true;
 		Engine._isPaused = false;
+		this.accumulator = 0;
+		this.lastFrameTime = performance.now();
 		requestAnimationFrame = window.requestAnimationFrame((time) => {
 			this.loop(time);
 		});
@@ -87,6 +89,9 @@ export class Engine {
 		if (requestAnimationFrame) {
 			window.cancelAnimationFrame(requestAnimationFrame);
 		}
+		requestAnimationFrame = null;
+		this.accumulator = 0;
+		this.lastFrameTime = 0;
 		this.clearCanvas();
 		this.setScene(null);
 	}
@@ -118,7 +123,10 @@ export class Engine {
 		return Engine._gameRoot;
 	}
 
-	public setScene(scene: Scene) {
+	public setScene(scene: Scene | null) {
+		if (this.scene && this.scene !== scene) {
+			this.scene.destroy();
+		}
 		this.scene = scene;
 	}
 
@@ -159,7 +167,7 @@ export class Engine {
 		}
 
 		this.clearCanvas();
-		if (this.scene.renderer && !Engine._sleeping) {
+		if (this.scene?.renderer && !Engine._sleeping) {
 			this.scene.renderer.render(Engine._context);
 		}
 
