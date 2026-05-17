@@ -209,7 +209,6 @@ export class PlayerSpriteController extends ScriptComponent {
 		if (!playerMovement) return;
 		
 		const isDashing = playerMovement.isDashing;
-		console.log("isDashing", isDashing);
 
 		const isAiming = aimingController.isAiming();
 		const aimingDirection = aimingController.getAimingDirection();
