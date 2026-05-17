@@ -3,6 +3,7 @@ import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { BasicMovement } from "../script-components/player/basic-movement";
 import { PlayerController } from "../script-components/player/player-controller";
+import { PlayerCameraController } from "../script-components/player/player-camera-controller";
 import { HealthComponent } from "../script-components/shared/health-component";
 import { FallDamage } from "../script-components/player/fall-damage";
 import { PlayerHud } from "../hud/hud";
@@ -36,6 +37,7 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
 	entity.addComponent(new BasicMovement());
 	entity.addComponent(new PlayerController());
+	entity.addComponent(new PlayerCameraController());
 	entity.addComponent(new HealthComponent(100, 100, false));
 	entity.addComponent(new ShieldComponent());
 	entity.addComponent(new FallDamage());
