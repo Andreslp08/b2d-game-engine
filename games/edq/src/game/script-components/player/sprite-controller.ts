@@ -12,6 +12,7 @@ import { AimingController } from "./aiming-controller";
 import { PlayerSkinComponent } from "./player-skin-component";
 import { PlayerSkin } from "../../config/constants";
 import { PlayerMovement } from "./player-movement";
+import { Sprite } from "engine/graphics/sprites/components/sprite";
 
 export enum PlayerAnimationKey {
 	IDLE = "idle",
@@ -155,6 +156,7 @@ export class PlayerSpriteController extends ScriptComponent {
 	private animationSpeed: number = 0.08;
 	private currentSkin: PlayerSkin;
 	private skinComponent: PlayerSkinComponent;
+	private dashSprite: Sprite;
 
 	onStart(): void {
 		this.gameObject = this.entity as GameObject;
@@ -165,6 +167,16 @@ export class PlayerSpriteController extends ScriptComponent {
 		this.skinComponent.onChangeSkin.subscribe(this.changeSkinListener);
 		this.currentSkin = this.skinComponent.getCurrentSkin();
 		this.spritesheets = PlayerSkinSpritesheetFactory.create(this.currentSkin);
+		this.dashSprite = new Sprite({
+			image: AssetsManager.getImageByName("spritesheet:dash-effect"),
+			scale: new Vector2(3, 0.5),
+			framePosition: new Vector2(0, 0),
+			pivot: new Vector2(1.2, 0.5),
+			frameSize: { w: 951, h: 616 },
+		})
+		this.dashSprite.setVisible(false);
+		this.dashSprite.setZindex(2);
+		this.entity.addComponent(this.dashSprite);
 
 		const spriteAnimation = new SpriteAnimation(
 			this.spritesheets[PlayerAnimationKey.IDLE],
@@ -220,9 +232,13 @@ export class PlayerSpriteController extends ScriptComponent {
 		if (!spriteAnimation) return;
 
 		spriteAnimation.setAnimationDirectionInX(dynamicBody.direction.x);
+		this.dashSprite.setDirection({ x: dynamicBody.direction.x, y: 1 });
 		if(isDashing) {
+			this.dashSprite.setVisible(true);
 			spriteAnimation.setAnimation(this.spritesheets[PlayerAnimationKey.DASH], false, this.animationSpeed, false);
 			return
+		}else{
+			this.dashSprite.setVisible(false);
 		}
 
 		const { isOnGround } = dynamicBody;

@@ -57,4 +57,9 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
         name: "spritesheet:spines-bug",
         path: "/assets/textures/spines-bug.png",
     },
+    {
+        type: GameAssetsTypes.Image,
+        name: "spritesheet:dash-effect",
+        path: "/assets/textures/dash-effect.png",
+    },
 ];
