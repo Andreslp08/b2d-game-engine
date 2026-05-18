@@ -1,3 +1,4 @@
+
 import { GameObject } from "engine/common/entities/game-object";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { HealthComponent } from "../shared/health-component";
@@ -27,7 +28,7 @@ export class FallDamage extends ScriptComponent {
 			const fallDistance = Math.abs(this.startFallPosition - currentPosition.y);
 			if (fallDistance > 6) {
 				const damage = fallDistance * 2.5;
-				healthComponent.setHealth(healthComponent.getHealth() - damage);
+				playerLife.setDamage(damage, "health-only");
 				playerLife.shouldEnableDamageShader = true;
 				playerLife.damageShaderStartTime = Time.time;
 			}

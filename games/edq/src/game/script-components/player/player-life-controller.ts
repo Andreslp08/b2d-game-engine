@@ -13,6 +13,8 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { GameEvent } from "engine/common/events/game-event";
 import { useGameStore } from "../../../store/store";
 
+type DamageMode = "shield-first" | "health-only";
+
 export class PlayerLifeController extends ScriptComponent {
 	private grayscaleValue: number = 0;
 	private fov: number = 1;
@@ -66,25 +68,27 @@ export class PlayerLifeController extends ScriptComponent {
 		}
 	}
 
-	setDamage(damage: number) {
+	setDamage(damage: number, mode: DamageMode = "shield-first") {
 		const entity = this.getEntity();
 		if (!entity) return;
+
 		const shieldComponent = entity.getComponent(ShieldComponent);
 		const healthComponent = entity.getComponent(HealthComponent);
-		if (shieldComponent && healthComponent) {
-			if (shieldComponent.getShield() > 0) {
-				shieldComponent.setDamage(damage);
-			} else {
+
+		if (mode === "health-only") {
+			if (healthComponent) {
 				healthComponent.setDamage(damage);
 			}
-		} else if (shieldComponent && !healthComponent) {
+		} else if (shieldComponent && shieldComponent.getShield() > 0) {
 			shieldComponent.setDamage(damage);
-		} else if (!shieldComponent && healthComponent) {
+		} else if (healthComponent) {
 			healthComponent.setDamage(damage);
 		}
+
 		this.shouldEnableDamageShader = true;
 		this.damageShaderStartTime = Time.time;
-		if(healthComponent && healthComponent.getHealth() <= 0) {
+
+		if (healthComponent && healthComponent.getHealth() <= 0) {
 			this.isDead = true;
 			this.onPlayerDie.emit();
 			useGameStore.getState().setCurrentUI("arcade", "gameOverMenu");
