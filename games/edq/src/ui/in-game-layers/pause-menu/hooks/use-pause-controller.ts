@@ -8,7 +8,6 @@ export const usePauseController = () => {
 	const pauseMenu = useGameStore((state) => state.uiLayers.inGameLayer.pauseMenu);
 	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
 	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
-	const setRunningGame = useGameStore((state) => state.setRunningGame);
 	const pendingResumeRef = useRef(false);
 	const autoPausedByVisibilityRef = useRef(false);
 	const [isTransitionLocked, setIsTransitionLocked] = useState(false);
@@ -61,7 +60,6 @@ export const usePauseController = () => {
 		inGameLayer.setVisible(false);
 		generalLayer.setVisible(true);
 		generalLayer.mainMenu.setVisible(true);
-		setRunningGame(false);
 		currentGameInstance.stop();
 	};
 

@@ -3,6 +3,7 @@ import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
 import { Time } from "./common/interfaces/time";
+import { GameEvent } from "./common/events/game-event";
 
 // let accFrameMs = 0;
 // const frameRate = 60;
@@ -12,6 +13,8 @@ let requestAnimationFrame;
 export class Engine {
 	private static _canvas: HTMLCanvasElement;
 	private static _context: CanvasRenderingContext2D;
+	public static onRunningChange: GameEvent<boolean> = new GameEvent();
+	public static onPausedChange: GameEvent<boolean> = new GameEvent();
 	private scene: Scene | null = null;
 	private static _isRunning: boolean = false;
 	static _isPaused: boolean = false;
@@ -74,8 +77,8 @@ export class Engine {
 	}
 
 	public start() {
-		Engine._isRunning = true;
-		Engine._isPaused = false;
+		Engine.setRunningState(true);
+		Engine.setPausedState(false);
 		this.accumulator = 0;
 		this.lastFrameTime = performance.now();
 		requestAnimationFrame = window.requestAnimationFrame((time) => {
@@ -84,8 +87,8 @@ export class Engine {
 	}
 
 	public stop() {
-		Engine._isRunning = false;
-		Engine._isPaused = false;
+		Engine.setRunningState(false);
+		Engine.setPausedState(false);
 		if (requestAnimationFrame) {
 			window.cancelAnimationFrame(requestAnimationFrame);
 		}
@@ -97,14 +100,14 @@ export class Engine {
 	}
 
 	public pause() {
-		Engine._isPaused = true;
+		Engine.setPausedState(true);
 		this.accumulator = 0;
 		this.lastFrameTime = performance.now();
 		Time.setFixedUpdateAccumulator(0);
 	}
 
 	public resume() {
-		Engine._isPaused = false;
+		Engine.setPausedState(false);
 		this.accumulator = 0;
 		this.lastFrameTime = performance.now();
 		Time.setFixedUpdateAccumulator(0);
@@ -138,6 +141,18 @@ export class Engine {
 
 	public getScene() {
 		return this.scene;
+	}
+
+	private static setRunningState(isRunning: boolean) {
+		if (Engine._isRunning === isRunning) return;
+		Engine._isRunning = isRunning;
+		Engine.onRunningChange.emit(isRunning);
+	}
+
+	private static setPausedState(isPaused: boolean) {
+		if (Engine._isPaused === isPaused) return;
+		Engine._isPaused = isPaused;
+		Engine.onPausedChange.emit(isPaused);
 	}
 
 	private clearCanvas() {

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useGameStore } from "./store/store";
-import { currentGameInstance } from "./game/game";
 import { AnimatePresence, motion } from "framer-motion";
 import { InGameLayer } from "./ui/in-game-layers";
 import { GeneralLayer } from "./ui/general-layers";
@@ -11,20 +10,6 @@ function App() {
 	const showGeneralLayer = useGameStore((state) => state.uiLayers.generalLayer.setVisible);
 	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
 	const showInGameLayer = useGameStore((state) => state.uiLayers.inGameLayer.setVisible);
-
-	useEffect(() => {
-		const unsubscribe = useGameStore.subscribe((state, prevState) => {
-			if (state.paused !== prevState.paused) {
-				if (state.paused) {
-					currentGameInstance.pause();
-				} else {
-					currentGameInstance.resume();
-				}
-			}
-		});
-
-		return unsubscribe;
-	}, []);
 
 	useEffect(() => {
 		if (runningGame) {

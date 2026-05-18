@@ -8,8 +8,18 @@ import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
 // import { GameSceneLoader } from "./scene-loader";
 
 const setLoadingGame = useGameStore.getState().setLoadingGame;
+const setRunningGame = useGameStore.getState().setRunningGame;
+const setPaused = useGameStore.getState().setPaused;
 const aspectRatio = 16/9;
 export const currentGameInstance = new Engine();
+
+Engine.onRunningChange.subscribe((isRunning) => {
+	setRunningGame(isRunning);
+});
+Engine.onPausedChange.subscribe((isPaused) => {
+	setPaused(isPaused);
+});
+
 Screen.getInstance().setResolution(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 	Screen.getInstance().setResolution(
 		new Vector2(window.innerWidth, window.innerHeight),

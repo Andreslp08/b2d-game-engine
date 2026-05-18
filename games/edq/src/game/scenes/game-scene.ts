@@ -1,5 +1,3 @@
-import { Engine } from "engine";
-import { useGameStore } from "../../store/store";
 import { GameSceneLevel } from "./../enum/scene";
 import { Scene } from "engine/scenes/scene";
 
@@ -19,11 +17,5 @@ export class GameScene extends Scene {
 
 	public get displayName() {
 		return this._displayName;
-	}
-
-	update(): void {
-		super.update();
-		useGameStore.getState().setRunningGame(Engine.isRunning);
-		useGameStore.getState().setPaused(Engine.isPaused);
 	}
 }
