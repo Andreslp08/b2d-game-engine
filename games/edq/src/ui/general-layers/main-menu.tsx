@@ -5,6 +5,7 @@ import { Logo } from "../shared/components/logo";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
 import { GAME_VERSION } from "../../game/config/constants";
+import { EnemyCarousel } from "./enemy-carousel";
 
 export const MainMenu = () => {
 	const sectionRef = useRef(null);
@@ -118,46 +119,32 @@ export const MainMenu = () => {
 				<AnimatePresence mode="wait">
 					{!close && (
 						<>
-							<motion.img
-								key="player-vs-solider"
-								initial={{ translateX: "-100%", opacity: 0 }}
-								animate={{ translateX: "0", opacity: 1 }}
-								exit={{
-									translateX: "-100%",
-									opacity: 0,
-									transition: {
-										duration: 1.2,
-										ease: [0.48, -0.27, 1, 0.68],
-									},
-								}}
-								transition={{
+						
+						<motion.div
+							key="player-vs-solider"
+							initial={{ translateX: "-100%", opacity: 0 }}
+							animate={{ translateX: "0", opacity: 1 }}
+							exit={{
+								translateX: "-100%",
+								opacity: 0,
+								transition: {
 									duration: 1.2,
-									ease: [0.28, -0.03, 0.16, 1.38],
-								}}
+									ease: [0.48, -0.27, 1, 0.68],
+								},
+							}}
+							transition={{
+								duration: 1.2,
+								ease: [0.28, -0.03, 0.16, 1.38],
+							}}
+							className="aspect-[0.61] w-[600px]"
+							>
+							<motion.img
 								src="/assets/ui/player.png"
 								loading="lazy"
-								className="w-[40%] max-w-[800px] bottom-[-30%] translate-y-[30%] pointer-events-none"
+								className=""
 							/>
-							<motion.img
-								key="solider-vs-player"
-								initial={{ translateX: "100%", opacity: 0 }}
-								animate={{ translateX: "0", opacity: 1 }}
-								exit={{
-									translateX: "100%",
-									opacity: 0,
-									transition: {
-										duration: 1.2,
-										ease: [0.48, -0.27, 1, 0.68],
-									},
-								}}
-								transition={{
-									duration: 1.2,
-									ease: [0.28, -0.03, 0.16, 1.38],
-								}}
-								src="/assets/ui/soldier.png"
-								loading="lazy"
-								className="w-[30%]  max-w-[800px] bottom-[-10%] translate-y-[10%] pointer-events-none"
-							/>
+						</motion.div>
+							<EnemyCarousel isActive={!close} />
 						</>
 					)}
 				</AnimatePresence>
