@@ -42,7 +42,7 @@ function App() {
 		<>
 
 		{
-			!runningGame && <div className=" fixed top-0 left-0 w-screen h-screen">
+			!runningGame && <div className=" fixed top-0 left-0 w-full h-screen">
 				<div className="bg-ui-gradient w-full h-full">
 
 				</div>
