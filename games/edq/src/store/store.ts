@@ -1,138 +1,40 @@
 import { create } from "zustand";
-import type { GameState } from "../game/interfaces/store";
-import { produce } from "immer";
 import { devtools } from "zustand/middleware";
+import type { ActiveUIState, GameState, UIScope, UILayersByScope } from "../game/interfaces/store";
+
+const INITIAL_UI_STATE: GameState["currentUI"] = {
+	scope: "global",
+	layer: "loadingScreen",
+};
+
+type ActiveUIForScope<S extends UIScope> = Extract<NonNullable<ActiveUIState>, { scope: S }>;
+
+const createActiveUIState = <S extends UIScope>(
+	scope: S,
+	layer: UILayersByScope[S]
+): ActiveUIForScope<S> =>
+	({
+		scope,
+		layer,
+	}) as ActiveUIForScope<S>;
 
 export const useGameStore = create<GameState>()(
-	devtools(
+	devtools<GameState>(
 		(set) => ({
-			runningGame: false,
-			setRunningGame: (runningGame) => set({ runningGame }, false, "game/setRunningGame"),
-			loadingGame: true,
-			setLoadingGame: (loadingGame) => set({ loadingGame }, false, "game/setLoadingGame"),
-			paused: false,
-			setPaused: (paused) => set({ paused }, false, "game/setPaused"),
-			uiLayers: {
-				inGameLayer: {
-					visible: false,
-					setVisible: (visible) =>
-						set(
-							produce((state) => {
-								state.uiLayers.inGameLayer.visible = visible;
-							}),
-							false,
-							"ui/inGameLayer/setVisible"
-						),
-					hudLayer: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => (state.uiLayers.inGameLayer.hudLayer.visible = visible)),
-								false,
-								"ui/inGameLayer/hudLayer/setVisible"
-							),
-					},
-					victoryMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.inGameLayer.victoryMenu.visible = visible;
-								}),
-								false,
-								"ui/inGameLayer/victoryMenu/setVisible"
-							),
-					},
-					gameOverMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.inGameLayer.gameOverMenu.visible = visible;
-								}),
-								false,
-								"ui/inGameLayer/gameOverMenu/setVisible"
-							),
-					},
-					pauseMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.inGameLayer.pauseMenu.visible = visible;
-								}),
-								false,
-								"ui/inGameLayer/pauseMenu/setVisible"
-							),
-					},
-				},
-				generalLayer: {
-					visible: false,
-					setVisible: (visible) =>
-						set(
-							produce((state) => {
-								state.uiLayers.generalLayer.visible = visible;
-							}),
-							false,
-							"ui/generalLayer/setVisible"
-						),
-					loadingScreen: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.generalLayer.loadingScreen.visible = visible;
-								}),
-								false,
-								"ui/generalLayer/loadingScreen/setVisible"
-							),
-					},
-					mainMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.generalLayer.mainMenu.visible = visible;
-								}),
-								false,
-								"ui/generalLayer/mainMenu/setVisible"
-							),
-					},
-					controlsMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.generalLayer.controlsMenu.visible = visible;
-								}),
-								false,
-								"ui/generalLayer/controlsMenu/setVisible"
-							),
-					},
-					levelsMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.generalLayer.levelsMenu.visible = visible;
-								}),
-								false,
-								"ui/generalLayer/levelsMenu/setVisible"
-							),
-					},
-					SettingsMenu: {
-						visible: false,
-						setVisible: (visible) =>
-							set(
-								produce((state) => {
-									state.uiLayers.generalLayer.SettingsMenu.visible = visible;
-								}),
-								false,
-								"ui/generalLayer/settingsMenu/setVisible"
-							),
-					},
-				},
-			},
+			currentGame: null,
+			currentUI: INITIAL_UI_STATE,
+
+			setCurrentGame: (currentGame) => set({ currentGame }, false, "game/setCurrentGame"),
+			clearCurrentGame: () => set({ currentGame: null }, false, "game/clearCurrentGame"),
+
+			setCurrentUI: <S extends UIScope>(scope: S, layer: UILayersByScope[S]) =>
+				set(
+					{ currentUI: createActiveUIState(scope, layer) },
+					false,
+					`ui/${scope}/${String(layer)}/setCurrent`
+				),
+
+			clearCurrentUI: () => set({ currentUI: null }, false, "ui/clearCurrentUI"),
 		}),
 		{
 			name: "edq-game-store",

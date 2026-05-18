@@ -1,40 +1,31 @@
 import { useEffect } from "react";
 import { useGameStore } from "./store/store";
 import { AnimatePresence, motion } from "framer-motion";
-import { InGameLayer } from "./ui/in-game-layers";
+import { ArcadeLayer } from "./ui/arcade-layers";
 import { GeneralLayer } from "./ui/general-layers";
 import { MouseManager } from "engine/input/mouse-manager";
 function App() {
-	const runningGame = useGameStore((state) => state.runningGame);
-	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
-	const showGeneralLayer = useGameStore((state) => state.uiLayers.generalLayer.setVisible);
-	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
-	const showInGameLayer = useGameStore((state) => state.uiLayers.inGameLayer.setVisible);
+	const currentGame = useGameStore((state) => state.currentGame);
+	const currentUI = useGameStore((state) => state.currentUI);
 
 	useEffect(() => {
-		if (runningGame) {
+		if (currentGame) {
 			MouseManager.setCursorRenderMode("hidden");
-			showGeneralLayer(false);
-			showInGameLayer(true);
 		} else {
 			MouseManager.setCursorRenderMode("system");
-			showGeneralLayer(true);
-			showInGameLayer(false);
 		}
-	}, [runningGame]);
+	}, [currentGame]);
 
 	return (
 		<>
-
-		{
-			!runningGame && <div className=" fixed top-0 left-0 w-full h-screen">
+			{currentUI?.scope === "global" && <div className=" fixed top-0 left-0 w-full h-screen">
 				<div className="bg-ui-gradient w-full h-full">
 
 				</div>
 			</div>
-		}
+			}
 			<AnimatePresence mode="wait">
-				{generalLayer.visible && (
+				{currentUI?.scope === "global" && (
 					<motion.div
 						key="general-layer"
 						initial={{ opacity: 0 }}
@@ -47,12 +38,12 @@ function App() {
 					</motion.div>
 				)}
 
-				{inGameLayer.visible && (
+				{currentGame === "arcade" && (
 					<div
-						key="in-game-layer"
+						key="arcade-layer"
 						className="w-full h-screen  flex items-center justify-center"
 					>
-						<InGameLayer />
+						<ArcadeLayer />
 					</div>
 				)}
 			</AnimatePresence>

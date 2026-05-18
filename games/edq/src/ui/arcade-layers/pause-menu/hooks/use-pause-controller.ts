@@ -5,32 +5,35 @@ import { currentGameInstance } from "../../../../game/game";
 import { useGameStore } from "../../../../store/store";
 
 export const usePauseController = () => {
-	const pauseMenu = useGameStore((state) => state.uiLayers.inGameLayer.pauseMenu);
-	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
-	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
+	const currentGame = useGameStore((state) => state.currentGame);
+	const currentUI = useGameStore((state) => state.currentUI);
+	const setCurrentUI = useGameStore((state) => state.setCurrentUI);
+	const clearCurrentUI = useGameStore((state) => state.clearCurrentUI);
+	const clearCurrentGame = useGameStore((state) => state.clearCurrentGame);
 	const pendingResumeRef = useRef(false);
 	const autoPausedByVisibilityRef = useRef(false);
 	const [isTransitionLocked, setIsTransitionLocked] = useState(false);
+	const isPauseMenuVisible = currentUI?.scope === "arcade" && currentUI.layer === "pauseMenu";
 
 	const openPauseMenu = () => {
-		if (pauseMenu.visible || isTransitionLocked) return;
+		if (isPauseMenuVisible || isTransitionLocked || currentGame !== "arcade") return;
 		setIsTransitionLocked(true);
 		currentGameInstance.pause();
 		MouseManager.setCursorRenderMode("system");
-		pauseMenu.setVisible(true);
+		setCurrentUI("arcade", "pauseMenu");
 	};
 
 	const closePauseMenuAndResume = () => {
-		if (!pauseMenu.visible || isTransitionLocked) return;
+		if (!isPauseMenuVisible || isTransitionLocked) return;
 		setIsTransitionLocked(true);
 		autoPausedByVisibilityRef.current = false;
 		MouseManager.setCursorRenderMode("custom");
 		pendingResumeRef.current = true;
-		pauseMenu.setVisible(false);
+		clearCurrentUI();
 	};
 
 	const togglePauseMenu = () => {
-		if (pauseMenu.visible) {
+		if (isPauseMenuVisible) {
 			closePauseMenuAndResume();
 			return;
 		}
@@ -39,14 +42,14 @@ export const usePauseController = () => {
 	};
 
 	const pauseOnVisibilityLoss = () => {
-		if (!pauseMenu.visible && !Engine.isPaused) {
+		if (!isPauseMenuVisible && !Engine.isPaused) {
 			autoPausedByVisibilityRef.current = true;
 			openPauseMenu();
 		}
 	};
 
 	const resumeAfterVisibilityRestore = () => {
-		if (autoPausedByVisibilityRef.current && pauseMenu.visible) {
+		if (autoPausedByVisibilityRef.current && isPauseMenuVisible) {
 			closePauseMenuAndResume();
 		}
 	};
@@ -56,10 +59,8 @@ export const usePauseController = () => {
 		autoPausedByVisibilityRef.current = false;
 		setIsTransitionLocked(false);
 		MouseManager.setCursorRenderMode("system");
-		pauseMenu.setVisible(false);
-		inGameLayer.setVisible(false);
-		generalLayer.setVisible(true);
-		generalLayer.mainMenu.setVisible(true);
+		clearCurrentGame();
+		setCurrentUI("global", "mainMenu");
 		currentGameInstance.stop();
 	};
 
@@ -77,7 +78,7 @@ export const usePauseController = () => {
 	};
 
 	return {
-		isPauseMenuVisible: pauseMenu.visible,
+		isPauseMenuVisible,
 		isTransitionLocked,
 		openPauseMenu,
 		closePauseMenuAndResume,

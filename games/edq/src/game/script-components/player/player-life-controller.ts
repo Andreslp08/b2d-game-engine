@@ -10,6 +10,8 @@ import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-anima
 import { Entity } from "engine/ecs/entity";
 import { PlayerAimingArm } from "./player-aiming-arm";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { GameEvent } from "engine/common/events/game-event";
+import { useGameStore } from "../../../store/store";
 
 export class PlayerLifeController extends ScriptComponent {
 	private grayscaleValue: number = 0;
@@ -23,6 +25,8 @@ export class PlayerLifeController extends ScriptComponent {
 	private damageShaderDuration = 0.5;
 	damageShaderStartTime = 0;
 	shouldEnableDamageShader = false;
+	isDead = false;
+	onPlayerDie = new GameEvent<void>();
 
 	onStart(): void {
 		this.grayscaleValue = 0;
@@ -80,6 +84,11 @@ export class PlayerLifeController extends ScriptComponent {
 		}
 		this.shouldEnableDamageShader = true;
 		this.damageShaderStartTime = Time.time;
+		if(healthComponent && healthComponent.getHealth() <= 0) {
+			this.isDead = true;
+			this.onPlayerDie.emit();
+			useGameStore.getState().setCurrentUI("arcade", "gameOverMenu");
+		}
 	}
 
 	handleDamageCoolDown() {

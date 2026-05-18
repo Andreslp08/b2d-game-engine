@@ -1,54 +1,35 @@
-export interface GameState {
-    runningGame: boolean;
-    setRunningGame: (running: boolean) => void;
-    loadingGame: boolean;
-    setLoadingGame: (loading: boolean) => void;
-    paused: boolean;
-    setPaused: (paused: boolean) => void;
-    uiLayers: {
-        inGameLayer: {
-            visible: boolean;
-            setVisible: (visible: boolean) => void;
-            hudLayer: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            victoryMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            gameOverMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            pauseMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-        };
-        generalLayer: {
-            visible: boolean;
-            setVisible: (visible: boolean) => void;
-            loadingScreen: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            mainMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            levelsMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            SettingsMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-            controlsMenu: {
-                visible: boolean;
-                setVisible: (visible: boolean) => void;
-            };
-        };
-    };
+export const UI_LAYER_DEFINITIONS = {
+	global: ["loadingScreen", "mainMenu", "levelsMenu", "settingsMenu", "controlsMenu"],
+	arcade: ["pauseMenu", "victoryMenu", "gameOverMenu"],
+	story: ["pauseMenu", "victoryMenu", "gameOverMenu"],
+} as const;
+
+export type UIScope = keyof typeof UI_LAYER_DEFINITIONS;
+export type GameId = Exclude<UIScope, "global">;
+
+export type UILayersByScope = {
+	[S in UIScope]: (typeof UI_LAYER_DEFINITIONS)[S][number];
+};
+
+export type ActiveUIState =
+	| {
+			[S in UIScope]: {
+				scope: S;
+				layer: UILayersByScope[S];
+			};
+	  }[UIScope]
+	| null;
+
+export interface GameRuntimeState {
+	currentGame: GameId | null;
+	currentUI: ActiveUIState;
 }
+
+export interface GameRuntimeActions {
+	setCurrentGame: (game: GameId | null) => void;
+	clearCurrentGame: () => void;
+	setCurrentUI: <S extends UIScope>(scope: S, layer: UILayersByScope[S]) => void;
+	clearCurrentUI: () => void;
+}
+
+export type GameState = GameRuntimeState & GameRuntimeActions;

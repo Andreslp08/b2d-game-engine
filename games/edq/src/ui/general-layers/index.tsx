@@ -1,27 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useGameStore } from "../../store/store";
-import { useEffect } from "react";
 import { LoadingScreen } from "./loading-screen";
 import { MainMenu } from "./main-menu";
 export const GeneralLayer = () => {
-	const loadingGame = useGameStore((state) => state.loadingGame);
-	const showLoadingScreen = useGameStore(
-		(state) => state.uiLayers.generalLayer.loadingScreen.setVisible
-	);
-	const showMainMenu = useGameStore((state) => state.uiLayers.generalLayer.mainMenu.setVisible);
-	const ui = useGameStore((state) => state.uiLayers.generalLayer);
-
-	useEffect(() => {
-		showLoadingScreen(loadingGame);
-	}, [loadingGame]);
-
-	useEffect(() => {
-		if (!ui.loadingScreen.visible && !ui.loadingScreen.visible) {
-			showMainMenu(true);
-		} else {
-			showMainMenu(false);
-		}
-	}, [loadingGame, ui.loadingScreen.visible]);
+	const currentUI = useGameStore((state) => state.currentUI);
+	const activeLayer = currentUI?.scope === "global" ? currentUI.layer : null;
 
 	return (
 		<motion.div
@@ -33,7 +16,7 @@ export const GeneralLayer = () => {
 			className="w-full h-screen flex items-center justify-center"
 		>
 			<AnimatePresence mode="wait">
-				{ui.loadingScreen.visible && (
+				{activeLayer === "loadingScreen" && (
 					<motion.div
 						key="loading"
 						initial={{ opacity: 0 }}
@@ -46,7 +29,7 @@ export const GeneralLayer = () => {
 					</motion.div>
 				)}
 
-				{ui.mainMenu.visible && !ui.loadingScreen.visible && (
+				{activeLayer === "mainMenu" && (
 					<motion.div
 						key="menu"
 						initial={{ opacity: 0 }}
