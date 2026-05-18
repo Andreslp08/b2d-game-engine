@@ -18,12 +18,6 @@ function App() {
 
 	return (
 		<>
-			{currentUI?.scope === "global" && <div className=" fixed top-0 left-0 w-full h-screen">
-				<div className="bg-ui-gradient w-full h-full">
-
-				</div>
-			</div>
-			}
 			<AnimatePresence mode="wait">
 				{currentUI?.scope === "global" && (
 					<motion.div
