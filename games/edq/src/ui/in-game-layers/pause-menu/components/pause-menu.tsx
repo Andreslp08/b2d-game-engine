@@ -1,8 +1,6 @@
 import { motion, type Variants } from "framer-motion";
-import { useGameStore } from "../../store/store";
-import { currentGameInstance } from "../../game/game";
-import { Button } from "../shared/components/button";
-import { FramedPanel } from "../shared/components/framed-panel";
+import { Button } from "../../../shared/components/button";
+import { FramedPanel } from "../../../shared/components/framed-panel";
 
 const backdropVariants: Variants = {
 	hidden: {
@@ -17,7 +15,7 @@ const backdropVariants: Variants = {
 		transition: {
 			duration: 0.3,
 			when: "beforeChildren" as const,
-			delayChildren: 0.3,
+			delayChildren: 0.02,
 		},
 	},
 	exit: {
@@ -59,31 +57,11 @@ const modalVariants: Variants = {
 
 type PauseMenuLayerProps = {
 	onEnterComplete?: () => void;
-	onRequestResume?: () => void;
+	onResume?: () => void;
+	onMainMenu?: () => void;
 };
 
-export const PauseMenuLayer = ({ onEnterComplete, onRequestResume }: PauseMenuLayerProps) => {
-	const setVisible = useGameStore((state) => state.uiLayers.inGameLayer.pauseMenu.setVisible);
-	const inGameLayer = useGameStore((state) => state.uiLayers.inGameLayer);
-	const generalLayer = useGameStore((state) => state.uiLayers.generalLayer);
-	const setRunningGame = useGameStore((state) => state.setRunningGame);
-	const setPaused = useGameStore((state) => state.setPaused);
-
-	const resumeGame = () => {
-		onRequestResume?.();
-		setVisible(false);
-	};
-
-	const mainMenu = () => {
-		setVisible(false);
-		inGameLayer.setVisible(false);
-		generalLayer.setVisible(true);
-		generalLayer.mainMenu.setVisible(true);
-		setPaused(false);
-		setRunningGame(false);
-		currentGameInstance.stop();
-	};
-
+export const PauseMenuLayer = ({ onEnterComplete, onResume, onMainMenu }: PauseMenuLayerProps) => {
 	return (
 		<motion.div
 			key="pause-menu-backdrop"
@@ -106,8 +84,8 @@ export const PauseMenuLayer = ({ onEnterComplete, onRequestResume }: PauseMenuLa
 					<div className="flex flex-col items-center justify-center xl:w-[500px]">
 						<h1 className="modal-title">Paused</h1>
 						<div className="grid grid-cols-1 gap-3">
-							<Button onClick={resumeGame} text="Resume" />
-							<Button onClick={mainMenu} text="Main menu" />
+							<Button onClick={onResume} text="Resume" />
+							<Button onClick={onMainMenu} text="Main menu" />
 						</div>
 					</div>
 				</FramedPanel>

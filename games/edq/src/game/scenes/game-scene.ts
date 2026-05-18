@@ -24,5 +24,6 @@ export class GameScene extends Scene {
 	update(): void {
 		super.update();
 		useGameStore.getState().setRunningGame(Engine.isRunning);
+		useGameStore.getState().setPaused(Engine.isPaused);
 	}
 }
