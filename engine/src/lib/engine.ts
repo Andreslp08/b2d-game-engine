@@ -79,6 +79,7 @@ export class Engine {
 	public start() {
 		Engine.setRunningState(true);
 		Engine.setPausedState(false);
+		Time.timeScale = 1;
 		this.accumulator = 0;
 		this.lastFrameTime = performance.now();
 		requestAnimationFrame = window.requestAnimationFrame((time) => {
@@ -89,6 +90,7 @@ export class Engine {
 	public stop() {
 		Engine.setRunningState(false);
 		Engine.setPausedState(false);
+		Time.timeScale = 1;
 		if (requestAnimationFrame) {
 			window.cancelAnimationFrame(requestAnimationFrame);
 		}
