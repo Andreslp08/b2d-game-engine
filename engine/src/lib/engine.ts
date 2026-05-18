@@ -9,10 +9,12 @@ import { GameEvent } from "./common/events/game-event";
 // const frameRate = 60;
 // const frameMs = 1000 / frameRate;
 let requestAnimationFrame;
+const CANVAS_OVERLAY_DURATION_MS = 250;
 
 export class Engine {
 	private static _canvas: HTMLCanvasElement;
 	private static _context: CanvasRenderingContext2D;
+	private static _canvasOverlay: HTMLDivElement;
 	public static onRunningChange: GameEvent<boolean> = new GameEvent();
 	public static onPausedChange: GameEvent<boolean> = new GameEvent();
 	private scene: Scene | null = null;
@@ -20,6 +22,8 @@ export class Engine {
 	static _isPaused: boolean = false;
 	private static _gameRoot: HTMLDivElement;
 	private static _sleeping: boolean = false;
+	private static _isCanvasOverlayPendingHide = false;
+	private static _canvasOverlayElapsedMs = 0;
 	private accumulator: number = 0;
 	private fixedDelta: number = 1 / 60;
 	private targetFps = 60;
@@ -45,10 +49,19 @@ export class Engine {
 		canvas.height = 0;
 		gameRoot.innerHTML = "";
 		gameRoot.appendChild(canvas);
+		const canvasOverlay = document.createElement("div");
+		canvasOverlay.id = "game-loading-overlay";
+		canvasOverlay.style.position = "absolute";
+		canvasOverlay.style.inset = "0";
+		canvasOverlay.style.backgroundColor = "#000";
+		canvasOverlay.style.pointerEvents = "none";
+		canvasOverlay.style.opacity = "1";
+		gameRoot.appendChild(canvasOverlay);
 		const keyBoardManager = KeyBoardManager.listen();
 		const mouseManager = MouseManager.listen();
 		Engine._canvas = canvas;
 		Engine._context = Engine._canvas.getContext("2d");
+		Engine._canvasOverlay = canvasOverlay;
 		Screen.getInstance().setCanvasBackgroundColor("rgb(30 30 30)");
 		this.loop = this.loop.bind(this);
 		// on pause tab event
@@ -79,6 +92,7 @@ export class Engine {
 	public start() {
 		Engine.setRunningState(true);
 		Engine.setPausedState(false);
+		Engine.showCanvasOverlay();
 		Time.timeScale = 1;
 		this.accumulator = 0;
 		this.lastFrameTime = performance.now();
@@ -90,6 +104,7 @@ export class Engine {
 	public stop() {
 		Engine.setRunningState(false);
 		Engine.setPausedState(false);
+		Engine.showCanvasOverlay();
 		Time.timeScale = 1;
 		if (requestAnimationFrame) {
 			window.cancelAnimationFrame(requestAnimationFrame);
@@ -157,6 +172,25 @@ export class Engine {
 		Engine.onPausedChange.emit(isPaused);
 	}
 
+	private static showCanvasOverlay() {
+		Engine._isCanvasOverlayPendingHide = true;
+		Engine._canvasOverlayElapsedMs = 0;
+		Engine._canvasOverlay.style.opacity = "1";
+	}
+
+	private static hideCanvasOverlay() {
+		Engine._isCanvasOverlayPendingHide = false;
+		Engine._canvasOverlayElapsedMs = 0;
+		Engine._canvasOverlay.style.opacity = "0";
+	}
+
+	private static updateCanvasOverlayAfterRender(elapsedMs: number) {
+		if (!Engine._isCanvasOverlayPendingHide) return;
+		Engine._canvasOverlayElapsedMs += elapsedMs;
+		if (Engine._canvasOverlayElapsedMs < CANVAS_OVERLAY_DURATION_MS) return;
+		Engine.hideCanvasOverlay();
+	}
+
 	private clearCanvas() {
 		const ctx = Engine._canvas.getContext("2d");
 		ctx.save(); // por si hay transformaciones activas
@@ -179,6 +213,7 @@ export class Engine {
 			this.clearCanvas();
 			if (this.scene?.renderer && !Engine._sleeping) {
 				this.scene.renderer.render(Engine._context);
+				Engine.updateCanvasOverlayAfterRender(elapsed);
 			}
 			requestAnimationFrame = window.requestAnimationFrame(this.loop);
 			return;
@@ -201,6 +236,7 @@ export class Engine {
 		this.clearCanvas();
 		if (this.scene?.renderer && !Engine._sleeping) {
 			this.scene.renderer.render(Engine._context);
+			Engine.updateCanvasOverlayAfterRender(elapsed);
 		}
 
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
