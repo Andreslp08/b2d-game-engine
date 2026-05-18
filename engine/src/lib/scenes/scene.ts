@@ -16,6 +16,10 @@ import { CullingSystem } from "../performance/culling-system";
 import { ParticleSystem } from "../particle-system/system";
 import { TriggerAreaSystem } from "../trigger-area/system/trigger-area-system";
 
+/**
+ * Represents a game scene that manages entities, systems, and cameras.
+ * Each scene contains its own ECS context, renderer, and lifecycle.
+ */
 export class Scene implements Updatable {
 	protected entities: Set<Entity> = new Set();
 	protected indexedEntitiesByComponents: Map<ComponentClass<Component>, Entity[]> = new Map();
@@ -46,14 +50,23 @@ export class Scene implements Updatable {
 		Cameras.setCurrentScreenCamera(uiCamera);
 	}
 
+	/**
+	 * Updates all systems in the scene every frame.
+	 */
 	update(): void {
 		this.systems.forEach((system) => system.update());
 	}
 
+	/**
+	 * Updates all systems at a fixed time step (useful for physics).
+	 */
 	fixedUpdate(): void {
 		this.systems.forEach((system) => system.fixedUpdate());
 	}
 
+	/**
+	 * Destroys the scene, removing all entities, clearing systems and cameras.
+	 */
 	destroy(): void {
 		if (this.destroyed) return;
 		this.destroyed = true;
@@ -71,10 +84,17 @@ export class Scene implements Updatable {
 		Cameras.removeAllCameras();
 	}
 
+	/**
+	 * The render system used by this scene, if any.
+	 */
 	get renderer() {
 		return this._renderer;
 	}
 
+	/**
+	 * Indexes an entity by all of its component types (including inherited ones).
+	 * @param entity - The entity to index.
+	 */
 	indexEntity(entity: Entity): void {
 		for (const component of entity.getAllComponents()) {
 			let proto = component.constructor;
@@ -96,6 +116,12 @@ export class Scene implements Updatable {
 		}
 	}
 
+	/**
+	 * Removes an entity from the component index. If specific components are provided,
+	 * only those are unindexed; otherwise the entity is fully unindexed.
+	 * @param entity - The entity to unindex.
+	 * @param components - Optional list of specific component types to unindex.
+	 */
 	unindexEntity(entity: Entity, components?: ComponentClass<Component>[]): void {
 		// 🔹 Si se pasan componentes específicos, solo procesamos esos
 		if (components) {
@@ -137,6 +163,11 @@ export class Scene implements Updatable {
 		}
 	}
 
+	/**
+	 * Adds an entity to the scene and indexes its components.
+	 * @param entity - The entity to add.
+	 * @returns The entity's unique id.
+	 */
 	addEntity(entity: Entity): string {
 		if (!entity) {
 			throw new Error("Entity is null");
@@ -147,6 +178,12 @@ export class Scene implements Updatable {
 		return entity.id;
 	}
 
+	/**
+	 * Finds an entity by its unique id.
+	 * @template T - The expected entity type.
+	 * @param id - The entity id to search for.
+	 * @returns The entity if found, or null.
+	 */
 	getEntityById<T>(id: string): T | null {
 		for (const entity of this.entities) {
 			if (entity.id === id) {
@@ -156,6 +193,12 @@ export class Scene implements Updatable {
 		return null;
 	}
 
+	/**
+	 * Finds the first entity with the given tag.
+	 * @template T - The expected entity type.
+	 * @param tag - The tag to search for.
+	 * @returns The entity if found, or null.
+	 */
 	getEntityByTag<T>(tag: string): T | null {
 		for (const entity of this.entities) {
 			if (entity.hasTag(tag)) {
@@ -165,6 +208,10 @@ export class Scene implements Updatable {
 		return null;
 	}
 
+	/**
+	 * Destroys an entity, removing it from the scene and clearing its components.
+	 * @param entity - The entity to destroy.
+	 */
 	destroyEntity(entity: Entity): void {
 		if (!entity) return;
 		entity.getComponents(ScriptComponent).forEach((script) => script.onDestroy());
@@ -174,15 +221,29 @@ export class Scene implements Updatable {
 		this.unindexEntity(entity);
 	}
 
+	/**
+	 * Destroys an entity by its unique id.
+	 * @param id - The id of the entity to destroy.
+	 */
 	destroyEntityById(id: string): void {
 		this.destroyEntity(this.getEntityById(id) as Entity);
 	}
 
+	/**
+	 * Adds a system to the scene.
+	 * @param system - The system to add.
+	 * @returns The system's name.
+	 */
 	addSystem(system: System): string {
 		this.systems.add(system);
 		return system.getName();
 	}
 
+	/**
+	 * Gets a system by its name.
+	 * @param name - The system name to search for.
+	 * @returns The system if found, or null.
+	 */
 	getSystemByName(name: string): System | null {
 		for (const system of this.systems) {
 			if (system.getName() === name) {
@@ -192,26 +253,50 @@ export class Scene implements Updatable {
 		return null;
 	}
 
+	/**
+	 * Removes a system from the scene by its name.
+	 * @param name - The name of the system to remove.
+	 */
 	destroySystemByName(name: string): void {
 		this.systems.delete(this.getSystemByName(name) as System);
 	}
 
+	/**
+	 * Removes a system from the scene.
+	 * @param system - The system to remove.
+	 */
 	destroySystem(system: System): void {
 		this.systems.delete(system);
 	}
 
+	/**
+	 * Returns all entities that have a specific component type.
+	 * @template T - The component type.
+	 * @param componentClass - The component class to filter by.
+	 */
 	getEntitiesWithComponent<T extends Component>(componentClass: ComponentClass<T>): Entity[] {
 		return Array.from(this.entities).filter((e) => e.hasComponent(componentClass));
 	}
 
+	/**
+	 * Returns all entities in the scene as an array.
+	 */
 	getEntitiesAsArray(): Entity[] {
 		return Array.from(this.entities);
 	}
 
+	/**
+	 * Returns the raw Set of all entities in the scene.
+	 */
 	getEntities(): Set<Entity> {
 		return this.entities;
 	}
 
+	/**
+	 * Returns entities that have all the specified component types (intersection).
+	 * Uses indexed lookups for efficiency, with fallback to linear search for small sets.
+	 * @param components - The list of required component types.
+	 */
 	getEntitiesByComponents(components: ComponentClass<Component>[]): Entity[] {
 		if (components.length === 0) return [];
 
@@ -241,6 +326,13 @@ export class Scene implements Updatable {
 		return result;
 	}
 
+/**
+ * Returns entities matching a flexible query with optional all/any/none filters.
+ * Uses the component index for efficient lookups.
+ * @param all - Entities must have all of these components (intersection).
+ * @param any - Entities must have at least one of these components (union).
+ * @param none - Entities must not have any of these components (exclusion).
+ */
 getEntitiesByQuery({
 	all = [],
 	any = [],
@@ -287,14 +379,24 @@ getEntitiesByQuery({
 
 	return result;
 }
+	/**
+	 * Returns the internal entity-by-component index map.
+	 */
 	getIndexedEntitiesByComponents(): Map<ComponentClass<Component>, Entity[]> {
 		return this.indexedEntitiesByComponents;
 	}
 
+	/**
+	 * The current active camera for this scene.
+	 */
 	get camera(): OrthographicCamera {
 		return Cameras.currentCamera as OrthographicCamera;
 	}
 
+	/**
+	 * Sets the active camera for this scene. If the camera is not registered, it is added.
+	 * @param camera - The camera to set as active.
+	 */
 	setCamera(camera: OrthographicCamera) {
 		// if not has camera add an then set it
 		const hasCamera = Cameras.hasCamera(camera);
@@ -306,26 +408,46 @@ getEntitiesByQuery({
 		}
 	}
 
+	/**
+	 * Returns the current active camera.
+	 */
 	getCurrentCamera() {
 		return Cameras.currentCamera;
 	}
 
+	/**
+	 * Returns all registered cameras.
+	 */
 	getCameras() {
 		return Cameras.cameras;
 	}
 
+	/**
+	 * Removes a specific camera from the scene.
+	 * @param camera - The camera to remove.
+	 */
 	removeCamera(camera: OrthographicCamera) {
 		Cameras.removeCamera(camera);
 	}
 
+	/**
+	 * Removes all cameras from the scene.
+	 */
 	removeAllCameras() {
 		Cameras.removeAllCameras();
 	}
 
+	/**
+	 * Sets render filter tags for this scene.
+	 * @param filters - The filter string to apply.
+	 */
 	setRenderFilters(filters: string) {
 		this.renderFilters = filters;
 	}
 
+	/**
+	 * Returns the current render filter tags.
+	 */
 	getRenderFilters() {
 		return this.renderFilters;
 	}
