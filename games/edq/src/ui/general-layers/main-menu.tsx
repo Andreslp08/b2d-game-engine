@@ -22,10 +22,10 @@ export const MainMenu = () => {
 			},
 		},
 		{
-			text: "Settings",
+			text: "Player",
 		},
 		{
-			text: "Controls",
+			text: "Settings",
 		},
 		{
 			text: "Quit",
