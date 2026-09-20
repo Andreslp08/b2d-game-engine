@@ -7,8 +7,9 @@ import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
-import { Loot, LootType } from "./loot";
 import { PlayerMovement } from "./player-movement";
+import { InventoryComponent } from "../../items/components/inventory-component";
+import { EquipmentComponent } from "../../items/components/equipment-component";
 
 export class AimingController extends ScriptComponent {
 	private _isAiming = false;
@@ -31,17 +32,24 @@ export class AimingController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.gameObject) return;
-		const loot = this.entity.getComponent(Loot);
-		if (!loot) return;
-		const currentSlot = loot.getCurrentSlot();
+		const equipment = this.entity.getComponent(EquipmentComponent);
+		const inventory = this.entity.getComponent(InventoryComponent);
+		const equippedEntryId = equipment?.getEquippedReferenceId();
+		const equippedEntry = equippedEntryId && inventory
+			? inventory.inventory.get(equippedEntryId)
+			: undefined;
+		const equippedDefinition = equippedEntry && inventory
+			? inventory.inventory.getDefinition(equippedEntry.definitionId)
+			: undefined;
 		const dynamicBody = this.gameObject.getComponent(DynamicBody);
 		if (!dynamicBody) return;
 		const movement = this.gameObject.getComponent(PlayerMovement);
 		const isDashing = movement ? movement.isDashing : false;
 
-		this._isAiming = !dynamicBody.isOnGround || 
-			isDashing? false
-			: !!(currentSlot?.item && currentSlot.item.type === LootType.WEAPON);
+		const hasEquippedWeapon = equippedDefinition?.type === "weapon";
+		this._isAiming = !dynamicBody.isOnGround || isDashing
+			? false
+			: !!inventory && !!equipment && hasEquippedWeapon;
 		MouseManager.setCursorInputEnabled(this._isAiming);
 
 		const mousePos = MouseManager.getRelativePosition();

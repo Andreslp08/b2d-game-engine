@@ -17,10 +17,19 @@ import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
 
+/** Moves a projectile, applies weapon damage, and destroys it on collision/range expiry. */
 export class BulletController extends ScriptComponent {
 	private shooted = false;
 	private startPosition = new Vector2(0, 0);
 	private collisionDetected = false;
+
+	/** Creates a projectile controller with weapon-specific damage and range. */
+	constructor(
+		private readonly damage = 10,
+		private readonly maxDistance = VIEWPORT_WIDTH_IN_METERS,
+	) {
+		super();
+	}
 
 	onStart(): void {
 		const shootSound = AssetsManager.getSoundByName("sound:desert-eagle");
@@ -76,7 +85,7 @@ export class BulletController extends ScriptComponent {
 		this.destroyBullet();
 		const damageable = entity.getComponent(Damageable);
 		if (!damageable) return;
-		damageable.applyDamage({ damage: 10, source: this.entity, type: "bullet" });
+		damageable.applyDamage({ damage: this.damage, source: this.entity, type: "bullet" });
 	}
 
 	onFixedUpdate(): void {
@@ -89,13 +98,18 @@ export class BulletController extends ScriptComponent {
 		transform.position = body.move(transform.position, Time.fixedDeltaTime);
 		const distance = Vector2.distance(this.startPosition, transform.position);
 		const MAX_DISTANCE = VIEWPORT_WIDTH_IN_METERS;
-		if (distance > MAX_DISTANCE) {
+		if (distance > Math.min(MAX_DISTANCE, this.maxDistance)) {
 			this.destroyBullet();
 		}
 	}
 }
 
-export const createBullet = (position: Vector2) => {
+/** Creates a projectile entity configured for a particular weapon shot. */
+export const createBullet = (
+	position: Vector2,
+	damage = 10,
+	maxDistance = VIEWPORT_WIDTH_IN_METERS,
+) => {
 	const sprite = new Sprite({
 		image: AssetsManager.getImageByName("spritesheet:desert-eagle-bullet"),
 		framePosition: new Vector2(0, 0),
@@ -111,7 +125,7 @@ export const createBullet = (position: Vector2) => {
 		sprite,
 	);
 	obj.addTag("bullet");
-	obj.addComponent(new BulletController());
+	obj.addComponent(new BulletController(damage, maxDistance));
 	obj.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.2, 0.2)));
 	obj.addComponent(new KinematicBody());
 	return obj;

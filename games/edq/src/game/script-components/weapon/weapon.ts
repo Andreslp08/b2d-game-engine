@@ -15,7 +15,13 @@ import { createBullet } from "../../prefabs/bullet";
 import { AimingController } from "../player/aiming-controller";
 import { PlayerAimingArm } from "../player/player-aiming-arm";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
+import { InventoryComponent } from "../../items/components/inventory-component";
+import { EquipmentComponent } from "../../items/components/equipment-component";
+import { itemRegistry } from "../../items/item-catalog";
+import type { WeaponDefinition } from "../../items/definitions/item-definition";
+import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 
+/** Synchronizes the equipped inventory weapon with its visual GameObject. */
 export class WeaponHolder extends ScriptComponent {
 	weapon: GameObject | null = null;
 
@@ -29,7 +35,20 @@ export class WeaponHolder extends ScriptComponent {
 
 	onStart(): void {}
 
-	onUpdate(): void {}
+	onUpdate(): void {
+		if (!this.weapon) return;
+		const inventory = this.entity.getComponent(InventoryComponent);
+		const equipment = this.entity.getComponent(EquipmentComponent);
+		const referenceId = equipment?.getEquippedReferenceId();
+		const entry = referenceId && inventory ? inventory.inventory.get(referenceId) : undefined;
+		const definition = entry && inventory
+			? inventory.inventory.getDefinition(entry.definitionId)
+			: undefined;
+		const weaponController = this.weapon.getComponent(WeaponController);
+		if (!weaponController) return;
+		if (definition?.type === "weapon") weaponController.setDefinition(definition.id);
+		weaponController.setActive(definition?.type === "weapon");
+	}
 
 	onDestroy(): void {
 		const scene = this.entity.getScene();
@@ -37,12 +56,23 @@ export class WeaponHolder extends ScriptComponent {
 	}
 }
 
+/** Handles weapon aiming, firing, projectile creation, ammo, and reloads. */
 export class WeaponController extends ScriptComponent {
 	weaponHolder: GameObject | null = null;
 	fireCooldown = 0;
 	enableController = true;
 	private weaponEffectDuration = 0.1;
 	private weaponEffectRemainingTime = 0;
+	private reloadRemainingTime = 0;
+	private reloading = false;
+	private reloadDefinitionId?: string;
+	private previousReloadKey = false;
+	definitionId: string;
+
+	constructor(definitionId = "desert_eagle") {
+		super();
+		this.definitionId = definitionId;
+	}
 	weaponEffectSprite:Sprite = new Sprite({
 		image: AssetsManager.getImageByName("spritesheet:gunfire-effect1"),
 		framePosition: new Vector2(0, 0),
@@ -62,6 +92,129 @@ export class WeaponController extends ScriptComponent {
 		this.weaponHolder = weaponHolder;
 	}
 
+	/** Enables or disables the visual weapon and its firing behavior. */
+	setActive(active: boolean): void {
+		this.enableController = active;
+		if (!active) {
+			this.cancelReload();
+			this.weaponEffectRemainingTime = 0;
+			this.weaponEffectSprite.setVisible(false);
+			this.entity.getComponent(Sprite)?.setVisible(false);
+		}
+	}
+
+	/** Changes the data definition used by the shared temporary weapon visual. */
+	setDefinition(definitionId: string): void {
+		if (this.definitionId !== definitionId) this.cancelReload();
+		this.definitionId = definitionId;
+	}
+
+	private getDefinition(): WeaponDefinition {
+		const definition = itemRegistry.get(this.definitionId);
+		if (definition.type !== "weapon") throw new Error(`${this.definitionId} is not a weapon`);
+		return definition;
+	}
+
+	private getEquippedWeaponState() {
+		const inventory = this.weaponHolder?.getComponent(InventoryComponent);
+		const equipment = this.weaponHolder?.getComponent(EquipmentComponent);
+		const referenceId = equipment?.getEquippedReferenceId();
+		const entry = referenceId && inventory ? inventory.inventory.get(referenceId) : undefined;
+		return { inventory, entry, state: entry?.instance?.state };
+	}
+
+	private consumeRound(definition: WeaponDefinition): boolean {
+		const { state } = this.getEquippedWeaponState();
+		if (!state || state.currentAmmo <= 0) {
+			console.log("[Weapon] No ammunition in magazine", {
+				definitionId: definition.id,
+				name: definition.name,
+				currentAmmo: state?.currentAmmo ?? 0,
+			});
+			return false;
+		}
+		state.currentAmmo -= 1;
+		return true;
+	}
+
+	private logShot(definition: WeaponDefinition): void {
+		const { inventory, state } = this.getEquippedWeaponState();
+		console.log("[Weapon] Shot", {
+			id: definition.id,
+			name: definition.name,
+			type: definition.type,
+			weaponType: definition.weaponType,
+			ammoType: definition.ammoType,
+			baseDamage: definition.baseDamage,
+			fireRate: definition.fireRate,
+			range: definition.range,
+			projectileCount: definition.projectileCount,
+			spreadDegrees: definition.spreadDegrees,
+			projectileSpeed: definition.projectileSpeed,
+			reloadTime: definition.reloadTime,
+			magazineSize: definition.magazineSize,
+			currentAmmo: state?.currentAmmo ?? 0,
+			remainingAmmo: inventory?.inventory.count(definition.ammoType) ?? 0,
+		});
+	}
+
+	private cancelReload(): void {
+		this.reloading = false;
+		this.reloadRemainingTime = 0;
+		this.reloadDefinitionId = undefined;
+	}
+
+	/** Starts a timed reload when the magazine and reserve allow it. */
+	private startReload(definition: WeaponDefinition): void {
+		if (this.reloading) return;
+		const { inventory, state } = this.getEquippedWeaponState();
+		const reserveAmmo = inventory?.inventory.count(definition.ammoType) ?? 0;
+		if (!state || state.currentAmmo >= definition.magazineSize || reserveAmmo <= 0) {
+			console.log("[Weapon] Reload unavailable", {
+				id: definition.id,
+				currentAmmo: state?.currentAmmo ?? 0,
+				magazineSize: definition.magazineSize,
+				remainingAmmo: reserveAmmo,
+			});
+			return;
+		}
+		this.reloading = true;
+		this.reloadRemainingTime = definition.reloadTime;
+		this.reloadDefinitionId = definition.id;
+		console.log("[Weapon] Reload started", {
+			id: definition.id,
+			name: definition.name,
+			reloadTime: definition.reloadTime,
+			currentAmmo: state.currentAmmo,
+			remainingAmmo: reserveAmmo,
+		});
+	}
+
+	/** Transfers reserve ammunition into the equipped weapon instance. */
+	private finishReload(): void {
+		const definition = this.getDefinition();
+		const { inventory, state } = this.getEquippedWeaponState();
+		if (!state || this.reloadDefinitionId !== definition.id || !inventory) {
+			this.cancelReload();
+			return;
+		}
+		const missingAmmo = definition.magazineSize - state.currentAmmo;
+		const availableAmmo = inventory.inventory.count(definition.ammoType);
+		const loadedAmmo = Math.min(missingAmmo, availableAmmo);
+		if (loadedAmmo > 0) {
+			inventory.inventory.remove(definition.ammoType, loadedAmmo);
+			state.currentAmmo += loadedAmmo;
+		}
+		this.cancelReload();
+		console.log("[Weapon] Reload completed", {
+			id: definition.id,
+			name: definition.name,
+			currentAmmo: state.currentAmmo,
+			remainingAmmo: inventory.inventory.count(definition.ammoType),
+		});
+	}
+
+	/** Fires one weapon action and consumes one round from the magazine. */
 	shot() {
 		if (!this.weaponHolder) return;
 
@@ -100,24 +253,40 @@ export class WeaponController extends ScriptComponent {
 		}
 
 		const angle = MathUtil.radToDeg(angleInRads);
-
-		const bullet = createBullet(spawnPosition);
-		bullet.setZindex(0);
-		bullet.getComponent(Transform).rotation = angle;
-
-		const kinematic = bullet.getComponent(KinematicBody);
-		const bulletSpeed = 25;
-		kinematic.velocity = aimDir.clone().multiplyBy(bulletSpeed);
-
-		const collider = bullet.getComponent(Collider);
-		collider.ignoreZIndex = true;
-		collider.ignoreEntity(this.weaponHolder);
-
+		const definition = this.getDefinition();
+		if (!this.consumeRound(definition)) return;
+		this.logShot(definition);
 		const scene = this.entity.getScene();
-		if (scene) scene.addEntity(bullet);
+		if (!scene) return;
+		const projectileCount = Math.max(1, definition.projectileCount);
+		for (let index = 0; index < projectileCount; index++) {
+			const spread = projectileCount === 1
+				? 0
+				: -definition.spreadDegrees / 2 + (definition.spreadDegrees * index) / (projectileCount - 1);
+			const direction = aimDir.clone().rotate(MathUtil.degToRad(spread)).normalize();
+			const projectileAngle = angleInRads + MathUtil.degToRad(spread);
+			const bullet = createBullet(spawnPosition.clone(), definition.baseDamage, definition.range);
+			bullet.setZindex(0);
+			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
 
-		const sprite = bullet.getComponent(Sprite);
-		if (sprite) sprite.setRotation(angleInRads);
+			const kinematic = bullet.getComponent(KinematicBody);
+			kinematic.velocity = direction.multiplyBy(definition.projectileSpeed);
+
+			const collider = bullet.getComponent(Collider);
+			collider.ignoreZIndex = true;
+			collider.ignoreEntity(this.weaponHolder);
+			for (const existingEntity of scene.getEntitiesAsArray()) {
+				if (!existingEntity.hasTag("bullet")) continue;
+				const existingCollider = existingEntity.getComponent(Collider);
+				if (!existingCollider) continue;
+				collider.ignoreEntity(existingEntity);
+				existingCollider.ignoreEntity(bullet);
+			}
+			scene.addEntity(bullet);
+
+			const sprite = bullet.getComponent(Sprite);
+			if (sprite) sprite.setRotation(projectileAngle);
+		}
 
 		this.weaponEffectRemainingTime = this.weaponEffectDuration;
 		this.weaponEffectSprite.setVisible(true);
@@ -142,6 +311,10 @@ export class WeaponController extends ScriptComponent {
 		const holderGameObject = this.weaponHolder as GameObject;
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
+		if (!this.enableController) {
+			weaponSprite.setVisible(false);
+			return;
+		}
 
 		const arm = holderGameObject.getComponent(PlayerAimingArm)?.getArm();
 		if (!arm) return;
@@ -178,7 +351,19 @@ export class WeaponController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.enableController) return;
-		const fireRate = 0.4;
+		const reloadKey = KeyBoardManager.keyDown("r");
+		const reloadPressed = reloadKey && !this.previousReloadKey;
+		this.previousReloadKey = reloadKey;
+		const definition = this.getDefinition();
+		if (reloadPressed) this.startReload(definition);
+		if (this.reloading) {
+			this.reloadRemainingTime -= Time.fixedDeltaTime;
+			if (this.reloadRemainingTime <= 0) this.finishReload();
+			return;
+		}
+		const aimingController = this.weaponHolder?.getComponent(AimingController);
+		if (!aimingController?.isAiming()) return;
+		const fireRate = definition.fireRate;
 		this.fireCooldown -= Time.fixedDeltaTime;
 		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
 			this.shot();
