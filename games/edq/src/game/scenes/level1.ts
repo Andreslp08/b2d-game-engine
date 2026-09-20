@@ -2,8 +2,8 @@ import { GameObject } from "engine/common/entities/game-object";
 import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
 
-import { GameScene } from "./game-scene";
-import { GameSceneLevel } from "../enum/scene";
+import { GameScene, type GameSceneInfo } from "./game-scene";
+import { GameSceneDifficultyLevel } from "../enum/scene";
 import { createBox } from "../prefabs/box";
 import { createPlayer } from "../prefabs/player";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
@@ -21,14 +21,22 @@ import { Parallax } from "engine/graphics/components/parallax";
 import { RenderLayers } from "engine/graphics/render/render-layers";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { PlayerSkin } from "../config/constants";
+import { useGameStore } from "../../store/store";
+import { PlayerSkinComponent } from "../script-components/player/player-skin-component";
 
 export class Level1 extends GameScene {
+	static readonly info: GameSceneInfo = {
+		displayName: "Map 1",
+		description: "Deliver the package while surviving the enemy attacks.",
+		difficultyLevel: GameSceneDifficultyLevel.EASY,
+	} as const;
+
 	player: GameObject;
 	floor: GameObject;
 	wall: GameObject;
 
 	constructor() {
-		super("Delivery 1", GameSceneLevel.EASY);
+		super();
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
 		// DebugMode.enabled = true;
@@ -42,6 +50,17 @@ export class Level1 extends GameScene {
 		// this.loadEffects();
 		// this.loadUI();
 		// this.loadDebug();
+	}
+
+	updatePlayerSkinFromCustomMenu() {
+		useGameStore.subscribe((state) => {
+			if (state.currentSkin && this.player) {
+				const playerSkinComponent = this.player.getComponent(PlayerSkinComponent);
+				if (playerSkinComponent) {
+					this.player.getComponent(PlayerSkinComponent).changeSkin(state.currentSkin);
+				}
+			}
+		});
 	}
 
 	loadEffects() {
@@ -86,7 +105,7 @@ export class Level1 extends GameScene {
 		}
 
 		const playerId = this.addEntity(
-			createPlayer({ position: new Vector2(0, -4), skin: PlayerSkin.SKIN1 }),
+			createPlayer({ position: new Vector2(0, -4), skin: useGameStore.getState().currentSkin }),
 		);
 		this.player = this.getEntityById<GameObject>(playerId);
 		// setTimeout(() => {
