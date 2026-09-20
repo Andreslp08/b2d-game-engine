@@ -1,5 +1,7 @@
+import type { PlayerSkin } from "../config/constants";
+
 export const UI_LAYER_DEFINITIONS = {
-	global: ["loadingScreen", "mainMenu", "levelsMenu", "settingsMenu", "controlsMenu"],
+	global: ["loadingScreen", "mainMenu", "gameModeMenu", "levelsMenu", "customPlayerMenu", "settingsMenu", "controlsMenu"],
 	arcade: ["pauseMenu", "victoryMenu", "gameOverMenu"],
 	story: ["pauseMenu", "victoryMenu", "gameOverMenu"],
 } as const;
@@ -23,6 +25,7 @@ export type ActiveUIState =
 export interface GameRuntimeState {
 	currentGame: GameId | null;
 	currentUI: ActiveUIState;
+	currentSkin: PlayerSkin;
 }
 
 export interface GameRuntimeActions {
@@ -30,6 +33,7 @@ export interface GameRuntimeActions {
 	clearCurrentGame: () => void;
 	setCurrentUI: <S extends UIScope>(scope: S, layer: UILayersByScope[S]) => void;
 	clearCurrentUI: () => void;
+	setCurrentSkin: (skin: PlayerSkin) => void;
 }
 
 export type GameState = GameRuntimeState & GameRuntimeActions;
