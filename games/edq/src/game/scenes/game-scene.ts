@@ -14,12 +14,11 @@ export class GameScene extends Scene {
 		difficultyLevel: GameSceneDifficultyLevel.EASY,
 	};
 
-
 	constructor() {
 		super();
 	}
 
-	getInfo(): GameSceneInfo {
+	getSceneInfo(): GameSceneInfo {
 		return (this.constructor as typeof GameScene).info;
 	}
 }
