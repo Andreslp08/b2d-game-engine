@@ -21,13 +21,11 @@ export type WeaponType =
 
 /** Identifies a compatible ammunition family. */
 export type AmmoType =
-	| "handgun"
-	| "shotgun_shell"
-	| "smg"
-	| "rifle"
-	| "sniper"
-	| "magnum"
-	| "rocket";
+	| "light"
+	| "medium"
+	| "shells"
+	| "heavy"
+	| "explosive";
 
 /** Describes the effect family of a throwable item. */
 export type ThrowableType = "explosive" | "incendiary" | "flash" | "smoke";
