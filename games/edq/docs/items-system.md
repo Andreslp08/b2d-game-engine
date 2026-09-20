@@ -52,7 +52,7 @@ The design intentionally avoids a large class hierarchy. New item behavior shoul
 
 ## 2. Weapon types and ammunition types
 
-`WeaponType` and `AmmoType` are independent concepts.
+`WeaponType` and `AmmoType` are independent concepts. Ammo types are broad compatibility families, not one type per weapon.
 
 ```ts
 type WeaponType =
@@ -68,13 +68,11 @@ type WeaponType =
 
 ```ts
 type AmmoType =
-  | "handgun"
-  | "shotgun_shell"
-  | "smg"
-  | "rifle"
-  | "sniper"
-  | "magnum"
-  | "rocket";
+  | "light"
+  | "medium"
+  | "shells"
+  | "heavy"
+  | "explosive";
 ```
 
 This allows multiple concrete weapons to share ammunition, while a weapon type remains independent from its ammunition type. Melee weapons do not require ammunition.
@@ -105,13 +103,11 @@ The current catalog contains:
 - M4
 - Shotgun
 - First Aid
-- Handgun Ammo
-- Shotgun Shells
-- SMG Ammo
-- Rifle Ammo
-- Sniper Ammo
-- Magnum Ammo
-- Rockets
+- Light Ammo
+- Medium Ammo
+- Shells
+- Heavy Ammo
+- Explosive Ammo
 
 `AmmoDefinition` is used explicitly for the ammo catalog so TypeScript validates that every ammunition entry contains the correct ammo-specific fields.
 
@@ -183,7 +179,7 @@ The player currently receives:
 - one M4 instance;
 - one Shotgun instance;
 - one First Aid instance;
-- separate ammunition reserves for magnum, rifle, and shotgun shells.
+- separate ammunition reserves for heavy, medium, and shells.
 
 ## 6. Loot in the world
 
@@ -276,7 +272,7 @@ This keeps item ownership and equipment selection separate from the current temp
 ### Desert Eagle
 
 - `weaponType`: `magnum`
-- `ammoType`: `magnum`
+- `ammoType`: `heavy`
 - one projectile per shot;
 - high damage;
 - slow fire rate;
@@ -285,7 +281,7 @@ This keeps item ownership and equipment selection separate from the current temp
 ### M4
 
 - `weaponType`: `rifle`
-- `ammoType`: `rifle`
+- `ammoType`: `medium`
 - one projectile per shot;
 - faster fire rate;
 - moderate damage;
@@ -295,7 +291,7 @@ This keeps item ownership and equipment selection separate from the current temp
 ### Shotgun
 
 - `weaponType`: `shotgun`
-- `ammoType`: `shotgun_shell`
+- `ammoType`: `shells`
 - six projectiles per shot;
 - wide spread;
 - close-range behavior;
@@ -308,7 +304,7 @@ Each weapon instance owns its current magazine through `WeaponInstanceState.curr
 
 The inventory owns reserve ammunition as stackable entries. A weapon consumes reserve ammo only when reloading.
 
-Pressing `R` starts a reload when:
+Reloading starts automatically when a shot empties the magazine. Pressing `R` can also start a manual reload when:
 
 - a weapon is equipped;
 - the magazine is not full;
@@ -320,6 +316,8 @@ During the configured reload duration:
 - shooting is blocked;
 - the weapon remains in its reload state;
 - the current weapon definition is preserved.
+
+While reloading, the crosshair displays only the large main circle. The secondary circle and center crosshair are hidden until the reload completes.
 
 When the timer completes, the inventory transfers the required amount of reserve ammo into the weapon instance's magazine. Reload time is defined per weapon through `WeaponDefinition.reloadTime`.
 
