@@ -1,21 +1,21 @@
-import { GameSceneLevel } from "./../enum/scene";
+import { GameSceneDifficultyLevel } from "./../enum/scene";
 import { Scene } from "engine/scenes/scene";
 
+export type GameSceneInfo = {
+	displayName: string;
+	description: string;
+	difficultyLevel: GameSceneDifficultyLevel;
+};
+
 export class GameScene extends Scene {
-	private _level: GameSceneLevel;
-	private _displayName: string = "Game scene";
+	static readonly info: GameSceneInfo = {
+		displayName: "Game scene",
+		description: "",
+		difficultyLevel: GameSceneDifficultyLevel.EASY,
+	};
 
-	constructor(displayName: string, level: GameSceneLevel) {
+
+	constructor() {
 		super();
-		this._level = level;
-		this._displayName = displayName;
-	}
-
-	public get level() {
-		return this._level;
-	}
-
-	public get displayName() {
-		return this._displayName;
 	}
 }
