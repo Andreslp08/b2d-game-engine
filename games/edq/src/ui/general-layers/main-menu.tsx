@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { GameSceneLoader } from "../../game/scene-loader";
 import { Button } from "../shared/components/button";
-import { Logo } from "../shared/components/logo";
 import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
-import { GAME_VERSION } from "../../game/config/constants";
 import { EnemyCarousel } from "./enemy-carousel";
 import { useGameStore } from "../../store/store";
 import { DefaultMenuHeader } from "./default-menu-header";

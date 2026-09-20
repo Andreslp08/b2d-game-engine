@@ -4,7 +4,6 @@ import { DefaultMenuHeader } from "./default-menu-header";
 import { useEscapeBack } from "../shared/hooks/use-escape-back";
 import { useGameStore } from "../../store/store";
 import { BackButton } from "../shared/components/back-button";
-import { FramedPanel } from "../shared/components/framed-panel";
 import { GameSceneLoader } from "../../game/scene-loader";
 
 export const ArcadeLevelsMenu = () => {

@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Button } from "../shared/components/button";
-import gsap from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
 import { DefaultMenuHeader } from "./default-menu-header";
 import { useEscapeBack } from "../shared/hooks/use-escape-back";
