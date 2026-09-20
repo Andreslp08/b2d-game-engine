@@ -56,9 +56,9 @@ export const createPlayer = (params: Params): GameObject => {
 	const m4Entry = inventoryComponent.inventory.addInstance(m4);
 	const shotgun = inventoryComponent.inventory.createInstance(itemRegistry.get("shotgun"));
 	const shotgunEntry = inventoryComponent.inventory.addInstance(shotgun);
-	inventoryComponent.inventory.add("magnum", 42);
-	inventoryComponent.inventory.add("rifle", 90);
-	inventoryComponent.inventory.add("shotgun_shell", 24);
+	inventoryComponent.inventory.add("heavy_ammo", 42);
+	inventoryComponent.inventory.add("medium_ammo", 90);
+	inventoryComponent.inventory.add("shells_ammo", 24);
 	const firstAid = inventoryComponent.inventory.createInstance(itemRegistry.get("first_aid"));
 	const firstAidEntry = inventoryComponent.inventory.addInstance(firstAid);
 	const quickSlots = new QuickSlotsComponent();

@@ -126,6 +126,7 @@ export class WeaponController extends ScriptComponent {
 	private consumeRound(definition: WeaponDefinition): boolean {
 		const { state } = this.getEquippedWeaponState();
 		if (!state || state.currentAmmo <= 0) {
+			this.startReload(definition);
 			console.log("[Weapon] No ammunition in magazine", {
 				definitionId: definition.id,
 				name: definition.name,
@@ -154,8 +155,13 @@ export class WeaponController extends ScriptComponent {
 			reloadTime: definition.reloadTime,
 			magazineSize: definition.magazineSize,
 			currentAmmo: state?.currentAmmo ?? 0,
-			remainingAmmo: inventory?.inventory.count(definition.ammoType) ?? 0,
+			remainingAmmo: inventory?.inventory.countAmmo(definition.ammoType) ?? 0,
 		});
+	}
+
+	/** Returns whether the current weapon is in its timed reload phase. */
+	isReloading(): boolean {
+		return this.reloading;
 	}
 
 	private cancelReload(): void {
@@ -168,7 +174,7 @@ export class WeaponController extends ScriptComponent {
 	private startReload(definition: WeaponDefinition): void {
 		if (this.reloading) return;
 		const { inventory, state } = this.getEquippedWeaponState();
-		const reserveAmmo = inventory?.inventory.count(definition.ammoType) ?? 0;
+		const reserveAmmo = inventory?.inventory.countAmmo(definition.ammoType) ?? 0;
 		if (!state || state.currentAmmo >= definition.magazineSize || reserveAmmo <= 0) {
 			console.log("[Weapon] Reload unavailable", {
 				id: definition.id,
@@ -199,10 +205,10 @@ export class WeaponController extends ScriptComponent {
 			return;
 		}
 		const missingAmmo = definition.magazineSize - state.currentAmmo;
-		const availableAmmo = inventory.inventory.count(definition.ammoType);
+		const availableAmmo = inventory.inventory.countAmmo(definition.ammoType);
 		const loadedAmmo = Math.min(missingAmmo, availableAmmo);
 		if (loadedAmmo > 0) {
-			inventory.inventory.remove(definition.ammoType, loadedAmmo);
+			inventory.inventory.removeAmmo(definition.ammoType, loadedAmmo);
 			state.currentAmmo += loadedAmmo;
 		}
 		this.cancelReload();
@@ -210,7 +216,7 @@ export class WeaponController extends ScriptComponent {
 			id: definition.id,
 			name: definition.name,
 			currentAmmo: state.currentAmmo,
-			remainingAmmo: inventory.inventory.count(definition.ammoType),
+			remainingAmmo: inventory.inventory.countAmmo(definition.ammoType),
 		});
 	}
 
@@ -256,6 +262,8 @@ export class WeaponController extends ScriptComponent {
 		const definition = this.getDefinition();
 		if (!this.consumeRound(definition)) return;
 		this.logShot(definition);
+		const { state } = this.getEquippedWeaponState();
+		if (state?.currentAmmo === 0) this.startReload(definition);
 		const scene = this.entity.getScene();
 		if (!scene) return;
 		const projectileCount = Math.max(1, definition.projectileCount);
