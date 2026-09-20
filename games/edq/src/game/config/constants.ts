@@ -1,4 +1,4 @@
-export const DEV_MODE = true;
+export const DEV_MODE = false;
 
 export const GAME_VERSION = "v1.0.0";
 
