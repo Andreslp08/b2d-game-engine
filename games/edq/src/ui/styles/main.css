@@ -106,3 +106,26 @@
   position: relative;
   z-index: 1;
 }
+
+
+@layer utilities {
+  .general-menu-content{
+    @apply w-full h-full p-10 lg:p-20;
+  }
+}
+
+/* new scroll style */
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ff0000;
+  border-radius: 20px;
+  border: 2px solid #ff0000;
+}
