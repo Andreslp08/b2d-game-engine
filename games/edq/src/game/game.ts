@@ -27,7 +27,7 @@ export const preloadGame = () => {
 		setTimeout(() => {
 			const scene = GameSceneLoader.loadByClassName("Level1");
 			if (scene) {
-				console.log(scene.displayName);
+				console.log(scene.getSceneInfo());
 			}
 			console.log(AssetsPreloader.assets);
 		}, 0);

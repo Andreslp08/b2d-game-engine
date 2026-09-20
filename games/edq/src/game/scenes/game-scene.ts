@@ -18,4 +18,8 @@ export class GameScene extends Scene {
 	constructor() {
 		super();
 	}
+
+	getInfo(): GameSceneInfo {
+		return (this.constructor as typeof GameScene).info;
+	}
 }
