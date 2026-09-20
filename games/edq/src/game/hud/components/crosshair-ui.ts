@@ -9,6 +9,7 @@ import { UIComponent } from "engine/ui/components/ui-component";
 
 export class CrossHairUI extends UIComponent {
 	private _visible: boolean = false;
+	private _reloadMode = false;
 	private _crosshairImage: GameImage;
 	private _crosshairMainCircleImage: GameImage;
 	private _crosshairSecondaryCircleImage: GameImage;
@@ -61,6 +62,16 @@ export class CrossHairUI extends UIComponent {
 		const mainCirclePosition = new Vector2(this.transform.position.x - 10, this.transform.position.y - 10);
 		const mainCircleSize = new Vector2(this.transform.size.x + 20, this.transform.size.y + 20);
 		const secondaryCirclePosition = this.transform.position.clone();
+		if (this._reloadMode) {
+			this.drawRotatedImage(
+				context,
+				this._crosshairMainCircleImage,
+				mainCirclePosition,
+				mainCircleSize,
+				this._mainCircleRotation,
+			);
+			return;
+		}
 		const secondaryCircleSize = this.transform.size.clone();
 		this.drawRotatedImage(
 			context,
@@ -87,6 +98,11 @@ export class CrossHairUI extends UIComponent {
 
 	setVisible(visible: boolean) {
 		this._visible = visible;
+	}
+
+	/** Shows only the large circle while the equipped weapon is reloading. */
+	setReloading(reloading: boolean): void {
+		this._reloadMode = reloading;
 	}
 
 	isVisible(): boolean {

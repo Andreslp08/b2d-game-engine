@@ -7,6 +7,7 @@ import Vector2 from "engine/math/vector2";
 import { ShieldComponent } from "../script-components/shared/shield-component";
 import { CrossHairUI } from "./components/crosshair-ui";
 import { AimingController } from "../script-components/player/aiming-controller";
+import { WeaponController, WeaponHolder } from "../script-components/weapon/weapon";
 
 class HudUI extends UIObject {
 	private _healthUI: SegmentBarUI;
@@ -53,9 +54,12 @@ class HudUI extends UIObject {
 		}
 		if(isPlayer) {
 			const aimingController = entity.getComponent(AimingController);
+			const weaponHolder = entity.getComponent(WeaponHolder);
+			const weaponController = weaponHolder?.weapon?.getComponent(WeaponController);
 			if (aimingController) {
 				this._crosshair.setVisible(aimingController.isAiming());
 			}
+			this._crosshair.setReloading(weaponController?.isReloading() ?? false);
 		}
 	}
 }
