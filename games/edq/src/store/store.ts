@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { ActiveUIState, GameState, UIScope, UILayersByScope } from "../game/interfaces/store";
+import { PlayerSkin } from "../game/config/constants";
 
 const INITIAL_UI_STATE: GameState["currentUI"] = {
 	scope: "global",
@@ -11,7 +12,7 @@ type ActiveUIForScope<S extends UIScope> = Extract<NonNullable<ActiveUIState>, {
 
 const createActiveUIState = <S extends UIScope>(
 	scope: S,
-	layer: UILayersByScope[S]
+	layer: UILayersByScope[S],
 ): ActiveUIForScope<S> =>
 	({
 		scope,
@@ -23,7 +24,8 @@ export const useGameStore = create<GameState>()(
 		(set) => ({
 			currentGame: null,
 			currentUI: INITIAL_UI_STATE,
-
+			currentSkin: PlayerSkin.SKIN1,
+			setCurrentSkin: (skin) => set({ currentSkin: skin }, false, "game/setCurrentSkin"),
 			setCurrentGame: (currentGame) => set({ currentGame }, false, "game/setCurrentGame"),
 			clearCurrentGame: () => set({ currentGame: null }, false, "game/clearCurrentGame"),
 
@@ -31,7 +33,7 @@ export const useGameStore = create<GameState>()(
 				set(
 					{ currentUI: createActiveUIState(scope, layer) },
 					false,
-					`ui/${scope}/${String(layer)}/setCurrent`
+					`ui/${scope}/${String(layer)}/setCurrent`,
 				),
 
 			clearCurrentUI: () => set({ currentUI: null }, false, "ui/clearCurrentUI"),
@@ -39,6 +41,6 @@ export const useGameStore = create<GameState>()(
 		{
 			name: "edq-game-store",
 			enabled: import.meta.env.DEV,
-		}
-	)
+		},
+	),
 );
