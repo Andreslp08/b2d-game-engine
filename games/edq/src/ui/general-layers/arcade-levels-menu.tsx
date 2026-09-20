@@ -42,8 +42,6 @@ export const ArcadeLevelsMenu = () => {
 		setClose(true);
 	};
 
-	console.log(arcadeLevels);
-
 	return (
 		<div
 			className="relative w-full h-full flex flex-col items-center overflow-hidden"
