@@ -60,6 +60,7 @@ class HudUI extends UIObject {
 				this._crosshair.setVisible(aimingController.isAiming());
 			}
 			this._crosshair.setReloading(weaponController?.isReloading() ?? false);
+			this._crosshair.setNoAmmo(weaponController?.isOutOfAmmo() ?? false);
 		}
 	}
 }

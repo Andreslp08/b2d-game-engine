@@ -25,6 +25,7 @@ itemRegistry.register({
 	spreadDegrees: 0,
 	projectileSpeed: 25,
 	reloadTime: 1.1,
+	projectileSprite: "bullet:heavy",
 });
 
 itemRegistry.register({
@@ -48,6 +49,7 @@ itemRegistry.register({
 	spreadDegrees: 2,
 	projectileSpeed: 32,
 	reloadTime: 1.8,
+	projectileSprite: "bullet:medium",
 });
 
 itemRegistry.register({
@@ -71,6 +73,7 @@ itemRegistry.register({
 	spreadDegrees: 18,
 	projectileSpeed: 24,
 	reloadTime: 2.2,
+	projectileSprite: "bullet:shells",
 });
 
 const ammoDefinitions: readonly AmmoDefinition[] = [

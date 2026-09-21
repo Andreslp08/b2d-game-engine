@@ -109,9 +109,10 @@ export const createBullet = (
 	position: Vector2,
 	damage = 10,
 	maxDistance = VIEWPORT_WIDTH_IN_METERS,
+	imageName = "bullet:medium",
 ) => {
 	const sprite = new Sprite({
-		image: AssetsManager.getImageByName("spritesheet:desert-eagle-bullet"),
+		image: AssetsManager.getImageByName(imageName),
 		framePosition: new Vector2(0, 0),
 		frameSize: { w: 500, h: 500 },
 	});

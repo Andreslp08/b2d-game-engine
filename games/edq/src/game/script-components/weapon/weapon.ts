@@ -164,6 +164,16 @@ export class WeaponController extends ScriptComponent {
 		return this.reloading;
 	}
 
+	/** Returns whether the equipped weapon has no magazine or reserve ammunition. */
+	isOutOfAmmo(): boolean {
+		if (!this.enableController) return false;
+		const definition = this.getDefinition();
+		const { inventory, state } = this.getEquippedWeaponState();
+		return !!state &&
+			state.currentAmmo === 0 &&
+			(inventory?.inventory.countAmmo(definition.ammoType) ?? 0) === 0;
+	}
+
 	private cancelReload(): void {
 		this.reloading = false;
 		this.reloadRemainingTime = 0;

@@ -58,6 +58,7 @@ export interface WeaponDefinition extends ItemDefinitionBase {
 	spreadDegrees: number;
 	projectileSpeed: number;
 	reloadTime: number;
+	projectileSprite: string;
 }
 
 /** Static design data for stackable ammunition. */

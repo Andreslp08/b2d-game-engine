@@ -255,7 +255,7 @@ Keyboard input
 
 ## 9. Weapon presentation and behavior
 
-The current visual weapon is still a `GameObject` created by the existing weapon prefab. The same Desert Eagle sprite is intentionally reused for all three current firearm definitions.
+The current visual weapon is still a `GameObject` created by the existing weapon prefab. Weapon projectiles are registered in the dedicated `preload/bullets/` folder. The standard projectile is reused by the Desert Eagle and M4, while the shotgun uses the existing shell projectile asset.
 
 `WeaponHolder` now synchronizes that visual object with `EquipmentComponent`:
 
@@ -318,6 +318,8 @@ During the configured reload duration:
 - the current weapon definition is preserved.
 
 While reloading, the crosshair displays only the large main circle. The secondary circle and center crosshair are hidden until the reload completes.
+
+If both the magazine and reserve are empty, the crosshair displays only the red center reticle to indicate that the weapon cannot fire or reload.
 
 When the timer completes, the inventory transfers the required amount of reserve ammo into the weapon instance's magazine. Reload time is defined per weapon through `WeaponDefinition.reloadTime`.
 

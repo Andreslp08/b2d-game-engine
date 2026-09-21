@@ -10,6 +10,7 @@ import { UIComponent } from "engine/ui/components/ui-component";
 export class CrossHairUI extends UIComponent {
 	private _visible: boolean = false;
 	private _reloadMode = false;
+	private _noAmmoMode = false;
 	private _crosshairImage: GameImage;
 	private _crosshairMainCircleImage: GameImage;
 	private _crosshairSecondaryCircleImage: GameImage;
@@ -72,6 +73,16 @@ export class CrossHairUI extends UIComponent {
 			);
 			return;
 		}
+		if (this._noAmmoMode) {
+			this.drawRotatedImage(
+				context,
+				this._crosshairSecondaryCircleImage,
+				secondaryCirclePosition,
+				this.transform.size.clone(),
+				this._secondaryCircleRotation,
+			);
+			return;
+		}
 		const secondaryCircleSize = this.transform.size.clone();
 		this.drawRotatedImage(
 			context,
@@ -103,6 +114,11 @@ export class CrossHairUI extends UIComponent {
 	/** Shows only the large circle while the equipped weapon is reloading. */
 	setReloading(reloading: boolean): void {
 		this._reloadMode = reloading;
+	}
+
+	/** Shows only the center reticle when the weapon has no available ammo. */
+	setNoAmmo(noAmmo: boolean): void {
+		this._noAmmoMode = noAmmo;
 	}
 
 	isVisible(): boolean {
