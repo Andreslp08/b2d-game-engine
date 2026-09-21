@@ -16,6 +16,7 @@ import { ParticleEmitter } from "engine/particle-system/component/particle-emitt
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
+import type { ProjectileDefinition } from "../items/definitions/item-definition";
 
 /** Moves a projectile, applies weapon damage, and destroys it on collision/range expiry. */
 export class BulletController extends ScriptComponent {
@@ -109,25 +110,39 @@ export const createBullet = (
 	position: Vector2,
 	damage = 10,
 	maxDistance = VIEWPORT_WIDTH_IN_METERS,
-	imageName = "bullet:medium",
+	definition: ProjectileDefinition,
 ) => {
+	const image = AssetsManager.getImageByName(definition.image);
+	const imageSize = {
+		w: image.nativeElement.naturalWidth,
+		h: image.nativeElement.naturalHeight,
+	};
 	const sprite = new Sprite({
-		image: AssetsManager.getImageByName(imageName),
+		image,
 		framePosition: new Vector2(0, 0),
-		frameSize: { w: 500, h: 500 },
+		frameSize: imageSize,
+		sourceSize: imageSize,
+		spriteSourceSize: { x: 0, y: 0, ...imageSize },
+		scale: new Vector2(definition.visual.scale.x, definition.visual.scale.y),
+		direction: { x: 1, y: 1 },
+		rotation: 0,
+		anchor: new Vector2(definition.visual.anchor.x, definition.visual.anchor.y),
+		pivot: new Vector2(definition.visual.pivot.x, definition.visual.pivot.y),
 	});
-	// sprite.setDirection({ x: direction.x, y: direction.y });
 	const obj = new GameObject(
 		{
 			position: position.clone(),
-			size: new Vector2(0.2, 0.2),
+			size: new Vector2(definition.visual.size.x, definition.visual.size.y),
 			rotation: 0,
 		},
 		sprite,
 	);
 	obj.addTag("bullet");
 	obj.addComponent(new BulletController(damage, maxDistance));
-	obj.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.2, 0.2)));
+	obj.addComponent(new Collider(
+		new Vector2(definition.collider.offset.x, definition.collider.offset.y),
+		new Vector2(definition.collider.size.x, definition.collider.size.y),
+	));
 	obj.addComponent(new KinematicBody());
 	return obj;
 };

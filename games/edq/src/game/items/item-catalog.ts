@@ -1,8 +1,33 @@
 import { ItemRegistry } from "./definitions/item-registry";
-import type { AmmoDefinition } from "./definitions/item-definition";
+import type { AmmoDefinition, ProjectileDefinition, WeaponVisualDefinition } from "./definitions/item-definition";
 
 /** Shared game catalog for all static item definitions. */
 export const itemRegistry = new ItemRegistry();
+
+const createProjectileDefinition = (image: string): ProjectileDefinition => ({
+	image,
+	visual: {
+		size: { x: 0.2, y: 0.1 },
+		scale: { x: 1, y: 1 },
+		anchor: { x: 0, y: 0 },
+		pivot: { x: 0.5, y: 0.5 },
+	},
+	collider: {
+		offset: { x: 0, y: 0 },
+		size: { x: 0.2, y: 0.2 },
+	},
+});
+
+const createWeaponVisualDefinition = (): WeaponVisualDefinition => ({
+	image: "spritesheet:desert-eagle",
+	size: { x: 0.35, y: 0.35 },
+	scale: { x: 1, y: 1 },
+	anchor: { x: 0, y: 0 },
+	pivot: { x: 0.5, y: 0.2 },
+	handOffset: { x: 0.35, y: 0.35 },
+	rotationOffsetDegrees: 45,
+	projectileSpawnPoint: { x: 0.5, y: 0.2 },
+});
 
 itemRegistry.register({
 	id: "desert_eagle",
@@ -25,7 +50,8 @@ itemRegistry.register({
 	spreadDegrees: 0,
 	projectileSpeed: 25,
 	reloadTime: 1.1,
-	projectileSprite: "bullet:heavy",
+	weaponVisual: createWeaponVisualDefinition(),
+	projectile: createProjectileDefinition("bullet:heavy"),
 });
 
 itemRegistry.register({
@@ -49,7 +75,8 @@ itemRegistry.register({
 	spreadDegrees: 2,
 	projectileSpeed: 32,
 	reloadTime: 1.8,
-	projectileSprite: "bullet:medium",
+	weaponVisual: createWeaponVisualDefinition(),
+	projectile: createProjectileDefinition("bullet:medium"),
 });
 
 itemRegistry.register({
@@ -73,7 +100,8 @@ itemRegistry.register({
 	spreadDegrees: 18,
 	projectileSpeed: 24,
 	reloadTime: 2.2,
-	projectileSprite: "bullet:shells",
+	weaponVisual: createWeaponVisualDefinition(),
+	projectile: createProjectileDefinition("bullet:shells"),
 });
 
 const ammoDefinitions: readonly AmmoDefinition[] = [

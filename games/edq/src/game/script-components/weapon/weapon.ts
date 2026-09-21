@@ -230,6 +230,43 @@ export class WeaponController extends ScriptComponent {
 		});
 	}
 
+	/** Applies the equipped weapon's visual definition to the shared weapon entity. */
+	private applyWeaponVisual(
+		definition: WeaponDefinition,
+		weaponTransform: Transform,
+		weaponSprite: Sprite,
+	): void {
+		const visual = definition.weaponVisual;
+		const image = AssetsManager.getImageByName(visual.image);
+		const imageSize = { w: image.nativeElement.naturalWidth, h: image.nativeElement.naturalHeight };
+		weaponTransform.size = new Vector2(visual.size.x, visual.size.y);
+		weaponSprite.setImage(image);
+		weaponSprite.setFramePosition(new Vector2(0, 0));
+		weaponSprite.setFrameSize(imageSize);
+		weaponSprite.setSourceSize(imageSize);
+		weaponSprite.setSpriteSourceSize({ x: 0, y: 0, ...imageSize });
+		weaponSprite.setScale(new Vector2(visual.scale.x, visual.scale.y));
+		weaponSprite.setAnchor(new Vector2(visual.anchor.x, visual.anchor.y));
+		weaponSprite.setPivot(new Vector2(visual.pivot.x, visual.pivot.y));
+	}
+
+	/** Returns the configured projectile spawn point using the weapon sprite's transform. */
+	private getMuzzlePosition(
+		weapon: Transform,
+		sprite: Sprite,
+		definition: WeaponDefinition,
+	): Vector2 {
+		const pivot = sprite.getPivot();
+		const scale = sprite.getScale();
+		const flip = sprite.getDirection();
+		const spawnPoint = definition.weaponVisual.projectileSpawnPoint;
+		return new Vector2(
+			(spawnPoint.x - pivot.x) * weapon.size.x * scale.x * flip.x,
+			(spawnPoint.y - pivot.y) * weapon.size.y * scale.y * flip.y,
+		).rotate(MathUtil.degToRad(weapon.rotation + sprite.getRotation()))
+			.add(weapon.position).substract(sprite.getAnchor());
+	}
+
 	/** Fires one weapon action and consumes one round from the magazine. */
 	shot() {
 		if (!this.weaponHolder) return;
@@ -237,6 +274,10 @@ export class WeaponController extends ScriptComponent {
 		const weaponObject = this.entity as GameObject;
 		const weaponTransform = weaponObject.getComponent(Transform);
 		if (!weaponTransform) return;
+		const weaponSprite = weaponObject.getComponent(Sprite);
+		if (!weaponSprite) return;
+		const definition = this.getDefinition();
+		this.applyWeaponVisual(definition, weaponTransform, weaponSprite);
 
 		const holderGameObject = this.weaponHolder as GameObject;
 		const aimingController = holderGameObject.getComponent(AimingController);
@@ -246,7 +287,7 @@ export class WeaponController extends ScriptComponent {
 		const holderVelocity = holderBody?.velocity ?? new Vector2(0, 0);
 
 		const compensation = holderVelocity.clone().multiplyBy(Time.deltaTime);
-		const spawnPosition = weaponTransform.position.clone().add(compensation);
+		const spawnPosition = this.getMuzzlePosition(weaponTransform, weaponSprite, definition).add(compensation);
 		const mousePosition = MouseManager.getRelativePosition();
 		const targetWorldPosition = Cameras.currentCamera
 			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
@@ -267,9 +308,6 @@ export class WeaponController extends ScriptComponent {
 			aimDir = targetWorldPosition.clone().substract(spawnPosition).normalize();
 			angleInRads = Math.atan2(aimDir.y, aimDir.x);
 		}
-
-		const angle = MathUtil.radToDeg(angleInRads);
-		const definition = this.getDefinition();
 		if (!this.consumeRound(definition)) return;
 		this.logShot(definition);
 		const { state } = this.getEquippedWeaponState();
@@ -287,7 +325,7 @@ export class WeaponController extends ScriptComponent {
 				spawnPosition.clone(),
 				definition.baseDamage,
 				definition.range,
-				definition.projectileSprite,
+				definition.projectile,
 			);
 			bullet.setZindex(0);
 			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
@@ -307,8 +345,7 @@ export class WeaponController extends ScriptComponent {
 			}
 			scene.addEntity(bullet);
 
-			const sprite = bullet.getComponent(Sprite);
-			if (sprite) sprite.setRotation(projectileAngle);
+			// Transform.rotation already supplies the projectile's full rotation.
 		}
 
 		this.weaponEffectRemainingTime = this.weaponEffectDuration;
@@ -334,6 +371,9 @@ export class WeaponController extends ScriptComponent {
 		const holderGameObject = this.weaponHolder as GameObject;
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
+		const definition = this.getDefinition();
+		const visual = definition.weaponVisual;
+		this.applyWeaponVisual(definition, weaponTransform, weaponSprite);
 		if (!this.enableController) {
 			weaponSprite.setVisible(false);
 			return;
@@ -358,14 +398,16 @@ export class WeaponController extends ScriptComponent {
 		}
 
 		const aimingDirectionInX = aimingController.getAimingDirection().x;
-		const handOffset = new Vector2(0.4 * aimingDirectionInX, 0.4);
+		const handOffset = new Vector2(
+			visual.handOffset.x * aimingDirectionInX,
+			visual.handOffset.y,
+		);
 		const rotatedOffset = handOffset.rotate(MathUtil.degToRad(armTransform.rotation));
 
 		weaponTransform.position = armTransform.position.clone().add(rotatedOffset);
 		weaponTransform.rotation = armTransform.rotation;
 		weaponSprite.setDirection({ x: aimingDirectionInX, y: 1 });
-		weaponSprite.setRotation(45 * aimingDirectionInX);
-		weaponSprite.setPivot(new Vector2(0.5, 0.2));
+		weaponSprite.setRotation(visual.rotationOffsetDegrees * aimingDirectionInX);
 		weaponObject.setZindex(1);
 		this.weaponEffectSprite.setDirection({ x: aimingDirectionInX, y: 1 });
 		this.weaponEffectSprite.setRotation(45 * aimingDirectionInX);

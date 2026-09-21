@@ -45,6 +45,34 @@ export interface ItemDefinitionBase {
 	quickAssignable: boolean;
 }
 
+/** Static visual and collision data for a projectile spawned by a weapon. */
+export interface ProjectileDefinition {
+	image: string;
+	visual: {
+		size: { x: number; y: number };
+		scale: { x: number; y: number };
+		anchor: { x: number; y: number };
+		pivot: { x: number; y: number };
+	};
+	collider: {
+		offset: { x: number; y: number };
+		size: { x: number; y: number };
+	};
+}
+
+/** Static visual and attachment data for an equipped weapon. */
+export interface WeaponVisualDefinition {
+	image: string;
+	size: { x: number; y: number };
+	scale: { x: number; y: number };
+	anchor: { x: number; y: number };
+	pivot: { x: number; y: number };
+	handOffset: { x: number; y: number };
+	rotationOffsetDegrees: number;
+	/** Normalized image coordinate where projectiles leave the weapon. */
+	projectileSpawnPoint: { x: number; y: number };
+}
+
 /** Static design data for a weapon item. */
 export interface WeaponDefinition extends ItemDefinitionBase {
 	type: "weapon";
@@ -58,7 +86,8 @@ export interface WeaponDefinition extends ItemDefinitionBase {
 	spreadDegrees: number;
 	projectileSpeed: number;
 	reloadTime: number;
-	projectileSprite: string;
+	weaponVisual: WeaponVisualDefinition;
+	projectile: ProjectileDefinition;
 }
 
 /** Static design data for stackable ammunition. */
