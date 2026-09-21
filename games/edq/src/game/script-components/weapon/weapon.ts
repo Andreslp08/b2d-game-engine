@@ -283,7 +283,12 @@ export class WeaponController extends ScriptComponent {
 				: -definition.spreadDegrees / 2 + (definition.spreadDegrees * index) / (projectileCount - 1);
 			const direction = aimDir.clone().rotate(MathUtil.degToRad(spread)).normalize();
 			const projectileAngle = angleInRads + MathUtil.degToRad(spread);
-			const bullet = createBullet(spawnPosition.clone(), definition.baseDamage, definition.range);
+			const bullet = createBullet(
+				spawnPosition.clone(),
+				definition.baseDamage,
+				definition.range,
+				definition.projectileSprite,
+			);
 			bullet.setZindex(0);
 			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
 
