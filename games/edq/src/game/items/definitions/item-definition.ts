@@ -1,3 +1,5 @@
+import type { WeaponId } from "./weapons-ids";
+
 /** Identifies the broad gameplay category of an item. */
 export type ItemType =
 	| "weapon"
@@ -76,6 +78,7 @@ export interface WeaponVisualDefinition {
 /** Static design data for a weapon item. */
 export interface WeaponDefinition extends ItemDefinitionBase {
 	type: "weapon";
+	weaponId: WeaponId;
 	weaponType: WeaponType;
 	ammoType: AmmoType;
 	magazineSize: number;

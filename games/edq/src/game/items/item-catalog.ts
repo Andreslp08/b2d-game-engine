@@ -1,5 +1,6 @@
 import { ItemRegistry } from "./definitions/item-registry";
-import type { AmmoDefinition, ProjectileDefinition, WeaponVisualDefinition } from "./definitions/item-definition";
+import type { AmmoDefinition, ProjectileDefinition } from "./definitions/item-definition";
+import { getWeaponVisualDefinition } from "./definitions/get-weapon-definition";
 
 /** Shared game catalog for all static item definitions. */
 export const itemRegistry = new ItemRegistry();
@@ -18,19 +19,11 @@ const createProjectileDefinition = (image: string): ProjectileDefinition => ({
 	},
 });
 
-const createWeaponVisualDefinition = (): WeaponVisualDefinition => ({
-	image: "spritesheet:desert-eagle",
-	size: { x: 0.35, y: 0.35 },
-	scale: { x: 1, y: 1 },
-	anchor: { x: 0, y: 0 },
-	pivot: { x: 0.5, y: 0.2 },
-	handOffset: { x: 0.35, y: 0.35 },
-	rotationOffsetDegrees: 45,
-	projectileSpawnPoint: { x: 0.5, y: 0.2 },
-});
+
 
 itemRegistry.register({
 	id: "desert_eagle",
+	weaponId: "desert-eagle",
 	name: "Desert Eagle",
 	description: "A powerful handgun.",
 	type: "weapon",
@@ -50,12 +43,13 @@ itemRegistry.register({
 	spreadDegrees: 0,
 	projectileSpeed: 25,
 	reloadTime: 1.1,
-	weaponVisual: createWeaponVisualDefinition(),
+	weaponVisual: getWeaponVisualDefinition("desert-eagle"),
 	projectile: createProjectileDefinition("bullet:heavy"),
 });
 
 itemRegistry.register({
 	id: "m4",
+	weaponId: "m4",
 	name: "M4",
 	description: "A reliable modern assault rifle.",
 	type: "weapon",
@@ -75,12 +69,13 @@ itemRegistry.register({
 	spreadDegrees: 2,
 	projectileSpeed: 32,
 	reloadTime: 1.8,
-	weaponVisual: createWeaponVisualDefinition(),
+	weaponVisual:getWeaponVisualDefinition("m4"),
 	projectile: createProjectileDefinition("bullet:medium"),
 });
 
 itemRegistry.register({
 	id: "shotgun",
+	weaponId: "shotgun",
 	name: "Shotgun",
 	description: "A close-range shotgun with a wide spread.",
 	type: "weapon",
@@ -100,7 +95,7 @@ itemRegistry.register({
 	spreadDegrees: 18,
 	projectileSpeed: 24,
 	reloadTime: 2.2,
-	weaponVisual: createWeaponVisualDefinition(),
+	weaponVisual:getWeaponVisualDefinition("shotgun"),
 	projectile: createProjectileDefinition("bullet:shells"),
 });
 
