@@ -1,9 +1,11 @@
 import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
 import { PLAYER_IMAGES_ASSETS } from "./player/textures/images";
 import { BULLET_IMAGES_ASSETS } from "./bullets/images";
+import { WEAPONS_IMAGES_ASSETS } from "./weapon/images";
 
 export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
 	...BULLET_IMAGES_ASSETS,
+    ...WEAPONS_IMAGES_ASSETS,
     // UI
     {
         type: GameAssetsTypes.Image,
@@ -25,11 +27,6 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
         type: GameAssetsTypes.Image,
         name: "spritesheet:virus",
         path: "/assets/textures/Virus.png",
-    },
-    {
-        type: GameAssetsTypes.Image,
-        name: "spritesheet:desert-eagle",
-        path: "/assets/textures/desert-eagle.png",
     },
     {
         type: GameAssetsTypes.Image,
