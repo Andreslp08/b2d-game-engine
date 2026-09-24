@@ -77,7 +77,7 @@ itemRegistry.register({
 	ammoType: "shells",
 	magazineSize: 8,
 	baseDamage: 12,
-	fireRate: 0.8,
+	fireRate: 1,
 	range: 15,
 	projectileCount: 6,
 	spreadDegrees: 18,
