@@ -7,11 +7,12 @@ import { EquipmentComponent } from "../../items/components/equipment-component";
 /** Maps keyboard shortcuts to inventory references and equipment selection. */
 export class QuickSlotInputController extends ScriptComponent {
 	private readonly slots = [
-		{ slot: 0, key: "1" },
-		{ slot: 1, key: "2" },
-		{ slot: 2, key: "3" },
-		{ slot: 3, key: "4" },
-		{ slot: 4, key: "5" },
+		{ slot: 0, key: "f" },
+		{ slot: 1, key: "1" },
+		{ slot: 2, key: "2" },
+		{ slot: 3, key: "3" },
+		{ slot: 4, key: "4" },
+		{ slot: 5, key: "5" },
 	];
 
 	onUpdate(): void {

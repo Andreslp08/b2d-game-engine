@@ -90,6 +90,7 @@ export const createSoldierBomb = (position: Vector2, targetPosition: Vector2, ow
 	body.velocity = new Vector2(directionX * 8, -10);
 
 	bomb.addTag("soldier-bomb");
+	bomb.addTag("enemy-projectile");
 	bomb.addComponent(new SoldierBombController(owner));
 	bomb.addComponent(collider);
 	bomb.addComponent(body);

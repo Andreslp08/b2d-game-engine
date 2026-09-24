@@ -12,6 +12,7 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { KinematicBody } from "engine/physics/components/kinematic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { createBullet } from "../../prefabs/bullet";
+import { createRocket } from "../../prefabs/rocket";
 import { AimingController } from "../player/aiming-controller";
 import { PlayerAimingArm } from "../player/player-aiming-arm";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
@@ -20,6 +21,8 @@ import { EquipmentComponent } from "../../items/components/equipment-component";
 import { itemRegistry } from "../../items/item-catalog";
 import type { WeaponDefinition } from "../../items/definitions/item-definition";
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
+import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
+import { ParticleRenderType } from "engine/particle-system/enum/enum";
 
 /** Synchronizes the equipped inventory weapon with its visual GameObject. */
 export class WeaponHolder extends ScriptComponent {
@@ -267,6 +270,41 @@ export class WeaponController extends ScriptComponent {
 			.add(weapon.position).substract(sprite.getAnchor());
 	}
 
+	private emitRocketMuzzleEffect(position: Vector2, rotation: number): void {
+		const scene = this.entity.getScene();
+		if (!scene) return;
+
+		const effect = new GameObject({
+			position: position.clone(),
+			rotation,
+			size: new Vector2(1, 1),
+		});
+		const emitter = new ParticleEmitter();
+		emitter.particleRenderType = ParticleRenderType.CIRCLE;
+		emitter.maxParticles = 18;
+		emitter.burstCount = emitter.maxParticles;
+		emitter.duration = 0.35;
+		emitter.loop = false;
+		emitter.playing = true;
+		emitter.localSpace = true;
+		emitter.destroyOnComplete = true;
+		emitter.lifetime = { min: 0.08, max: 0.3 };
+		emitter.speed = { min: 1.2, max: 3 };
+		emitter.angle = { min: -25, max: 25 };
+		emitter.gravity = new Vector2(0, 0);
+		emitter.size = {
+			startMin: new Vector2(0.06, 0.06),
+			startMax: new Vector2(0.16, 0.16),
+			endMin: new Vector2(0.01, 0.01),
+			endMax: new Vector2(0.03, 0.03),
+		};
+		emitter.opacity = { start: 0.9, end: 0 };
+		emitter.startColors = ["#fff2a8", "#ff9f1c"];
+		emitter.endColors = ["#ef4444", "#7f1d1d"];
+		effect.addComponent(emitter);
+		scene.addEntity(effect);
+	}
+
 	/** Fires one weapon action and consumes one round from the magazine. */
 	shot() {
 		if (!this.weaponHolder) return;
@@ -277,6 +315,7 @@ export class WeaponController extends ScriptComponent {
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
 		const definition = this.getDefinition();
+		console.log("[Weapon] Firing", definition);
 		this.applyWeaponVisual(definition, weaponTransform, weaponSprite);
 
 		const holderGameObject = this.weaponHolder as GameObject;
@@ -321,12 +360,20 @@ export class WeaponController extends ScriptComponent {
 				: -definition.spreadDegrees / 2 + (definition.spreadDegrees * index) / (projectileCount - 1);
 			const direction = aimDir.clone().rotate(MathUtil.degToRad(spread)).normalize();
 			const projectileAngle = angleInRads + MathUtil.degToRad(spread);
-			const bullet = createBullet(
-				spawnPosition.clone(),
-				definition.baseDamage,
-				definition.range,
-				definition.projectile,
-			);
+			const bullet = definition.weaponType === "rocket_launcher"
+				? createRocket(
+					spawnPosition.clone(),
+					definition.baseDamage,
+					definition.range,
+					definition.projectile,
+					definition.explosionRadius ?? 2.5,
+				)
+				: createBullet(
+					spawnPosition.clone(),
+					definition.baseDamage,
+					definition.range,
+					definition.projectile,
+				);
 			bullet.setZindex(0);
 			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
 
@@ -350,6 +397,9 @@ export class WeaponController extends ScriptComponent {
 
 		this.weaponEffectRemainingTime = this.weaponEffectDuration;
 		this.weaponEffectSprite.setVisible(true);
+		if (definition.weaponType === "rocket_launcher") {
+			this.emitRocketMuzzleEffect(spawnPosition, angleInRads);
+		}
 	}
 
 	onUpdate(): void {

@@ -40,6 +40,7 @@ export const createSoldier = (position: Vector2) => {
 	soldier.addComponent(health);
 	soldier.addComponent(new SoliderIA())
 	soldier.addTag("soldier");
+	soldier.addTag("enemy");
 
 	return soldier;
 };

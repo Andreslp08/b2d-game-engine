@@ -28,19 +28,20 @@ export class BulletController extends ScriptComponent {
 	constructor(
 		private readonly damage = 10,
 		private readonly maxDistance = VIEWPORT_WIDTH_IN_METERS,
+		private readonly projectileDefinition: ProjectileDefinition
 	) {
 		super();
 	}
 
 	onStart(): void {
-		const shootSound = AssetsManager.getSoundByName("sound:desert-eagle");
+		const shootSound = AssetsManager.getSoundByName(this.projectileDefinition.sound);
 		shootSound.volume(1);
 		shootSound.play("shot");
 		this.startPosition = this.entity.getComponent(Transform).position.clone();
 		this.shooted = true;
 	}
 
-	private emitFlashParticle() {
+	private emitFlashParticle(): void {
 		const scene = this.entity.getScene();
 		if (!scene) return;
 		const flashEntity = new GameObject({
@@ -82,11 +83,13 @@ export class BulletController extends ScriptComponent {
 	}
 	onCollisionEnter(entity: Entity): void {
 		if (this.collisionDetected) return;
+		this.collisionDetected = true;
 		this.emitFlashParticle();
-		this.destroyBullet();
 		const damageable = entity.getComponent(Damageable);
-		if (!damageable) return;
-		damageable.applyDamage({ damage: this.damage, source: this.entity, type: "bullet" });
+		if (damageable) {
+			damageable.applyDamage({ damage: this.damage, source: this.entity, type: "bullet" });
+		}
+		this.destroyBullet();
 	}
 
 	onFixedUpdate(): void {
@@ -138,7 +141,7 @@ export const createBullet = (
 		sprite,
 	);
 	obj.addTag("bullet");
-	obj.addComponent(new BulletController(damage, maxDistance));
+	obj.addComponent(new BulletController(damage, maxDistance, definition ));
 	obj.addComponent(new Collider(
 		new Vector2(definition.collider.offset.x, definition.collider.offset.y),
 		new Vector2(definition.collider.size.x, definition.collider.size.y),
