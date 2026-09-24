@@ -13,4 +13,9 @@ export const WEAPONS_IMAGES_ASSETS: AssetToPreload<any>[] = [
 		name: "spritesheet:weapons:m4",
 		path: "/assets/textures/weapons/m4.png",
 	},
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:weapons:shotgun",
+		path: "/assets/textures/weapons/shotgun.png",
+	},
 ];

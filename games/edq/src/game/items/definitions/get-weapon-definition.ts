@@ -26,14 +26,14 @@ weapons.set("m4", {
 	projectileSpawnPoint: { x: 0.5, y: 0.3 },
 });
 weapons.set("shotgun", {
-	image: "spritesheet:weapons:m4",
-	size: { x: 1, y: 1 },
+	image: "spritesheet:weapons:shotgun",
+	size: { x: 0.7, y: 0.4 },
 	scale: { x: 1, y: 1 },
 	anchor: { x: 0, y: 0 },
-	pivot: { x: 0.5, y: 0.2 },
-	handOffset: { x: 0.35, y: 0.35 },
+	pivot: { x: 0.5, y: 0.4 },
+	handOffset: { x: 0.3, y: 0.4 },
 	rotationOffsetDegrees: 45,
-	projectileSpawnPoint: { x: 0.5, y: 0.2 },
+	projectileSpawnPoint: { x: 0.5, y: 0.3 },
 });
 
 export const getWeaponVisualDefinition = (weaponId: WeaponId) => {
