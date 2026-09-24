@@ -49,6 +49,23 @@ export class CrossHairUI extends UIComponent {
 		context.restore();
 	}
 
+	private drawStatusMessage(
+		context: CanvasRenderingContext2D,
+		message: string,
+		center: Vector2,
+	): void {
+		context.save();
+		context.font = "bold 10px sans-serif";
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.lineWidth = 3;
+		context.strokeStyle = "rgba(0, 0, 0, 0.85)";
+		context.fillStyle = "#ffffff";
+		context.strokeText(message, center.x, center.y);
+		context.fillText(message, center.x, center.y);
+		context.restore();
+	}
+
 	render(context: CanvasRenderingContext2D): void {
 		if (!this.isVisible()) return;
 		const mousePosition = MouseManager.getRelativePosition();
@@ -63,6 +80,10 @@ export class CrossHairUI extends UIComponent {
 		const mainCirclePosition = new Vector2(this.transform.position.x - 10, this.transform.position.y - 10);
 		const mainCircleSize = new Vector2(this.transform.size.x + 20, this.transform.size.y + 20);
 		const secondaryCirclePosition = this.transform.position.clone();
+		const crosshairCenter = new Vector2(
+			this.transform.position.x + this.transform.size.x / 2,
+			this.transform.position.y + this.transform.size.y / 2,
+		);
 		if (this._reloadMode) {
 			this.drawRotatedImage(
 				context,
@@ -71,6 +92,7 @@ export class CrossHairUI extends UIComponent {
 				mainCircleSize,
 				this._mainCircleRotation,
 			);
+			this.drawStatusMessage(context, "RELOADING", crosshairCenter);
 			return;
 		}
 		if (this._noAmmoMode) {
@@ -81,6 +103,7 @@ export class CrossHairUI extends UIComponent {
 				this.transform.size.clone(),
 				this._secondaryCircleRotation,
 			);
+			this.drawStatusMessage(context, "NO AMMO", crosshairCenter);
 			return;
 		}
 		const secondaryCircleSize = this.transform.size.clone();
