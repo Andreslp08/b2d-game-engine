@@ -35,6 +35,16 @@ weapons.set("shotgun", {
 	rotationOffsetDegrees: 45,
 	projectileSpawnPoint: { x: 0.5, y: 0.3 },
 });
+weapons.set("rocket_launcher", {
+	image: "spritesheet:weapons:rocket-launcher",
+	size: { x: 0.7, y: 0.4 },
+	scale: { x: 1, y: 1 },
+	anchor: { x: 0, y: 0 },
+	pivot: { x: 0.5, y: 0.4 },
+	handOffset: { x: 0.3, y: 0.4 },
+	rotationOffsetDegrees: 45,
+	projectileSpawnPoint: { x: 0.5, y: 0.3 },
+});
 
 export const getWeaponVisualDefinition = (weaponId: WeaponId) => {
     return weapons.get(weaponId);

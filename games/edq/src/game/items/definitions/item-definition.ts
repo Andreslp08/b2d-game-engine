@@ -60,6 +60,7 @@ export interface ProjectileDefinition {
 		offset: { x: number; y: number };
 		size: { x: number; y: number };
 	};
+	sound: string;
 }
 
 /** Static visual and attachment data for an equipped weapon. */
@@ -88,6 +89,8 @@ export interface WeaponDefinition extends ItemDefinitionBase {
 	projectileCount: number;
 	spreadDegrees: number;
 	projectileSpeed: number;
+	/** Radius in world units for explosive projectiles. Zero means direct-hit damage. */
+	explosionRadius?: number;
 	reloadTime: number;
 	weaponVisual: WeaponVisualDefinition;
 	projectile: ProjectileDefinition;
