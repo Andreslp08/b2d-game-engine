@@ -6,27 +6,27 @@ export const BULLET_IMAGES_ASSETS: AssetToPreload<any>[] = [
 	// They have separate asset keys so each ammo family can receive unique art later.
 	{
 		type: GameAssetsTypes.Image,
-		name: "bullet:light",
+		name: "spritesheet:bullet:light",
 		path: "/assets/textures/bullets/light.png",
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "bullet:medium",
+		name: "spritesheet:bullet:medium",
 		path: "/assets/textures/bullets/medium.png",
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "bullet:heavy",
+		name: "spritesheet:bullet:heavy",
 		path: "/assets/textures/bullets/heavy.png",
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "bullet:shells",
+		name: "spritesheet:bullet:shells",
 		path: "/assets/textures/bullets/shell.png",
 	},
 	{
 		type: GameAssetsTypes.Image,
-		name: "bullet:rocket-launcher",
+		name: "spritesheet:bullet:rocket-launcher",
 		path: "/assets/textures/bullets/rocket-launcher.png",
 	},
 ];
