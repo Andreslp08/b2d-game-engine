@@ -1,5 +1,6 @@
 import { Cameras } from "../graphics/cameras/camera-manager";
 import { OrthographicCamera } from "../graphics/cameras/orthographic-camera";
+import { ScreenCamera } from "../graphics/cameras/screen-camera";
 import { RenderLayers } from "../graphics/render/render-layers";
 import { SpriteAnimationSystem } from "../graphics/sprites/system/sprite-animation-system";
 import { PhysicsSystem } from "../physics/system/physics-system";
@@ -43,10 +44,10 @@ export class Scene implements Updatable {
 		) as RenderSystem;
 		RenderLayers.reset();
 		Cameras.removeAllCameras();
-		const worldCamera = new OrthographicCamera(new Vector2(0, 0), this, "world");
+		const worldCamera = new OrthographicCamera(new Vector2(0, 0), this);
 		Cameras.setCurrentCamera(worldCamera);
 
-		const uiCamera = new OrthographicCamera(new Vector2(0, 0), this, "screen");
+		const uiCamera = new ScreenCamera(this);
 		Cameras.setCurrentScreenCamera(uiCamera);
 	}
 
