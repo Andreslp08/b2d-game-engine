@@ -2,7 +2,7 @@ import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import type { GameImage } from "engine/common/assets-manager/game-image";
 import { Time } from "engine/common/interfaces/time";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import { ScreenCamera } from "engine/graphics/cameras/screen-camera";
 import { MouseManager } from "engine/input/mouse-manager";
 import Vector2 from "engine/math/vector2";
 import { UIComponent } from "engine/ui/components/ui-component";
@@ -69,9 +69,9 @@ export class CrossHairUI extends UIComponent {
 	render(context: CanvasRenderingContext2D): void {
 		if (!this.isVisible()) return;
 		const mousePosition = MouseManager.getRelativePosition();
-		const uiCamera = Cameras.currentScreenCamera as OrthographicCamera;
+		const uiCamera = Cameras.currentScreenCamera as ScreenCamera;
 		const uiMousePosition = uiCamera
-			? uiCamera.getScreenSpacePositionFromCanvasRelativePosition(mousePosition)
+			? uiCamera.canvasToUISpace(mousePosition)
 			: mousePosition;
 		this.transform.position = new Vector2(
 			uiMousePosition.x - this.transform.size.x / 2,

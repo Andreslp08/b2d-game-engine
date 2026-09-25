@@ -12,11 +12,11 @@ const aspectRatio = 16 / 9;
 export const currentGameInstance = new Engine();
 const gameStore = useGameStore.getState();
 
-Screen.getInstance().setResolution(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
-Screen.getInstance().setResolution(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
+Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
+Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 addEventListener("resize", () => {
 	console.log("updating resolution");
-	Screen.getInstance().setResolution(
+	Screen.getInstance().resize(
 		new Vector2(window.innerWidth, window.innerHeight),
 		aspectRatio,
 	);

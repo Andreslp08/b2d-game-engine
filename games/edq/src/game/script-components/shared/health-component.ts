@@ -3,6 +3,7 @@ import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import { Screen } from "engine/graphics/screen/screen";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import type { ITranform } from "engine/input/interfaces/transform.interface";
 import { MathUtil } from "engine/math/math-util";
@@ -195,7 +196,8 @@ export class HealthComponent extends ScriptComponent {
 				const topCenter = gameObj.transform.position
 					.clone()
 					.substract(new Vector2(0, gameObj.transform.size.y / 2));
-				const screenPos = currentCamera.getScreenPositionFromWorldPosition(topCenter);
+				const canvasPos = currentCamera.getCanvasPositionFromWorldPosition(topCenter);
+				const screenPos = Screen.getInstance().canvasToUISpace(canvasPos);
 
 				this.healthUI.setPosition(
 					screenPos,
