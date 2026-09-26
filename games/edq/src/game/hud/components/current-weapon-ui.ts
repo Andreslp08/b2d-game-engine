@@ -5,6 +5,7 @@ import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import type { GameObject } from "engine/common/entities/game-object";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
+import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
 import type {
 	AnyItemDefinition,
 	WeaponDefinition,
@@ -34,18 +35,21 @@ export class CurrentWeaponUI extends UIComponent {
 		context: CanvasRenderingContext2D,
 		image: HTMLImageElement,
 		container: { x: number; y: number; width: number; height: number },
+		rotationDegrees = 0,
 	): void {
 		if (!image.complete || image.naturalWidth === 0 || image.naturalHeight === 0) return;
 
+		const isQuarterTurn = Math.abs(rotationDegrees) % 180 === 90;
 		const scale = Math.min(
-			container.width / image.naturalWidth,
-			container.height / image.naturalHeight,
+			(isQuarterTurn ? container.height : container.width) / image.naturalWidth,
+			(isQuarterTurn ? container.width : container.height) / image.naturalHeight,
 		);
 		const drawWidth = image.naturalWidth * scale;
 		const drawHeight = image.naturalHeight * scale;
 
 		context.save();
 		context.translate(container.x + container.width / 2, container.y + container.height / 2);
+		context.rotate((rotationDegrees * Math.PI) / 180);
 		context.fillStyle = "rgba(255,255,255,255)";
 		// context.fillRect(
 		// 	-container.width / 2,
@@ -81,24 +85,29 @@ export class CurrentWeaponUI extends UIComponent {
 		}
 		const equipment = player.getComponent(EquipmentComponent);
 		const inventory = player.getComponent(InventoryComponent);
+		const quickSlots = player.getComponent(QuickSlotsComponent);
 
 		if (!equipment || !inventory) {
-			this.drawEmpty(context);
+			this.drawEmpty(context, quickSlots?.getActiveKey());
 			return;
 		}
 		const equippedReference = equipment.getEquippedReferenceId();
 		if (!equippedReference) {
-			this.drawEmpty(context);
+			if (quickSlots?.getActiveReference() === null) {
+				this.drawFist(context, quickSlots.getActiveKey());
+			} else {
+				this.drawEmpty(context, quickSlots?.getActiveKey());
+			}
 			return;
 		}
 		const currentItem = inventory.inventory.findByInstanceId(equippedReference);
 		if (!currentItem) {
-			this.drawEmpty(context);
+			this.drawEmpty(context, quickSlots?.getActiveKey());
 			return;
 		}
 		const definitions = inventory.inventory.getDefinition(currentItem.definitionId);
 		if (!definitions) {
-			this.drawEmpty(context);
+			this.drawEmpty(context, quickSlots?.getActiveKey());
 			return;
 		}
 		const { type } = definitions;
@@ -139,7 +148,8 @@ export class CurrentWeaponUI extends UIComponent {
 		const totalAmmo = definitions.type === "weapon"
 			? currentAmmo + inventory.inventory.countAmmo(definitions.ammoType)
 			: 0;
-		this.drawInfo(context, infoDrawDimensions, currentItem.quantity, definitions, currentAmmo, totalAmmo);
+		const keyBind = quickSlots?.getKeyForReference(equippedReference);
+		this.drawInfo(context, infoDrawDimensions, currentItem.quantity, definitions, currentAmmo, totalAmmo, keyBind);
 		context.restore();
 	}
 
@@ -153,7 +163,7 @@ export class CurrentWeaponUI extends UIComponent {
 		);
 	}
 
-	private drawEmpty(context: CanvasRenderingContext2D): void {
+	private drawEmpty(context: CanvasRenderingContext2D, keyBind?: string): void {
 		context.save();
 		context.translate(this.transform.position.x, this.transform.position.y);
 		context.fillStyle = "#ffffff";
@@ -163,6 +173,60 @@ export class CurrentWeaponUI extends UIComponent {
 		context.shadowColor = "rgba(0, 0, 0, 0.8)";
 		context.shadowBlur = 2;
 		context.fillText("Empty", this.transform.size.x / 2, this.transform.size.y / 2);
+		if (keyBind) {
+			const padding = 20;
+			const infoBounds = {
+				x: padding,
+				y: padding + this.transform.size.y * 0.7 - padding * 1.5,
+				width: this.transform.size.x - padding * 2,
+				height: this.transform.size.y * 0.3,
+			};
+			this.drawKeyBind(context, keyBind, infoBounds);
+		}
+		context.restore();
+	}
+
+	private drawFist(context: CanvasRenderingContext2D, keyBind?: string): void {
+		const fistImage = AssetsManager.getImageByName("ui:fist");
+		if (!fistImage) {
+			this.drawEmpty(context, keyBind);
+			return;
+		}
+
+		const padding = 20;
+		this.drawImageInsideBounds(context, fistImage.nativeElement, {
+			x: this.transform.position.x + padding,
+			y: this.transform.position.y + padding,
+			width: this.transform.size.x - padding * 2,
+			height: this.transform.size.y * 0.7 - padding * 1.5,
+		});
+		if (keyBind) {
+			this.drawKeyBind(context, keyBind, {
+				x: this.transform.position.x + padding,
+				y: this.transform.position.y + padding + this.transform.size.y * 0.7 - padding * 1.5,
+				width: this.transform.size.x - padding * 2,
+				height: this.transform.size.y * 0.3,
+			});
+		}
+	}
+
+	private drawKeyBind(
+		context: CanvasRenderingContext2D,
+		keyBind: string,
+		container: { x: number; y: number; width: number; height: number },
+	): void {
+		const size = Math.min(container.height * 0.58, container.width * 0.18);
+		const x = container.x + container.width - size;
+		const y = container.y + (container.height - size) / 2;
+
+		context.save();
+		context.fillStyle = "#ffffff";
+		context.fillRect(x, y, size, size);
+		context.fillStyle = "#111111";
+		context.font = `bold ${size * 0.68}px sans-serif`;
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.fillText(keyBind.toUpperCase(), x + size / 2, y + size / 2);
 		context.restore();
 	}
 
@@ -173,6 +237,7 @@ export class CurrentWeaponUI extends UIComponent {
 		definition: AnyItemDefinition,
 		currentAmmo: number,
 		totalAmmo: number,
+		keyBind?: string,
 	) {
 		context.save();
 		context.textBaseline = "middle";
@@ -186,31 +251,46 @@ export class CurrentWeaponUI extends UIComponent {
         const fontSize = Math.min(20, container.height * 0.5);
 
 
-		if (definition.type === "weapon") {
-			context.font = `bold ${fontSize}px sans-serif`;
-			context.textAlign = "left";
-            if(currentAmmo === 0 && totalAmmo === 0) {
-                context.fillStyle = textColors.empty;
-            }
-			context.fillText(`${currentAmmo}/${totalAmmo}`, container.x, container.y + container.height / 2);
-			const projectileImage = AssetsManager.getImageByName(definition.projectile.image);
-			const iconSize = container.height * 0.8;
-			this.drawImageInsideBounds(context, projectileImage.nativeElement, {
-				x: container.x + container.width - iconSize,
-				y: container.y + (container.height - iconSize) / 2,
+		const isWeapon = definition.type === "weapon";
+		if ((isWeapon && totalAmmo === 0) || (!isWeapon && quantity === 0)) {
+			context.fillStyle = textColors.empty;
+		}
+		context.font = `bold ${fontSize}px sans-serif`;
+		context.textAlign = "left";
+		const countText = isWeapon ? `${currentAmmo}/${totalAmmo}` : `x${quantity}`;
+		const centerY = container.y + container.height / 2;
+		const itemIcon = this.getCountIcon(definition);
+		const iconSize = itemIcon ? container.height * 0.62 : 0;
+		const gap = itemIcon ? container.height * 0.12 : 0;
+		if (itemIcon) {
+			this.drawImageInsideBounds(context, itemIcon.nativeElement, {
+				x: container.x,
+				y: centerY - iconSize / 2,
 				width: iconSize,
 				height: iconSize,
-			});
-		} else {
-            if(quantity === 0) {
-                context.fillStyle = textColors.empty;
-            }
-			context.font = `bold ${fontSize}px sans-serif`;
-			context.textAlign = "left";
-			context.fillText(`x${quantity}`, container.x, container.y + container.height / 2);
+			}, isWeapon || definition.type === "ammo" ? -90 : 0);
 		}
+		context.fillText(countText, container.x + iconSize + gap, centerY);
+		if (keyBind) this.drawKeyBind(context, keyBind, container);
 
 		context.restore();
+	}
+
+	private getCountIcon(definition: AnyItemDefinition): GameImage | undefined {
+		if (definition.type === "weapon") {
+			return AssetsManager.getImageByName(definition.projectile.image) ?? undefined;
+		}
+		if (definition.type === "ammo") {
+			const imageNameByAmmoType = {
+				light: "spritesheet:bullet:light",
+				medium: "spritesheet:bullet:medium",
+				shells: "spritesheet:bullet:shells",
+				heavy: "spritesheet:bullet:heavy",
+				explosive: "spritesheet:bullet:rocket-launcher",
+			} as const;
+			return AssetsManager.getImageByName(imageNameByAmmoType[definition.ammoType]) ?? undefined;
+		}
+		return definition.icon ? AssetsManager.getImageByName(definition.icon) ?? undefined : undefined;
 	}
 
 }
