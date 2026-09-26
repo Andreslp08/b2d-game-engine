@@ -13,6 +13,8 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { PlayerSpriteController } from "../script-components/player/sprite-controller";
 import { QuickSlotInputController } from "../script-components/player/quick-slot-input-controller";
 import { PlayerLifeController } from "../script-components/player/player-life-controller";
+import { PlayerAidKitController } from "../script-components/player/player-aid-kit-controller";
+import { HealingFlashEffect } from "../script-components/shared/healing-flash-effect";
 import { AimingController } from "../script-components/player/aiming-controller";
 import { PlayerAimingArm } from "../script-components/player/player-aiming-arm";
 import { PlayerSkin } from "../config/constants";
@@ -75,6 +77,8 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(quickSlots);
 	const equipment = new EquipmentComponent();
 	entity.addComponent(equipment);
+	entity.addComponent(new HealingFlashEffect());
+	entity.addComponent(new PlayerAidKitController());
 
 	entity.addComponent(new WeaponHolder());
 	const collider = entity.getComponent(Collider);
