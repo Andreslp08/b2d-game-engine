@@ -8,11 +8,13 @@ import { ShieldComponent } from "../script-components/shared/shield-component";
 import { CrossHairUI } from "./components/crosshair-ui";
 import { AimingController } from "../script-components/player/aiming-controller";
 import { WeaponController, WeaponHolder } from "../script-components/weapon/weapon";
+import { CurrentWeaponUI } from "./components/current-weapon-ui";
 
 class HudUI extends UIObject {
 	private _healthUI: SegmentBarUI;
 	private _shieldUI: SegmentBarUI;
 	private _crosshair: CrossHairUI;
+	private _currentWeaponUI: CurrentWeaponUI;
 	constructor() {
 		super();
 		const healthX = 10;
@@ -33,6 +35,9 @@ class HudUI extends UIObject {
 
 		this._crosshair = new CrossHairUI();
 		this.addComponent(this._crosshair);
+
+		this._currentWeaponUI = new CurrentWeaponUI();
+		this.addComponent(this._currentWeaponUI);
 	}
 
 	attachTo(entity: GameObject) {
