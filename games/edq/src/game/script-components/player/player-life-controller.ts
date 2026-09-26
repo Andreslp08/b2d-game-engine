@@ -5,11 +5,7 @@ import { MathUtil } from "engine/math/math-util";
 import { Time } from "engine/common/interfaces/time";
 import { PlayerController } from "./player-controller";
 import { ShieldComponent } from "../shared/shield-component";
-import { GameObject } from "engine/common/entities/game-object";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { Entity } from "engine/ecs/entity";
-import { PlayerAimingArm } from "./player-aiming-arm";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { DamageFlashEffect } from "../shared/damage-flash-effect";
 import { GameEvent } from "engine/common/events/game-event";
 import { useGameStore } from "../../../store/store";
 
@@ -24,9 +20,6 @@ export class PlayerLifeController extends ScriptComponent {
 	private disableInputStartTime = 0;
 	private disableInputDuration = 0.3;
 
-	private damageShaderDuration = 0.5;
-	damageShaderStartTime = 0;
-	shouldEnableDamageShader = false;
 	isDead = false;
 	onPlayerDie = new GameEvent<void>();
 
@@ -42,30 +35,6 @@ export class PlayerLifeController extends ScriptComponent {
 
 	private changeCameraRotation(rotation: number) {
 		Cameras.currentCamera.setRotation(rotation);
-	}
-
-	private damageShader() {
-		const gameObject = this.entity as GameObject;
-		if (!gameObject) return;
-		const spriteAnimation = gameObject.getComponent(SpriteAnimation);
-		if (!spriteAnimation) return;
-		const arm = gameObject.getComponent(PlayerAimingArm)?.getArm();
-		const armSprite = arm?.getComponent(Sprite);
-		const damageFilter = "sepia(1) hue-rotate(-50deg) saturate(6) brightness(1.1)";
-
-		if (this.shouldEnableDamageShader) {
-			const delta = Time.time - this.damageShaderStartTime;
-			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter(damageFilter));
-			if (armSprite) armSprite?.setFilter(damageFilter);
-
-			if (delta > this.damageShaderDuration) {
-				this.shouldEnableDamageShader = false;
-				this.damageShaderStartTime = Time.time;
-			}
-		} else {
-			spriteAnimation.spritesheet.sprites.forEach((sprite) => sprite.setFilter("none"));
-			if (armSprite) armSprite?.setFilter("none");
-		}
 	}
 
 	setDamage(damage: number, mode: DamageMode = "shield-first") {
@@ -85,8 +54,7 @@ export class PlayerLifeController extends ScriptComponent {
 			healthComponent.setDamage(damage);
 		}
 
-		this.shouldEnableDamageShader = true;
-		this.damageShaderStartTime = Time.time;
+		this.entity.getComponent(DamageFlashEffect)?.play();
 
 		if (healthComponent && healthComponent.getHealth() <= 0) {
 			this.isDead = true;
@@ -170,6 +138,5 @@ export class PlayerLifeController extends ScriptComponent {
 			}
 		}
 		this.handleDamageCoolDown();
-		this.damageShader();
 	}
 }

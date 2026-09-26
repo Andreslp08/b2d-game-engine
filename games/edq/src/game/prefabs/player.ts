@@ -15,6 +15,7 @@ import { QuickSlotInputController } from "../script-components/player/quick-slot
 import { PlayerLifeController } from "../script-components/player/player-life-controller";
 import { PlayerAidKitController } from "../script-components/player/player-aid-kit-controller";
 import { HealingFlashEffect } from "../script-components/shared/healing-flash-effect";
+import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";
 import { AimingController } from "../script-components/player/aiming-controller";
 import { PlayerAimingArm } from "../script-components/player/player-aiming-arm";
 import { PlayerSkin } from "../config/constants";
@@ -23,6 +24,7 @@ import { itemRegistry } from "../items/item-catalog";
 import { InventoryComponent } from "../items/components/inventory-component";
 import { QuickSlotsComponent } from "../items/components/quick-slots-component";
 import { EquipmentComponent } from "../items/components/equipment-component";
+import { Sprite } from "engine/graphics/sprites/components/sprite";
 
 type Params = {
 	position: Vector2;
@@ -48,7 +50,8 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new FallDamage());
 	entity.addComponent(new PlayerHud());
 	entity.addComponent(new PlayerLifeController());
-	entity.addComponent(new PlayerAimingArm(skin));
+	const playerAimingArm = new PlayerAimingArm(skin);
+	entity.addComponent(playerAimingArm);
 	entity.addComponent(new QuickSlotInputController());
 	entity.addComponent(new AimingController());
 	const inventoryComponent = new InventoryComponent(itemRegistry);
@@ -78,6 +81,12 @@ export const createPlayer = (params: Params): GameObject => {
 	const equipment = new EquipmentComponent();
 	entity.addComponent(equipment);
 	entity.addComponent(new HealingFlashEffect());
+	const damageFlashEffect = new DamageFlashEffect();
+	damageFlashEffect.setAdditionalSpritesProvider(() => {
+		const armSprite = playerAimingArm.getArm()?.getComponent(Sprite);
+		return armSprite ? [armSprite] : [];
+	});
+	entity.addComponent(damageFlashEffect);
 	entity.addComponent(new PlayerAidKitController());
 
 	entity.addComponent(new WeaponHolder());
