@@ -18,6 +18,7 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     { type: GameAssetsTypes.Image, name: "ui:crosshair-main-circle", path: "/assets/ui/crosshair/main-circle.png" },
     { type: GameAssetsTypes.Image, name: "ui:crosshair-secondary-circle", path: "/assets/ui/crosshair/secondary-circle.png" },
     { type: GameAssetsTypes.Image, name: "ui:current-weapon-container", path: "/assets/ui/current-weapon/current-weapon-texture.png" },
+    { type: GameAssetsTypes.Image, name: "ui:fist", path: "/assets/ui/current-weapon/fist.png" },
     // spritesheets
     {
         type: GameAssetsTypes.Image,
