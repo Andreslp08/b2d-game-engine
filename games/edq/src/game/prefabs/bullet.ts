@@ -16,7 +16,7 @@ import { ParticleEmitter } from "engine/particle-system/component/particle-emitt
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
-import type { ProjectileDefinition } from "../items/definitions/item-definition";
+import type { ProjectileDefinition } from "../items/definitions/projectile-definition";
 
 /** Moves a projectile, applies weapon damage, and destroys it on collision/range expiry. */
 export class BulletController extends ScriptComponent {

@@ -1,4 +1,6 @@
 import type { WeaponId } from "./weapons-ids";
+import type { ProjectileId } from "./projectile-ids";
+import type { AmmoId } from "./ammo-ids";
 
 /** Identifies the broad gameplay category of an item. */
 export type ItemType =
@@ -22,7 +24,7 @@ export type WeaponType =
 	| "melee";
 
 /** Identifies a compatible ammunition family. */
-export type AmmoType =
+export type AmmoFamily =
 	| "light"
 	| "medium"
 	| "shells"
@@ -37,7 +39,7 @@ export interface ItemDefinitionBase {
 	id: string;
 	name: string;
 	description: string;
-	icon?: string;
+	icon: string;
 	type: ItemType;
 	stackable: boolean;
 	maxStack: number;
@@ -45,22 +47,6 @@ export interface ItemDefinitionBase {
 	sellable: boolean;
 	equippable: boolean;
 	quickAssignable: boolean;
-}
-
-/** Static visual and collision data for a projectile spawned by a weapon. */
-export interface ProjectileDefinition {
-	image: string;
-	visual: {
-		size: { x: number; y: number };
-		scale: { x: number; y: number };
-		anchor: { x: number; y: number };
-		pivot: { x: number; y: number };
-	};
-	collider: {
-		offset: { x: number; y: number };
-		size: { x: number; y: number };
-	};
-	sound: string;
 }
 
 /** Static visual and attachment data for an equipped weapon. */
@@ -81,7 +67,7 @@ export interface WeaponDefinition extends ItemDefinitionBase {
 	type: "weapon";
 	weaponId: WeaponId;
 	weaponType: WeaponType;
-	ammoType: AmmoType;
+	ammoId: AmmoId;
 	magazineSize: number;
 	baseDamage: number;
 	fireRate: number;
@@ -89,17 +75,16 @@ export interface WeaponDefinition extends ItemDefinitionBase {
 	projectileCount: number;
 	spreadDegrees: number;
 	projectileSpeed: number;
-	/** Radius in world units for explosive projectiles. Zero means direct-hit damage. */
-	explosionRadius?: number;
 	reloadTime: number;
 	weaponVisual: WeaponVisualDefinition;
-	projectile: ProjectileDefinition;
 }
 
 /** Static design data for stackable ammunition. */
 export interface AmmoDefinition extends ItemDefinitionBase {
 	type: "ammo";
-	ammoType: AmmoType;
+	id: AmmoId;
+	ammoFamily: AmmoFamily;
+	projectileId: ProjectileId;
 }
 
 /** Static design data for a throwable item. */

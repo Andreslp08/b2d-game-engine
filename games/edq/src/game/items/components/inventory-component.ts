@@ -1,5 +1,5 @@
 import { Component } from "engine/ecs/component";
-import type { ItemRegistry } from "../definitions/item-registry";
+import type { ItemRegistry } from "../item-catalog/item-registry";
 import { Inventory } from "../runtime/inventory";
 
 /** ECS bridge that gives an entity ownership of a logical inventory. */

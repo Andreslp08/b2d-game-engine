@@ -1,6 +1,7 @@
 import { GameEvent } from "engine/common/events/game-event";
-import type { AmmoType, AnyItemDefinition } from "../definitions/item-definition";
-import type { ItemRegistry } from "../definitions/item-registry";
+import type { AnyItemDefinition } from "../definitions/item-definition";
+import type { AmmoId } from "../definitions/ammo-ids";
+import type { ItemRegistry } from "../item-catalog/item-registry";
 import { createItemInstance, type ItemInstance } from "./item-instance";
 
 /** Logical inventory entry; definitions are resolved through the registry. */
@@ -109,31 +110,15 @@ export class Inventory {
 			.reduce((total, entry) => total + entry.quantity, 0);
 	}
 
-	/** Returns the total reserve quantity for an ammunition family. */
-	countAmmo(ammoType: AmmoType): number {
-		return Array.from(this.entries.values())
-			.filter((entry) => {
-				const definition = this.registry.get(entry.definitionId);
-				return definition.type === "ammo" && definition.ammoType === ammoType;
-			})
-			.reduce((total, entry) => total + entry.quantity, 0);
+	/** Returns the total reserve quantity for one exact ammunition definition. */
+	countAmmo(ammoId: AmmoId): number {
+		const definition = this.registry.get(ammoId);
+		return definition.type === "ammo" ? this.count(ammoId) : 0;
 	}
 
-	/** Removes reserve ammunition across all entries belonging to a family. */
-	removeAmmo(ammoType: AmmoType, quantity: number): boolean {
-		if (quantity <= 0 || this.countAmmo(ammoType) < quantity) return false;
-		let remaining = quantity;
-		const entries = Array.from(this.entries.values()).filter((entry) => {
-			const definition = this.registry.get(entry.definitionId);
-			return definition.type === "ammo" && definition.ammoType === ammoType;
-		});
-		for (const entry of entries) {
-			if (remaining === 0) break;
-			const removed = Math.min(remaining, entry.quantity);
-			this.remove(entry.entryId, removed);
-			remaining -= removed;
-		}
-		return remaining === 0;
+	/** Removes reserve ammunition from one exact ammunition definition. */
+	removeAmmo(ammoId: AmmoId, quantity: number): boolean {
+		return this.remove(ammoId, quantity);
 	}
 
 	/** Returns a snapshot of the logical entries. */

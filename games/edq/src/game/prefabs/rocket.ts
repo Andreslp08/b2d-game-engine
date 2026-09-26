@@ -14,7 +14,7 @@ import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
-import type { ProjectileDefinition } from "../items/definitions/item-definition";
+import type { ProjectileDefinition } from "../items/definitions/projectile-definition";
 import type { GameSound } from "engine/common/assets-manager/game-sound";
 
 /** Handles rocket movement, impact effects, and area damage. */

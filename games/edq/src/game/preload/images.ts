@@ -1,11 +1,10 @@
 import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
 import { PLAYER_IMAGES_ASSETS } from "./player/textures/images";
-import { BULLET_IMAGES_ASSETS } from "./bullets/images";
-import { WEAPONS_IMAGES_ASSETS } from "./weapon/images";
+import { ITEMS_IMAGES_ASSETS } from "./items/images";
 
 export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
-	...BULLET_IMAGES_ASSETS,
-    ...WEAPONS_IMAGES_ASSETS,
+	...ITEMS_IMAGES_ASSETS,
+    ...PLAYER_IMAGES_ASSETS,
     // UI
     {
         type: GameAssetsTypes.Image,
@@ -37,7 +36,6 @@ export const IMAGES_ASSETS:  AssetToPreload<any>[] = [
     },
     { type: GameAssetsTypes.Image, name: "spritesheet:box", path: "/assets/textures/Box.png" },
     { type: GameAssetsTypes.Image, name: "spritesheet:city", path: "/assets/textures/city.png" },
-    ...PLAYER_IMAGES_ASSETS,
     {
         type: GameAssetsTypes.Image,
         name: "spritesheet:soldier-idle",

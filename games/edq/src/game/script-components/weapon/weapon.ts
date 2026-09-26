@@ -20,6 +20,7 @@ import { InventoryComponent } from "../../items/components/inventory-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { itemRegistry } from "../../items/item-catalog";
 import type { WeaponDefinition } from "../../items/definitions/item-definition";
+import { getProjectileDefinition } from "../../items/item-catalog/projectile-catalog";
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
@@ -148,7 +149,7 @@ export class WeaponController extends ScriptComponent {
 			name: definition.name,
 			type: definition.type,
 			weaponType: definition.weaponType,
-			ammoType: definition.ammoType,
+			ammoId: definition.ammoId,
 			baseDamage: definition.baseDamage,
 			fireRate: definition.fireRate,
 			range: definition.range,
@@ -158,7 +159,7 @@ export class WeaponController extends ScriptComponent {
 			reloadTime: definition.reloadTime,
 			magazineSize: definition.magazineSize,
 			currentAmmo: state?.currentAmmo ?? 0,
-			remainingAmmo: inventory?.inventory.countAmmo(definition.ammoType) ?? 0,
+			remainingAmmo: inventory?.inventory.countAmmo(definition.ammoId) ?? 0,
 		});
 	}
 
@@ -174,7 +175,7 @@ export class WeaponController extends ScriptComponent {
 		const { inventory, state } = this.getEquippedWeaponState();
 		return !!state &&
 			state.currentAmmo === 0 &&
-			(inventory?.inventory.countAmmo(definition.ammoType) ?? 0) === 0;
+			(inventory?.inventory.countAmmo(definition.ammoId) ?? 0) === 0;
 	}
 
 	private cancelReload(): void {
@@ -187,7 +188,7 @@ export class WeaponController extends ScriptComponent {
 	private startReload(definition: WeaponDefinition): void {
 		if (this.reloading) return;
 		const { inventory, state } = this.getEquippedWeaponState();
-		const reserveAmmo = inventory?.inventory.countAmmo(definition.ammoType) ?? 0;
+		const reserveAmmo = inventory?.inventory.countAmmo(definition.ammoId) ?? 0;
 		if (!state || state.currentAmmo >= definition.magazineSize || reserveAmmo <= 0) {
 			console.log("[Weapon] Reload unavailable", {
 				id: definition.id,
@@ -218,10 +219,10 @@ export class WeaponController extends ScriptComponent {
 			return;
 		}
 		const missingAmmo = definition.magazineSize - state.currentAmmo;
-		const availableAmmo = inventory.inventory.countAmmo(definition.ammoType);
+		const availableAmmo = inventory.inventory.countAmmo(definition.ammoId);
 		const loadedAmmo = Math.min(missingAmmo, availableAmmo);
 		if (loadedAmmo > 0) {
-			inventory.inventory.removeAmmo(definition.ammoType, loadedAmmo);
+			inventory.inventory.removeAmmo(definition.ammoId, loadedAmmo);
 			state.currentAmmo += loadedAmmo;
 		}
 		this.cancelReload();
@@ -229,7 +230,7 @@ export class WeaponController extends ScriptComponent {
 			id: definition.id,
 			name: definition.name,
 			currentAmmo: state.currentAmmo,
-			remainingAmmo: inventory.inventory.countAmmo(definition.ammoType),
+			remainingAmmo: inventory.inventory.countAmmo(definition.ammoId),
 		});
 	}
 
@@ -315,6 +316,11 @@ export class WeaponController extends ScriptComponent {
 		const weaponSprite = weaponObject.getComponent(Sprite);
 		if (!weaponSprite) return;
 		const definition = this.getDefinition();
+		const ammoDefinition = itemRegistry.get(definition.ammoId);
+		if (ammoDefinition.type !== "ammo") {
+			throw new Error(`${definition.ammoId} is not an ammunition definition`);
+		}
+		const projectileDefinition = getProjectileDefinition(ammoDefinition.projectileId);
 		console.log("[Weapon] Firing", definition);
 		this.applyWeaponVisual(definition, weaponTransform, weaponSprite);
 
@@ -360,19 +366,19 @@ export class WeaponController extends ScriptComponent {
 				: -definition.spreadDegrees / 2 + (definition.spreadDegrees * index) / (projectileCount - 1);
 			const direction = aimDir.clone().rotate(MathUtil.degToRad(spread)).normalize();
 			const projectileAngle = angleInRads + MathUtil.degToRad(spread);
-			const bullet = definition.weaponType === "rocket_launcher"
+			const bullet = projectileDefinition.kind === "rocket"
 				? createRocket(
 					spawnPosition.clone(),
 					definition.baseDamage,
 					definition.range,
-					definition.projectile,
-					definition.explosionRadius ?? 2.5,
+					projectileDefinition,
+					projectileDefinition.explosionRadius ?? 2.5,
 				)
 				: createBullet(
 					spawnPosition.clone(),
 					definition.baseDamage,
 					definition.range,
-					definition.projectile,
+					projectileDefinition,
 				);
 			bullet.setZindex(0);
 			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
@@ -397,7 +403,7 @@ export class WeaponController extends ScriptComponent {
 
 		this.weaponEffectRemainingTime = this.weaponEffectDuration;
 		this.weaponEffectSprite.setVisible(true);
-		if (definition.weaponType === "rocket_launcher") {
+		if (projectileDefinition.kind === "rocket") {
 			this.emitRocketMuzzleEffect(spawnPosition, angleInRads);
 		}
 	}

@@ -11,6 +11,7 @@ import type {
 	WeaponDefinition,
 } from "../../items/definitions/item-definition";
 import type { GameImage } from "engine/common/assets-manager/game-image";
+import { getProjectileDefinition } from "../../items/item-catalog/projectile-catalog";
 
 const containerMargin = {
 	x: 20,
@@ -100,7 +101,7 @@ export class CurrentWeaponUI extends UIComponent {
 			}
 			return;
 		}
-		const currentItem = inventory.inventory.findByInstanceId(equippedReference);
+		const currentItem = inventory.inventory.get(equippedReference);
 		if (!currentItem) {
 			this.drawEmpty(context, quickSlots?.getActiveKey());
 			return;
@@ -110,12 +111,8 @@ export class CurrentWeaponUI extends UIComponent {
 			this.drawEmpty(context, quickSlots?.getActiveKey());
 			return;
 		}
-		const { type } = definitions;
-		let weaponImage: GameImage | undefined;
-		if (type === "weapon") {
-			const weaponDefinitions = definitions as WeaponDefinition;
-			weaponImage = AssetsManager.getImageByName(weaponDefinitions.weaponVisual.image);
-		}
+		const itemImage: GameImage | undefined = AssetsManager.getImageByName(definitions.icon);
+        console.log(definitions.icon,itemImage);
 		context.save();
 		const padding = {
 			x: 20,
@@ -139,14 +136,14 @@ export class CurrentWeaponUI extends UIComponent {
 			width: this.transform.size.x - padding.x * 2,
 			height: this.transform.size.y*0.3,
 		};
-		if (weaponImage) {
-			this.drawImageInsideBounds(context, weaponImage.nativeElement, {
+		if (itemImage) {
+			this.drawImageInsideBounds(context, itemImage.nativeElement, {
 				...weaponImageDrawDimensions,
 			});
 		}
 		const currentAmmo = currentItem.instance?.state?.currentAmmo ?? 0;
 		const totalAmmo = definitions.type === "weapon"
-			? currentAmmo + inventory.inventory.countAmmo(definitions.ammoType)
+			? currentAmmo + inventory.inventory.countAmmo(definitions.ammoId)
 			: 0;
 		const keyBind = quickSlots?.getKeyForReference(equippedReference);
 		this.drawInfo(context, infoDrawDimensions, currentItem.quantity, definitions, currentAmmo, totalAmmo, keyBind);
@@ -277,20 +274,19 @@ export class CurrentWeaponUI extends UIComponent {
 	}
 
 	private getCountIcon(definition: AnyItemDefinition): GameImage | undefined {
-		if (definition.type === "weapon") {
-			return AssetsManager.getImageByName(definition.projectile.image) ?? undefined;
-		}
-		if (definition.type === "ammo") {
-			const imageNameByAmmoType = {
-				light: "spritesheet:bullet:light",
-				medium: "spritesheet:bullet:medium",
-				shells: "spritesheet:bullet:shells",
-				heavy: "spritesheet:bullet:heavy",
-				explosive: "spritesheet:bullet:rocket-launcher",
-			} as const;
-			return AssetsManager.getImageByName(imageNameByAmmoType[definition.ammoType]) ?? undefined;
-		}
-		return definition.icon ? AssetsManager.getImageByName(definition.icon) ?? undefined : undefined;
+		if (definition.type !== "weapon") return undefined;
+
+		const ammoDefinition = this.getAmmoDefinition(definition);
+		if (!ammoDefinition) return undefined;
+		const projectile = getProjectileDefinition(ammoDefinition.projectileId);
+		return AssetsManager.getImageByName(projectile.image) ?? undefined;
+	}
+
+	private getAmmoDefinition(definition: WeaponDefinition) {
+		const player = this.entity.getScene()?.getEntityByTag<GameObject>("player");
+		const inventory = player?.getComponent(InventoryComponent);
+		const ammo = inventory?.inventory.getDefinition(definition.ammoId);
+		return ammo?.type === "ammo" ? ammo : undefined;
 	}
 
 }
