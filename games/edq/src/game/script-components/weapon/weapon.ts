@@ -443,13 +443,15 @@ export class WeaponController extends ScriptComponent {
 		if (!aimingController) return;
 
 		const isAiming = aimingController.isAiming();
-		if (!isAiming) {
-			weaponSprite.setVisible(false);
-			this.weaponEffectRemainingTime = 0;
-			this.weaponEffectSprite.setVisible(false);
-		} else {
-			weaponSprite.setVisible(true);
-		}
+if (!isAiming) {
+	this.enableController = false;
+	weaponSprite.setVisible(false);
+	this.weaponEffectRemainingTime = 0;
+	this.weaponEffectSprite.setVisible(false);
+} else {
+	this.enableController = true;
+	weaponSprite.setVisible(true);
+}
 
 		const aimingDirectionInX = aimingController.getAimingDirection().x;
 		const handOffset = new Vector2(
