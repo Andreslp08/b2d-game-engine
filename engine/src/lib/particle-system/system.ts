@@ -4,20 +4,21 @@ import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
 import { MathUtil } from "../math/math-util";
 import Vector2 from "../math/vector2";
-import { Culling } from "../performance/culling";
 import { CullingTarget } from "../performance/enum/culling-type";
 import { ParticleEmitter } from "./component/particle-emitter";
 import { Particle } from "./particle";
 
 export class ParticleSystem extends System {
 	update(): void {
-		const entities = this.getScene().getEntitiesByQuery({
-			all: [ParticleEmitter],
-			none: [Culling],
-		});
+		const entities = this.getScene()
+			.getEntitiesByComponents([ParticleEmitter])
+			.filter((entity) => !Entity.isBeingCulling(entity, [
+				CullingTarget.ALL,
+				CullingTarget.LOGIC,
+				CullingTarget.RENDER,
+			]));
 
 		for (const entity of entities) {
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.LOGIC])) continue;
 			const transform = entity.getComponent(Transform);
 			if (!transform) continue;
 
@@ -168,4 +169,3 @@ export class ParticleSystem extends System {
 	
 
 }
-

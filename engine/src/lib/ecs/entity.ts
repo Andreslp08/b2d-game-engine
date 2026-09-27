@@ -149,11 +149,8 @@ export class Entity {
 	}
 
 	static isBeingCulling(entity: Entity, targets: CullingTarget[]) {
-		const culling = entity.getComponent(Culling);
 		const cullingConfig = entity.getComponent(CullingConfigComponent);
-		if (culling) {
-			if (targets.includes(cullingConfig.cullingTarget)) return true;
-		}
-		return false;
+		if (!entity.hasComponent(Culling) || !cullingConfig) return false;
+		return targets.includes(cullingConfig.cullingTarget);
 	}
 }

@@ -12,7 +12,6 @@ import { TriggerArea } from "../../trigger-area/components/trigger-area";
 import { UIRenderer } from "./ui-renderer";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { CullingTarget } from "../../performance/enum/culling-type";
-import { Culling } from "../../performance/culling";
 import { DrawDebugLine } from "../../debug/components/draw-line";
 import { DebugShapesRenderer } from "./debug-shapes-renderer";
 import { ParticleEmitter } from "../../particle-system/component/particle-emitter";
@@ -70,7 +69,6 @@ export class RenderSystem extends System {
 	) => {
 		const filteredEntities = entities.filter((entity) => entity.renderLayer === layer.type);
 		for (const entity of filteredEntities) {
-			if (Entity.isBeingCulling(entity, [CullingTarget.ALL, CullingTarget.RENDER])) continue;
 			renderingContext.save();
 			this.applyEntityParallax(renderingContext, entity, layer);
 			const spriteComponents = entity.getComponents(Sprite);
@@ -112,11 +110,19 @@ export class RenderSystem extends System {
 	};
 
 	render(renderingContext: CanvasRenderingContext2D): void {
-		const entities = this.getScene()
-			.getEntitiesByQuery({ all: [], none: [Culling] })
-			.sort((a, b) => a.getZindex() - b.getZindex());
 		const scene = this.getScene();
 		if (!scene) return;
+		const entities = scene
+			.getEntitiesAsArray()
+			.filter(
+				(entity) =>
+					!Entity.isBeingCulling(entity, [
+						CullingTarget.ALL,
+						CullingTarget.RENDER,
+					]),
+			)
+			
+			.sort((a, b) => a.getZindex() - b.getZindex());
 
 		const isValidFilters = (filters: string) => filters && filters !== "none";
 

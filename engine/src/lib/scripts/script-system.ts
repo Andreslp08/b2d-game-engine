@@ -1,6 +1,5 @@
 import { Entity } from "../ecs/entity";
 import { System } from "../ecs/system";
-import { Culling } from "../performance/culling";
 import { CullingTarget } from "../performance/enum/culling-type";
 import { ScriptComponent } from "./script-component";
 
@@ -10,11 +9,15 @@ export class ScriptSystem extends System {
 	update(): void {
 		const scene = this.getScene();
 
-		// 🔍 Usamos solo entidades que tengan ScriptComponent y no estén culladas
-		const entities = scene.getEntitiesByQuery({
-			all: [ScriptComponent],
-			none: [Culling],
-		});
+		const entities = scene
+			.getEntitiesByComponents([ScriptComponent])
+			.filter(
+				(entity) =>
+					!Entity.isBeingCulling(entity, [
+						CullingTarget.ALL,
+						CullingTarget.LOGIC,
+					]),
+			);
 
 		for (const entity of entities) {
 			const scripts = entity.getComponents(ScriptComponent);
@@ -45,7 +48,13 @@ export class ScriptSystem extends System {
 
 		const entities = scene
 			.getEntitiesByComponents([ScriptComponent])
-			.filter((e) => !Entity.isBeingCulling(e, [CullingTarget.ALL, CullingTarget.LOGIC]));
+			.filter(
+				(entity) =>
+					!Entity.isBeingCulling(entity, [
+						CullingTarget.ALL,
+						CullingTarget.LOGIC,
+					]),
+			);
 
 		for (const entity of entities) {
 			const scripts = entity.getComponents(ScriptComponent);

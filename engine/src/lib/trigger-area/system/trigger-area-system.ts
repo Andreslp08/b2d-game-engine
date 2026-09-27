@@ -1,7 +1,6 @@
 import { Transform } from "../../common/components/transform";
 import { Entity } from "../../ecs/entity";
 import { System } from "../../ecs/system";
-import { Culling } from "../../performance/culling";
 import { CullingTarget } from "../../performance/enum/culling-type";
 import { ScriptComponent } from "../../scripts/script-component";
 import { TriggerArea } from "../components/trigger-area";
@@ -23,10 +22,7 @@ export class TriggerAreaSystem extends System {
 
 	fixedUpdate(): void {
 		const currentPairs: Map<string, TriggerPair> = new Map();
-		const triggerEntities = this.getScene().getEntitiesByQuery({
-			all: [Transform, TriggerArea],
-			none: [Culling],
-		});
+		const triggerEntities = this.getScene().getEntitiesByComponents([Transform, TriggerArea]);
 		const triggerEntries = this.getTriggerEntries(triggerEntities);
 
 		for (let i = 0; i < triggerEntries.length; i++) {
