@@ -2,7 +2,7 @@ import type { PlayerSkin } from "../config/constants";
 
 export const UI_LAYER_DEFINITIONS = {
 	global: ["loadingScreen", "mainMenu", "gameModeMenu", "levelsMenu", "customPlayerMenu", "settingsMenu", "controlsMenu"],
-	arcade: ["pauseMenu", "victoryMenu", "gameOverMenu"],
+	arcade: ["pauseMenu", "victoryMenu", "gameOverMenu", "inventoryMenu"],
 	story: ["pauseMenu", "victoryMenu", "gameOverMenu"],
 } as const;
 
