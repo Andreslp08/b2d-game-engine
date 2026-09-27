@@ -444,12 +444,10 @@ export class WeaponController extends ScriptComponent {
 
 		const isAiming = aimingController.isAiming();
 		if (!isAiming) {
-			this.enableController = false;
 			weaponSprite.setVisible(false);
 			this.weaponEffectRemainingTime = 0;
 			this.weaponEffectSprite.setVisible(false);
 		} else {
-			this.enableController = true;
 			weaponSprite.setVisible(true);
 		}
 
