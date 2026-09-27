@@ -24,6 +24,8 @@ import { getProjectileDefinition } from "../../items/item-catalog/projectile-cat
 import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
+import { CullingConfigComponent } from "engine/performance/culling";
+import { CullingTarget, CullingType } from "engine/performance/enum/culling-type";
 
 /** Synchronizes the equipped inventory weapon with its visual GameObject. */
 export class WeaponHolder extends ScriptComponent {
@@ -35,6 +37,9 @@ export class WeaponHolder extends ScriptComponent {
 		this.weapon = weapon;
 		const weaponController = this.weapon.getComponent(WeaponController);
 		weaponController.setWeaponHolder(this.entity as GameObject);
+		const cullingConfig =this.weapon.getComponent(CullingConfigComponent);
+		cullingConfig.cullingType = CullingType.FRUSTRUM;
+		cullingConfig.cullingTarget = CullingTarget.RENDER;
 	}
 
 	onStart(): void {}
