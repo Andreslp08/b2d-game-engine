@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { currentGameInstance } from "../../../../game/game";
 import { useGameStore } from "../../../../store/store";
 import { useEscapeBack } from "../../../shared/hooks/use-escape-back";
+import { MouseManager } from "engine/input/mouse-manager";
 
 export const useInventoryMenuController = () => {
 	const currentUI = useGameStore((state) => state.currentUI);
@@ -13,10 +14,12 @@ export const useInventoryMenuController = () => {
 
 	const hideUI = () => {
 		clearCurrentUI();
+		MouseManager.setCursorRenderMode("hidden");
 	};
 
 	const showUI = () => {
 		setCurrentUI("arcade", "inventoryMenu");
+		MouseManager.setCursorRenderMode("system");
 		currentGameInstance.pause();
 	};
 

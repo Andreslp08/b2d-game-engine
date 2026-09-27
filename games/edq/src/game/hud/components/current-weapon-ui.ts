@@ -112,7 +112,7 @@ export class CurrentWeaponUI extends UIComponent {
 			return;
 		}
 		const itemImage: GameImage | undefined = AssetsManager.getImageByName(definitions.icon);
-        console.log(definitions.icon,itemImage);
+        // console.log(definitions.icon,itemImage);
 		context.save();
 		const padding = {
 			x: 20,
