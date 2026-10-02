@@ -55,7 +55,7 @@ export const ItemCard = ({  isActive,inventoryView, item, onClick }: Props) => {
 	};
 	return (
 		<button
-			className={`w-full p-2 transition-all duration-300 rounded-md border-3 border-[rgba(255,255,255,0.07)]  ${isActive ? "bg-[rgba(255,255,255,0.5)]  border-b-[#f00]" : "bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.17)] "}`}
+			className={`w-full h-full p-2 transition-all duration-300 rounded-md border-3 border-[rgba(255,255,255,0.07)]  ${isActive ? "bg-[rgba(255,255,255,0.5)]  border-b-[#f00]" : "bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.17)] "}`}
 			onClick={onClick}
 		>
 			<img
@@ -66,6 +66,11 @@ export const ItemCard = ({  isActive,inventoryView, item, onClick }: Props) => {
 			<div className="w-full flex items-center justify-between mt-2">
 				{isWeapon && currentWeaponAmmo()}
 				{isConsumable && currentQuantity()}
+				{item.definition.quickAssignable && item.quickSlot && (
+					<p className="bg-white text-black rounded-md px-2 font-black text-center flex items-center justify-center">
+						{item.quickSlot.key.toUpperCase()}
+					</p>
+				)}
 				{isAmmo && currentQuantity()}
 			</div>
 		</button>

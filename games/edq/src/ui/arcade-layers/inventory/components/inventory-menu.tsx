@@ -1,5 +1,4 @@
 import { motion, type Variants } from "framer-motion";
-import { Button } from "../../../shared/components/button";
 import { FramedPanel } from "../../../shared/components/framed-panel";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -8,8 +7,11 @@ import {
 	type UIInventoryCategory,
 } from "../hooks/use-inventory";
 import { CategorySelector } from "./category-selector";
-import { Grid, GridCell } from "./grid";
+import { EmptyGridCell, Grid, GridCell } from "./grid";
 import { ItemCard } from "./item-card";
+import { MIN_ITEMS_LENGTH } from "../constants";
+import { ItemPreviewInfo } from "./item-preview-info";
+import { ItemActionBar } from "./item-action-bar";
 
 const backdropVariants: Variants = {
 	hidden: {
@@ -75,12 +77,29 @@ export const InventoryMenu = () => {
 	}, [inventory.uiInventory, currentCategory]);
 
 	const [currentItemPreview, setCurrentItemPreview] = useState<InventoryItemView | null>(null);
-
 	console.log("Inventory", inventory);
 
-	useEffect(()=>{
+	useEffect(() => {
 		setCurrentItemPreview(null);
-	},[currentCategory])
+	}, [currentCategory]);
+
+	useEffect(() => {
+		setCurrentItemPreview((currentItem) =>
+			currentItem
+				? (inventory.entries.find((item) => item.entryId === currentItem.entryId) ?? null)
+				: null,
+		);
+	}, [inventory.entries]);
+
+	const gridItems = useMemo(() => {
+		if (currentItems.length < MIN_ITEMS_LENGTH) {
+			const arr = Array.from({ length: MIN_ITEMS_LENGTH });
+			return arr.map((_, index) => {
+				return currentItems[index];
+			});
+		}
+		return currentItems;
+	}, [currentItems]);
 
 	return (
 		<motion.div
@@ -89,7 +108,7 @@ export const InventoryMenu = () => {
 			initial="hidden"
 			animate="visible"
 			exit="exit"
-			className="w-full h-screen flex overflow-hidden"
+			className="w-full h-screen flex overflow-x-hidden overflow-y-auto"
 		>
 			<motion.div
 				className="w-full p-10 flex flex-col container mx-auto"
@@ -97,27 +116,50 @@ export const InventoryMenu = () => {
 				variants={modalVariants}
 			>
 				<h1 className="modal-title">Inventory</h1>
-				<FramedPanel>
+				<FramedPanel className="min-h-min! grow">
 					<div className="flex flex-col items-center justify-center w-full">
 						<CategorySelector
 							currentCategory={currentCategory}
 							setCurrentCategory={setCurrentCategory}
 						/>
 						<hr className="mt-5 lg:mt-10 2xl:mt-20" />
-						<Grid>
-							{currentItems.map((item: InventoryItemView, i) => {
-								return (
-									<GridCell key={i}>
-										<ItemCard
-											isActive={item?.entryId === currentItemPreview?.entryId}
-											inventoryView={inventory}
-											item={item}
-											onClick={() => setCurrentItemPreview(item)}
-										/>
-									</GridCell>
-								);
-							})}
-						</Grid>
+						<div className="relative flex w-full max-h-[150px] md:max-h-[300px] lg:max-h-[430px] overflow-auto">
+							<Grid>
+								{gridItems.map((item: InventoryItemView, i) => {
+									return (
+										<GridCell key={i}>
+											{item?.entryId ? (
+												<ItemCard
+													isActive={
+														item?.entryId ===
+														currentItemPreview?.entryId
+													}
+													inventoryView={inventory}
+													item={item}
+													onClick={() => setCurrentItemPreview(item)}
+												/>
+											) : (
+												<EmptyGridCell />
+											)}
+										</GridCell>
+									);
+								})}
+							</Grid>
+						</div>
+						{/* <hr className="mt-5 lg:mt-10 2xl:mt-20 w-full text-[#ba0000]" /> */}
+						<section className="w-full flex flex-col justify-start mt-10">
+							{currentItemPreview && (
+								<>
+									<ItemPreviewInfo item={currentItemPreview} />
+									<ItemActionBar
+										item={currentItemPreview}
+										category={currentCategory}
+										onAssignToQuickSlot={inventory.assignToQuickSlot}
+										onRemove={inventory.removeFromInventory}
+									/>
+								</>
+							)}
+						</section>
 					</div>
 				</FramedPanel>
 			</motion.div>
