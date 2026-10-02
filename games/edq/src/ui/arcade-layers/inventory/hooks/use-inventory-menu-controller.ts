@@ -10,7 +10,7 @@ export const useInventoryMenuController = () => {
 	const clearCurrentUI = useGameStore((state) => state.clearCurrentUI);
 	const isInventoryMenuVisible =
 		currentUI?.scope === "arcade" && currentUI.layer === "inventoryMenu";
-	const keybind = "i";
+	const keybind = "Tab";
 
 	const hideUI = () => {
 		clearCurrentUI();
@@ -34,11 +34,15 @@ export const useInventoryMenuController = () => {
 
 	useEffect(() => {
 		const showInventoryMenu = (event: KeyboardEvent) => {
-			if (
-				event.key !== keybind ||
-				(currentUI?.scope === "arcade" && currentUI?.layer === "pauseMenu")
-			)
+			if (event.key !== keybind) return;
+
+			// Tab is an in-game keybind, so do not let the browser move focus
+			// through the page's controls.
+			event.preventDefault();
+
+			if (currentUI?.scope === "arcade" && currentUI?.layer === "pauseMenu")
 				return;
+
 			if (isInventoryMenuVisible) hideUI();
 			else showUI();
 		};

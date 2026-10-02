@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GameObject } from "engine/common/entities/game-object";
 import { currentGameInstance } from "../../../../game/game";
 import { EquipmentComponent } from "../../../../game/items/components/equipment-component";
 import type { AnyItemDefinition } from "../../../../game/items/definitions/item-definition";
 import { InventoryComponent } from "../../../../game/items/components/inventory-component";
+import {
+	QUICK_SLOT_BINDINGS,
+	QuickSlotsComponent,
+} from "../../../../game/items/components/quick-slots-component";
 import type { InventoryEntry } from "../../../../game/items/runtime/inventory";
 import type { ItemInstance } from "../../../../game/items/runtime/item-instance";
 
@@ -13,6 +17,10 @@ export type InventoryItemView = {
 	readonly quantity: number;
 	readonly definition: AnyItemDefinition;
 	readonly instance?: ItemInstance;
+	readonly quickSlot?: {
+		readonly slot: number;
+		readonly key: string;
+	};
 };
 
 export type UIInventoryCategory = "items" | "treasures" | "key_items";
@@ -29,6 +37,10 @@ export type InventoryView = {
 	readonly inventoryComponent?: InventoryComponent;
 	/** Runtime component used to equip or unequip inventory entries. */
 	readonly equipmentComponent?: EquipmentComponent;
+	/** Assigns an inventory item to a quick slot and removes its previous assignment. */
+	readonly assignToQuickSlot: (entryId: string, slot: number) => void;
+	/** Permanently removes an inventory entry and all its runtime references. */
+	readonly removeFromInventory: (entryId: string) => void;
 	readonly isReady: boolean;
 };
 
@@ -39,6 +51,8 @@ const EMPTY_INVENTORY: InventoryView = {
 		key_items: [],
 	},
 	entries: [],
+	assignToQuickSlot: () => undefined,
+	removeFromInventory: () => undefined,
 	isReady: false,
 };
 
@@ -57,13 +71,29 @@ const cloneInstance = (instance?: ItemInstance): ItemInstance | undefined => {
 	};
 };
 
-const toItemView = (entry: InventoryEntry, inventory: InventoryComponent): InventoryItemView => ({
-	entryId: entry.entryId,
-	definitionId: entry.definitionId,
-	quantity: entry.quantity,
-	definition: inventory.inventory.getDefinition(entry.definitionId),
-	instance: cloneInstance(entry.instance),
-});
+const toItemView = (
+	entry: InventoryEntry,
+	inventory: InventoryComponent,
+	quickSlots?: QuickSlotsComponent,
+): InventoryItemView => {
+	const quickSlot = QUICK_SLOT_BINDINGS.find(
+		({ slot }) => quickSlots?.get(slot) === entry.entryId,
+	);
+
+	return {
+		entryId: entry.entryId,
+		definitionId: entry.definitionId,
+		quantity: entry.quantity,
+		definition: inventory.inventory.getDefinition(entry.definitionId),
+		instance: cloneInstance(entry.instance),
+		quickSlot: quickSlot
+			? {
+					slot: quickSlot.slot,
+					key: quickSlot.key,
+				}
+			: undefined,
+	};
+};
 
 /**
  * Provides a React snapshot of the player's inventory and equipment.
@@ -103,10 +133,11 @@ export const useInventory = (): InventoryView => {
 			setView(EMPTY_INVENTORY);
 			return;
 		}
+		const quickSlots = player?.getComponent(QuickSlotsComponent);
 
 		const entries = inventoryComponent.inventory
 			.getEntries()
-			.map((entry) => toItemView(entry, inventoryComponent));
+			.map((entry) => toItemView(entry, inventoryComponent, quickSlots));
 		const equippedReferenceId = equipmentComponent.getEquippedReferenceId();
 		const equippedEntry = entries.find((entry) => entry.entryId === equippedReferenceId);
 
@@ -117,6 +148,8 @@ export const useInventory = (): InventoryView => {
 			equippedDefinition: equippedEntry?.definition,
 			inventoryComponent,
 			equipmentComponent,
+			assignToQuickSlot,
+			removeFromInventory,
 			isReady: true,
 			uiInventory: {
 				items: getUIInventory(entries, "items"),
@@ -125,6 +158,54 @@ export const useInventory = (): InventoryView => {
 			},
 		});
 	}, []);
+
+	const assignToQuickSlot = useCallback(
+		(entryId: string, slot: number) => {
+			const scene = currentGameInstance.getScene();
+			const player = scene?.getEntityByTag<GameObject>("player");
+			const inventoryComponent = player?.getComponent(InventoryComponent);
+			const quickSlots = player?.getComponent(QuickSlotsComponent);
+			const entry = inventoryComponent?.inventory.get(entryId);
+
+			if (!inventoryComponent || !quickSlots || !entry) return;
+
+			const definition = inventoryComponent.inventory.getDefinition(entry.definitionId);
+			if (!definition.quickAssignable) return;
+
+			for (const [assignedSlot, referenceId] of quickSlots.getAll()) {
+				if (assignedSlot !== slot && referenceId === entryId) {
+					quickSlots.clear(assignedSlot);
+				}
+			}
+
+			quickSlots.set(slot, entryId);
+			sync();
+		},
+		[sync],
+	);
+
+	const removeFromInventory = useCallback(
+		(entryId: string) => {
+			const scene = currentGameInstance.getScene();
+			const player = scene?.getEntityByTag<GameObject>("player");
+			const inventoryComponent = player?.getComponent(InventoryComponent);
+			const equipmentComponent = player?.getComponent(EquipmentComponent);
+			const quickSlots = player?.getComponent(QuickSlotsComponent);
+			const entry = inventoryComponent?.inventory.get(entryId);
+
+			if (!inventoryComponent || !entry) return;
+
+			if (equipmentComponent?.getEquippedReferenceId() === entry.entryId) {
+				equipmentComponent.unequip();
+			}
+			quickSlots?.clearReference(entry.entryId);
+
+			// Remove the complete stack, or the complete unique instance.
+			inventoryComponent.inventory.remove(entry.entryId, entry.quantity);
+			sync();
+		},
+		[sync],
+	);
 
 	useEffect(() => {
 		const scene = currentGameInstance.getScene();
