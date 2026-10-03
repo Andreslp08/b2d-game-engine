@@ -23,7 +23,7 @@ const config: StateMachineConfig<State> = {
 export class TailAIController extends ScriptComponent {
 	stateMachine = new StateMachine<State>(config);
 	player: GameObject;
-	attackRange = 6;
+	attackRange = 3;
 	attackCooldownUntil = 0;
 	attackCooldownDuration = 3;
 	shotRate = 0.5;
