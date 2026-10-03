@@ -20,9 +20,9 @@ import { createSpinesBug } from "../prefabs/spines-enemy";
 import { Parallax } from "engine/graphics/components/parallax";
 import { RenderLayers } from "engine/graphics/render/render-layers";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { PlayerSkin } from "../config/constants";
 import { useGameStore } from "../../store/store";
 import { PlayerSkinComponent } from "../script-components/player/player-skin-component";
+import { createTailGunner } from "../prefabs/tail-gunner";
 
 export class Level1 extends GameScene {
 	static readonly info: GameSceneInfo = {
@@ -122,6 +122,9 @@ export class Level1 extends GameScene {
 
 		const spinesBug = createSpinesBug(new Vector2(-5, -3));
 		this.addEntity(spinesBug);
+
+		const tailGunner = createTailGunner(new Vector2(40, -3));
+		this.addEntity(tailGunner);
 
 		// // // TEST DE RENDIMIENTO
 		// const go = Array.from({ length: 10000 }, (_, index) => {
