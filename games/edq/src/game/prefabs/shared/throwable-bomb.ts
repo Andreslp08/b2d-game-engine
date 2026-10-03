@@ -24,6 +24,7 @@ export interface ThrowableBombConfig {
 	dragScale: number;
 	bounciness: Vector2;
 	horizontalSpeed: number;
+	horizontalDirection?: 1 | -1;
 	verticalSpeed: number;
 	damage: number;
 	health: number;
@@ -72,6 +73,9 @@ export const createThrowableBomb = (
 		tags: config.tags ?? [...defaultThrowableBombConfig.tags],
 	};
 
+	const horizontalDirection = resolvedConfig.horizontalDirection ??
+		(targetPosition.x >= position.x ? 1 : -1);
+
 	const bomb = new GameObject(
 		{ position: position.clone(), rotation: 0, size: resolvedConfig.size },
 		new Sprite({
@@ -88,7 +92,7 @@ export const createThrowableBomb = (
 	body.dragScale = resolvedConfig.dragScale;
 	body.bounciness = resolvedConfig.bounciness;
 	body.velocity = new Vector2(
-		(targetPosition.x > position.x ? 1 : -1) * resolvedConfig.horizontalSpeed,
+		horizontalDirection * resolvedConfig.horizontalSpeed,
 		resolvedConfig.verticalSpeed,
 	);
 

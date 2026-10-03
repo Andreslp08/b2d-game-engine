@@ -10,11 +10,16 @@ export class TailGunnerShotController extends ScriptComponent {
 		const shooterTransform = this.entity.getComponent(Transform);
 		const targetTransform = target?.getComponent(Transform);
 		if (!scene || !shooterTransform || !targetTransform) return;
+		const horizontalDirection: 1 | -1 =
+			targetTransform.position.x >= shooterTransform.position.x ? 1 : -1;
 
 		const bomb = createTailGunnerBomb(
-			shooterTransform.position.clone().add(new Vector2(1.3, -0.5)),
+			shooterTransform.position
+				.clone()
+				.add(new Vector2(horizontalDirection * 1.3, -0.5)),
 			targetTransform.position.clone(),
 			this.entity,
+			horizontalDirection,
 		);
 		scene.addEntity(bomb);
 	}
