@@ -53,11 +53,6 @@ export const PLAYER_SKIN1_ATLAS_ASSETS:  AssetToPreload<any>[] = [
 	},
 	{
 		type: GameAssetsTypes.Atlas,
-		name: "atlas:soldier-idle",
-		path: "/assets/atlas/soldier-idle.json",
-	},
-	{
-		type: GameAssetsTypes.Atlas,
 		name: "atlas:player-skin1-jump",
 		path: "/assets/atlas/player/skin1/player-jump.json",
 	},

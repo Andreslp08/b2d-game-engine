@@ -4,7 +4,17 @@ import {
 	type SoundAssetOptions,
 } from "engine/common/interfaces/assets";
 
-export const SOUNDS_ASSETS: AssetToPreload<SoundAssetOptions>[] = [
+
+const EXPLOSION_SOUNDS_ASSETS: AssetToPreload<SoundAssetOptions>[] = [
+	{
+		type: GameAssetsTypes.Sound,
+		name: "sound:explosion",
+		path: "/assets/sounds/weapons/explosion.mp3",
+		params: { sprite: { explosion1: [0, 10000] } },
+	},
+]
+export const WEAPON_SOUNDS_ASSETS: AssetToPreload<SoundAssetOptions>[] = [
+	...EXPLOSION_SOUNDS_ASSETS,
 	{
 		type: GameAssetsTypes.Sound,
 		name: "sound:weapon:shot:desert-eagle",
@@ -27,12 +37,6 @@ export const SOUNDS_ASSETS: AssetToPreload<SoundAssetOptions>[] = [
 		type: GameAssetsTypes.Sound,
 		name: "sound:weapon:shot:rocket-launcher",
 		path: "/assets/sounds/weapons/rocket-launcher.mp3",
-		params: { sprite: { shot: [0,1000] } },
-	},
-	{
-		type: GameAssetsTypes.Sound,
-		name: "sound:explosion",
-		path: "/assets/sounds/weapons/explosion.mp3",
-		params: { sprite: { explosion1: [0, 10000] } },
+		params: { sprite: { shot: [0, 1000] } },
 	},
 ];

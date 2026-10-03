@@ -1,7 +1,15 @@
 import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
 
+const EFFECTS_ASSETS: AssetToPreload<any>[] = [
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:gunfire-effect1",
+		path: "/assets/textures/effects/weapon/gunfire-effect1.png",
+	},
+]
 
 export const WEAPONS_IMAGES_ASSETS: AssetToPreload<any>[] = [
+	...EFFECTS_ASSETS,
 	
 	{
 		type: GameAssetsTypes.Image,
