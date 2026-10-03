@@ -14,8 +14,8 @@ import { DeathParticleEffect } from "../script-components/shared/death-particle-
 import { SoliderIA } from "../script-components/soldier/ia";
 
 export const createSoldier = (position: Vector2) => {
-	const idleImage = AssetsManager.getImageByName("spritesheet:soldier-idle");
-	const idleAtlas = AssetsManager.getAtlasByName("atlas:soldier-idle");
+	const idleImage = AssetsManager.getImageByName("spritesheet:enemies:soldier");
+	const idleAtlas = AssetsManager.getAtlasByName("atlas:enemies:soldier");
 	const PlayerIdle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage);
 
 	const size = new Vector2(1.6, 2);

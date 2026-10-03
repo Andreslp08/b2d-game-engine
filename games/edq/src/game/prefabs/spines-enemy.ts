@@ -13,8 +13,8 @@ import { DeathParticleEffect } from "../script-components/shared/death-particle-
 import { ContactDamage } from "../script-components/shared/contact-damage";
 
 export const createSpinesBug = (position: Vector2) => {
-	const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
-	const idleAtlas = AssetsManager.getAtlasByName("atlas:spines-bug");
+	const idleImage = AssetsManager.getImageByName("spritesheet:enemies:spines-bug");
+	const idleAtlas = AssetsManager.getAtlasByName("atlas:enemies:spines-bug");
 	const idle = SpriteSheet.genereateSpritesheetFromAtlas("idle", idleAtlas, idleImage, 0, 1);
 
 	const size = new Vector2(1.5, 1.5);

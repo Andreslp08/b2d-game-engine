@@ -41,8 +41,8 @@ export class SpinesBugController extends ScriptComponent {
 	private readonly CHASING_CONTACT_DAMAGE = 20;
 
 	onStart(): void {
-		const idleImage = AssetsManager.getImageByName("spritesheet:spines-bug");
-		const atlas = AssetsManager.getAtlasByName("atlas:spines-bug");
+		const idleImage = AssetsManager.getImageByName("spritesheet:enemies:spines-bug");
+		const atlas = AssetsManager.getAtlasByName("atlas:enemies:spines-bug");
 		this.idleSpriteSheet = SpriteSheet.genereateSpritesheetFromAtlas(
 			"idle",
 			atlas,
