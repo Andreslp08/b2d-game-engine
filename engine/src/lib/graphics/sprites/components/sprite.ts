@@ -3,7 +3,7 @@ import { Component } from "../../../ecs/component";
 import { ITranform } from "../../../input/interfaces/transform.interface";
 import Vector2 from "../../../math/vector2";
 
-type SpriteData = {
+export type SpriteData = {
 	image: GameImage;
 	framePosition: Vector2;
 	frameSize: { w: number; h: number };

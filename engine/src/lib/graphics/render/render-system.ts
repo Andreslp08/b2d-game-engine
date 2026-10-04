@@ -20,6 +20,8 @@ import { Parallax } from "../components/parallax";
 import { OrthographicCamera } from "../cameras/orthographic-camera";
 import { RenderLayer } from "./render-layer";
 import { RenderLayers } from "./render-layers";
+import { TileChunkBatch } from "../../tiles/components/tile-chunk-batch";
+import { TileChunkRenderer } from "./tile-chunk-renderer";
 
 export class RenderSystem extends System {
 	private readonly warnedParallaxColliderEntities = new Set<string>();
@@ -79,10 +81,14 @@ export class RenderSystem extends System {
 			const triggerAreaComponents = entity.getComponents(TriggerArea);
 			const transformComponents = entity.getComponents(Transform);
 			const debugLines = entity.getComponents(DrawDebugLine);
-			allSprites.forEach((_) => {
+			if (entity.hasComponent(TileChunkBatch)) {
+				const render = new TileChunkRenderer(entity);
+				render.render(renderingContext);
+			}
+			if (allSprites.length > 0) {
 				const render = new SpriteRenderer(entity);
 				render.render(renderingContext);
-			});
+			}
 			if (particleEmitters.length > 0) {
 				const render = new ParticleRenderer(entity);
 				render.render(renderingContext);
