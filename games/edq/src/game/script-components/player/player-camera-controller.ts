@@ -5,10 +5,29 @@ import { GameObject } from "engine/common/entities/game-object";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Time } from "engine/common/interfaces/time";
 import Vector2 from "engine/math/vector2";
+import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 
 export class PlayerCameraController extends ScriptComponent {
+
+	playerCamera: OrthographicCamera;
+	enabled = true;
+	lockAxis = {
+		x: false,
+		y: false
+	}
+
+	onStart(): void {
+		this.createCamera();
+	}
+	createCamera(): void {
+		this.playerCamera = new OrthographicCamera(new Vector2(0, 0), this.entity.getScene());
+		Cameras.setCurrentCamera(this.playerCamera);
+	}
 	onFixedUpdate(): void {
-		const camera = Cameras.currentCamera;
+		if(!this.enabled) return;
+		const camera = this.playerCamera;
+		if(!camera) return;
+		if(Cameras.currentCamera !== camera) return;
 		const targetGameObject = this.entity as GameObject;
 		if(!camera || !targetGameObject) throw new Error("Camera or target game object not found");
 		const cameraFOV = camera.getFieldOfView();
@@ -28,18 +47,17 @@ export class PlayerCameraController extends ScriptComponent {
 			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * Time.deltaTime),
 		);
 
-		const scene = this.entity.getScene();
-		const leftBound = scene.getEntityByTag<GameObject>("main-left-bound");
-		const rightBound = scene.getEntityByTag<GameObject>("main-right-bound");
 
-		const leftDistance = MathUtil.getDistanceBetweenEntities(this.entity, leftBound);
-		const rightDistance = MathUtil.getDistanceBetweenEntities(this.entity, rightBound);
 		const db = this.entity.getComponent(DynamicBody);
 		const finalCameraPosition = db?.isMoving ? newCameraPos : targetPos;
-		if (leftDistance > 6.8 && rightDistance > 6.8) {
+		if(!this.lockAxis.x && !this.lockAxis.y){
 			camera.setPosition(finalCameraPosition);
-		} else {
+		}
+		else if (this.lockAxis.x) {
 			camera.setYPosition(finalCameraPosition.y);
+		}
+		else if (this.lockAxis.y) {
+			camera.setXPosition(finalCameraPosition.x);
 		}
 	}
 }

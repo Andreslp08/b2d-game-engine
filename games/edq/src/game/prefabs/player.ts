@@ -25,6 +25,7 @@ import { InventoryComponent } from "../items/components/inventory-component";
 import { QuickSlotsComponent } from "../items/components/quick-slots-component";
 import { EquipmentComponent } from "../items/components/equipment-component";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { TriggerArea } from "engine/trigger-area";
 
 type Params = {
 	position: Vector2;
@@ -42,6 +43,8 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new PlayerSpriteController());
 	entity.addComponent(new DynamicBody());
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
+	const triggerArea = new TriggerArea(new Vector2(0, 0), new Vector2(0.5, 1.7));
+	entity.addComponent(triggerArea);
 	entity.addComponent(new PlayerMovement());
 	entity.addComponent(new PlayerController());
 	entity.addComponent(new PlayerCameraController());

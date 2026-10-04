@@ -5,7 +5,6 @@ import { createPlayer } from "../../../prefabs/player";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { createVerticalBounds } from "../../../prefabs/vertical-bounds";
 import { createWeapon } from "../../../prefabs/weapon";
 import { WeaponHolder } from "../../../script-components/weapon/weapon";
 import { Engine } from "engine";
@@ -20,6 +19,9 @@ import { useGameStore } from "../../../../store/store";
 import { PlayerSkinComponent } from "../../../script-components/player/player-skin-component";
 import { createTailGunner } from "../../../prefabs/tail-gunner";
 import { Room } from "../../../levels/room";
+import { createGameZone } from "../../../prefabs/game-zone";
+import { createStaticGameZone } from "../../../prefabs/static-game-zone";
+import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 
 // room to test world, player and enemies
 export class Room1 extends Room {
@@ -32,7 +34,7 @@ export class Room1 extends Room {
 	constructor() {
 		super();
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
-		DebugMode.enabled = false;
+		DebugMode.enabled = true;
 		DebugMode.setMode(DebugTypes.ALL);
 		Cameras.currentCamera.setFieldOfView(1);
 
@@ -65,20 +67,6 @@ export class Room1 extends Room {
 	}
 
 	loadWorld() {
-		const leftWallId = this.addEntity(
-			createVerticalBounds(
-				{ position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0 },
-				"left",
-			),
-		);
-
-		const rightWallId = this.addEntity(
-			createVerticalBounds(
-				{ position: new Vector2(2000, 0), size: new Vector2(3, 1000), rotation: 0 },
-				"right",
-			),
-		);
-
 		for (let i = 0; i < 50; i++) {
 			for (let j = 0; j < 5; j++) {
 				this.addEntity(createBox(new Vector2((j + 10) * 0.7 + i * 2, i * -2.8)));
@@ -97,8 +85,17 @@ export class Room1 extends Room {
 				skin: useGameStore.getState().currentSkin,
 			}),
 		);
+		createGameZone({
+			startPoint: new Vector2(-VIEWPORT_WIDTH_IN_METERS / 2, 0),
+			endPoint: new Vector2(30, 0),
+			scene: this,
+		});
+		// createStaticGameZone({
+		// 	center: new Vector2(0, 0),
+		// 	player: this.player,
+		// 	scene: this,
+		// });
 		this.player = this.getEntityById<GameObject>(playerId);
-
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
 		weapon.setZindex(-1);
