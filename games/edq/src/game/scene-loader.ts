@@ -3,6 +3,7 @@ import type { GameId } from "./interfaces/store";
 import { useGameStore } from "../store/store";
 import { GameScene, type GameSceneInfo } from "./scenes/game-scene";
 import { Level1 } from "./scenes/level1";
+import { TileMapTestScene } from "./scenes/tilemap-test-scene";
 
 type SceneClass = (new () => GameScene) & {
 	readonly info: GameSceneInfo;
@@ -21,6 +22,11 @@ class SceneLoader {
 			mode: "arcade",
 			sceneClass: Level1,
 			info: Level1.info,
+		});
+		this.sceneMap.set(TileMapTestScene.name, {
+			mode: "arcade",
+			sceneClass: TileMapTestScene,
+			info: TileMapTestScene.info,
 		});
 		// this.sceneMap.set("level 2", {
 		// 	mode: "arcade",

@@ -25,7 +25,8 @@ addEventListener("resize", () => {
 export const preloadGame = () => {
 	const testScene = () => {
 		setTimeout(() => {
-			const scene = GameSceneLoader.loadByClassName("Level1");
+			// const scene = GameSceneLoader.loadByClassName("Level1");
+			const scene = GameSceneLoader.loadByClassName("TileMapTestScene");
 			if (scene) {
 				console.log(scene.getSceneInfo());
 			}
