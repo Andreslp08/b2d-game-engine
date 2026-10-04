@@ -3,10 +3,11 @@ import Vector2 from "engine/math/vector2";
 import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preload/preloaded-assets";
 import { Screen } from "engine/graphics/screen/screen";
 import { useGameStore } from "../store/store";
-import { GameSceneLoader } from "./scene-loader";
+import { LevelLoaderInstance } from "./arcade-levels/level-loader";
+import { TestingLevel } from "./arcade-levels/testing-level/level";
+import { Room1 } from "./arcade-levels/testing-level/rooms/room1";
 import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
 import { DEV_MODE } from "./config/constants";
-// import { GameSceneLoader } from "./scene-loader";
 
 const aspectRatio = 16 / 9;
 export const currentGameInstance = new Engine();
@@ -23,13 +24,9 @@ addEventListener("resize", () => {
 });
 
 export const preloadGame = () => {
-	const testScene = () => {
+	const testLevel = () => {
 		setTimeout(() => {
-			// const scene = GameSceneLoader.loadByClassName("Level1");
-			const scene = GameSceneLoader.loadByClassName("TileMapTestScene");
-			if (scene) {
-				console.log(scene.getSceneInfo());
-			}
+			LevelLoaderInstance.loadLevel(TestingLevel.id, Room1.id);
 			console.log(AssetsPreloader.assets);
 		}, 0);
 	};
@@ -42,7 +39,7 @@ export const preloadGame = () => {
 		console.log(`${e.progress}% Loading game assets '${e.currentAssetLoading}'`);
 		if (e.progress >= 100 && e.finished) {
 			if (DEV_MODE) {
-				testScene();
+			testLevel();
 			} else {
 				goToMainMenu();
 			}
