@@ -7,6 +7,7 @@ export class TileChunkRenderer extends Renderer {
 		const batch = this.entity.getComponent(TileChunkBatch);
 		const transform = this.entity.getComponent(Transform);
 		if (!batch || !transform) return;
+		batch.ensureResolution(renderingContext);
 
 		renderingContext.save();
 		renderingContext.translate(transform.position.x, transform.position.y);
