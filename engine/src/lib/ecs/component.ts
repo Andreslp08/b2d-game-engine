@@ -1,7 +1,7 @@
 import { Tags } from "../common/tags";
 import { Entity } from "./entity";
 
-export type ComponentClass<T extends Component> = new (...args: any[]) => T;
+export type ComponentClass<T extends Component> = new (...args: never[]) => T;
 
 export abstract class Component {
 	private static idIncrementator: number = 0;

@@ -12,7 +12,7 @@ export interface PreloadedAsset {
 	type: GameAssetsTypes;
 	name: string;
 	path: string;
-	asset: Asset<any>;
+	asset: Asset<unknown>;
 }
 export class AssetsPreloader {
 	private static _assets: PreloadedAsset[] = [];
@@ -22,7 +22,7 @@ export class AssetsPreloader {
 	}
 
 	static set(
-		assets: AssetToPreload<any | SoundAssetOptions>[],
+		assets: AssetToPreload<SoundAssetOptions>[],
 		callback: AssetsPreloaderListener
 	): void {
 		let progress = 0;
@@ -34,7 +34,7 @@ export class AssetsPreloader {
 				const type = asset.type;
 				const path = asset.path;
 				const name = asset.name;
-				let newAsset: Asset<any> = null;
+				let newAsset: Asset<unknown> | null = null;
 				if (type === GameAssetsTypes.Image) {
 					newAsset = new GameImage(name, path);
 				} else if (type === GameAssetsTypes.Atlas) {
@@ -51,6 +51,7 @@ export class AssetsPreloader {
 					reject(
 						`Assets with type '${type}' cannot be loaded, no class can handle this type.`
 					);
+					return;
 				}
 				newAsset.onLoad = (e) => {
 					if (e.ok && e.loaded) {
@@ -96,7 +97,7 @@ export class AssetsPreloader {
 			: false;
 	}
 
-	static getByPath<T extends Asset<any>>(type: GameAssetsTypes, path: string): T | null {
+	static getByPath<T extends Asset<unknown>>(type: GameAssetsTypes, path: string): T | null {
 		const preloaded = AssetsPreloader._assets.find(
 			(ass) => ass.path === path && ass.type === type
 		);
@@ -105,7 +106,7 @@ export class AssetsPreloader {
 		}
 		return null;
 	}
-	static getByName<T extends Asset<any>>(type: GameAssetsTypes, name: string): T | null {
+	static getByName<T extends Asset<unknown>>(type: GameAssetsTypes, name: string): T | null {
 		const preloaded = AssetsPreloader._assets.find(
 			(ass) => ass.name === name && ass.type === type
 		);

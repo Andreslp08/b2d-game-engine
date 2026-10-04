@@ -98,7 +98,6 @@ export class SpriteRenderer extends Renderer {
 		if (isUsingEntityTransform && !transform) return;
 		if (!sprite.isVisible()) return;
 		const pos = transform.position;
-		const size = transform.size; // tamaño lógico del GameObject (en metros)
 		const spriteScale = sprite.getScale(); // escala visual adicional
 		const direction = sprite.getDirection(); // -1 o 1
 		const pivot = sprite.getPivot();

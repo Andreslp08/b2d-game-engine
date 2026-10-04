@@ -30,16 +30,7 @@ export class GameAtlas extends Asset<IAtlasData> {
 			});
 	}
 
-	private fetchJSON(path: string): Promise<any> {
-		return new Promise((resolve, reject) => {
-			fetch(path)
-				.then((response) => response.json())
-				.then((data) => {
-					resolve(data);
-				})
-				.catch((error) => {
-					reject(error);
-				});
-		});
+	private fetchJSON(path: string): Promise<IAtlasData> {
+		return fetch(path).then((response) => response.json() as Promise<IAtlasData>);
 	}
 }

@@ -12,7 +12,6 @@ export type MouseCursorRenderMode = "system" | "hidden" | "custom";
 export class MouseManager {
 	private static _canvasRelativePosition: Vector2 = new Vector2(0, 0);
 	private static _clientPosition: Vector2 = new Vector2(0, 0);
-	private static _positionOffset: Vector2 = new Vector2(0, 0);
 	private static _cursorInputEnabled: boolean = true;
 	private static _cursorRenderMode: MouseCursorRenderMode = "system";
 	private static clicksDown: object = {};
@@ -31,7 +30,6 @@ export class MouseManager {
 				e.clientX - canvasRect.left,
 				e.clientY - canvasRect.top,
 			);
-			MouseManager._positionOffset = new Vector2(e.offsetX, e.offsetY);
 		};
 		window.removeEventListener("mousemove", onMouseMove);
 		window.addEventListener("mousemove", onMouseMove);
@@ -67,7 +65,7 @@ export class MouseManager {
 
 	public static onWheel(wheelEventListener: WheelEventListener): void {
 		window.addEventListener("wheel", (e) => {
-			let direction: any = 0;
+			let direction: -1 | 0 | 1 = 0;
 			if (e.deltaY < 0) {
 				direction = 1;
 			} else if (e.deltaY > 0) {
@@ -84,7 +82,7 @@ export class MouseManager {
 
 	public static onClickLeft(ClickEventListener: ClickEventListener): void {
 		window.addEventListener("click", (e) => {
-			let button: any = "left";
+			let button: "left" | "right" = "left";
 			if (e.button === 0) {
 				button = "left";
 			} else if (e.button === 2) {

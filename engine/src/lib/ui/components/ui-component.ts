@@ -19,7 +19,7 @@ export  class UIComponent extends Component implements Renderable{
         this.transform.size = size;
     }
 
-    render(context: CanvasRenderingContext2D): void {
+	render(_context: CanvasRenderingContext2D): void {
 
     }
 }

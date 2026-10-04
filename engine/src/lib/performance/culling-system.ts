@@ -39,7 +39,6 @@ export class CullingSystem extends System {
 		entity: Entity,
 		xRadius: number,
 		yRadius: number,
-		strictFrustrum: boolean
 	): boolean => {
 		const cameraPosition = this.getEffectiveCameraPosition(entity);
 		if (!cameraPosition) return false;
@@ -83,8 +82,7 @@ export class CullingSystem extends System {
 			}
 			const xRadius = cullingSettings.distanceRadius.x;
 			const yRadius = cullingSettings.distanceRadius.y;
-			const isStrict = cullingSettings.frustrumStrict;
-			const isInView = this.IsInViewport(entity, xRadius, yRadius, isStrict);
+			const isInView = this.IsInViewport(entity, xRadius, yRadius);
 			if (isInView) {
 				if (entity.hasComponent(Culling)) entity.deleteallComponentsByClass(Culling);
 			} else {

@@ -1,7 +1,7 @@
 import { BehaviorSubject, filter, map } from "rxjs";
-export interface State<T> {
+export interface State<T, TData = unknown> {
 	name: T;
-	data: any;
+	data: TData;
 }
 
 export interface Transition<T> {

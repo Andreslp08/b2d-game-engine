@@ -1,6 +1,6 @@
 import { AssetEventListener, SoundAssetOptions } from "../interfaces/assets";
 import { Asset } from "./asset";
-import { Howl, HowlOptions } from "howler";
+import { Howl } from "howler";
 
 export class GameSound extends Asset<Howl> {
 	onLoad: AssetEventListener;
@@ -15,7 +15,7 @@ export class GameSound extends Asset<Howl> {
 			src: path,
 			preload: true,
 		});
-		this.nativeElement.on("load", (sound) => {
+		this.nativeElement.on("load", () => {
 			if (this.onLoad) {
 				console.log("sound loaded", this.nativeElement);
 				if (this._loaded) return;

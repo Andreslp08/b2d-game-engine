@@ -164,7 +164,7 @@ export class PhysicsSystem extends System {
 			this.notifyCollision(targetEntity, entity);
 		}
 	}
-	private staticCollisionResolver(targetEntity: Entity, entities: Entity[]) {}
+	private staticCollisionResolver(_targetEntity: Entity, _entities: Entity[]) {}
 
 	private notifyCollision(entity1: Entity, entity2: Entity) {
 		const collider1 = entity1.getComponent(Collider);
@@ -221,7 +221,6 @@ export class PhysicsSystem extends System {
 			}
 			const dynamicBody = entity.getComponent(DynamicBody);
 			const kinematicBody = entity.getComponent(KinematicBody);
-			const staticBody = entity.getComponent(StaticBody);
 			const isDynamic = dynamicBody && dynamicBody.bodyType === BodyType.Dynamic;
 			const isKinematic = kinematicBody && kinematicBody.bodyType === BodyType.Kinematic;
 			const isStatic = !isDynamic && !isKinematic;

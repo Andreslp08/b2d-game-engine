@@ -1,4 +1,4 @@
-import { HowlOptions } from "howler";
+
 import { GameAssetsTypes, SoundAssetOptions } from "../interfaces/assets";
 import { AssetsPreloader } from "./assets-preloader";
 import { GameAtlas } from "./game-atlas";
