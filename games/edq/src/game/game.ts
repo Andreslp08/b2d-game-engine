@@ -3,7 +3,7 @@ import Vector2 from "engine/math/vector2";
 import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preload/preloaded-assets";
 import { Screen } from "engine/graphics/screen/screen";
 import { useGameStore } from "../store/store";
-import { ArcadeLevelLoaderInstance } from "./arcade-levels/level-loader";
+import { ArcadeLevelManagerInstance } from "./arcade-levels/level-manager";
 import { TestingLevel } from "./arcade-levels/testing-level/level";
 import { Room1 } from "./arcade-levels/testing-level/rooms/room1";
 import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
@@ -23,7 +23,7 @@ addEventListener("resize", () => {
 export const preloadGame = () => {
 	const testLevel = () => {
 		setTimeout(() => {
-			ArcadeLevelLoaderInstance.loadLevel(TestingLevel.id, Room1.id);
+			ArcadeLevelManagerInstance.loadLevel(TestingLevel.id, Room1.id);
 			console.log(AssetsPreloader.assets);
 		}, 0);
 	};
