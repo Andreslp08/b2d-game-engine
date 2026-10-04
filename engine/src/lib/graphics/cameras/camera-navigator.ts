@@ -13,6 +13,9 @@ import { UIComponent } from "../../ui/components/ui-component";
 export interface CameraNavigatorOptions {
 	speed?: number;
 	fastMultiplier?: number;
+	zoomStep?: number;
+	minZoom?: number;
+	maxZoom?: number;
 }
 
 class CameraNavigatorUI extends UIComponent {
@@ -36,7 +39,7 @@ class CameraNavigatorUI extends UIComponent {
 		context.fillStyle = "rgba(0, 0, 0, 0.75)";
 		context.fillRect(10, 10, 230, 24);
 		context.fillStyle = "#a8d8ff";
-		context.fillText("WASD / ARROWS  |  SHIFT FAST", 18, 22);
+		context.fillText("WASD / ARROWS  |  SHIFT FAST  |  WHEEL ZOOM", 18, 22);
 
 		context.strokeStyle = "#a8d8ff";
 		context.lineWidth = 1;
@@ -61,19 +64,36 @@ class CameraNavigatorUI extends UIComponent {
 export class CameraNavigator extends ScriptComponent {
 	private readonly speed: number;
 	private readonly fastMultiplier: number;
+	private readonly zoomStep: number;
+	private readonly minZoom: number;
+	private readonly maxZoom: number;
 	private position = Vector2.ZERO.clone();
+	private zoom = 1;
 	private readonly ui = new Entity();
+	private readonly onWheel = (event: WheelEvent) => {
+		if (event.deltaY === 0) return;
+
+		const direction = event.deltaY < 0 ? 1 : -1;
+		this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom + direction * this.zoomStep));
+		event.preventDefault();
+	};
 
 	constructor(options: CameraNavigatorOptions = {}) {
 		super();
 		this.speed = options.speed ?? 10;
 		this.fastMultiplier = options.fastMultiplier ?? 4;
+		this.zoomStep = options.zoomStep ?? 0.1;
+		this.minZoom = options.minZoom ?? 0.25;
+		this.maxZoom = options.maxZoom ?? 3;
 		this.ui.renderLayer = RenderLayerTypes.UI;
 		this.ui.addComponent(new CameraNavigatorUI(this));
 	}
 
 	onStart(): void {
-		this.position = Cameras.currentCamera?.getPosition().clone() ?? Vector2.ZERO.clone();
+		const camera = Cameras.currentCamera;
+		this.position = camera?.getPosition().clone() ?? Vector2.ZERO.clone();
+		this.zoom = camera?.getFieldOfView() ?? 1;
+		window.addEventListener("wheel", this.onWheel, { passive: false });
 		const scene = this.entity.getScene();
 		if (scene && !this.ui.getScene()) scene.addEntity(this.ui);
 	}
@@ -96,9 +116,11 @@ export class CameraNavigator extends ScriptComponent {
 		}
 
 		camera.setPosition(this.position.clone());
+		camera.setFieldOfView(this.zoom);
 	}
 
 	onDestroy(): void {
+		window.removeEventListener("wheel", this.onWheel);
 		this.ui.destroy();
 	}
 
