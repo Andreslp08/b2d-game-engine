@@ -7,6 +7,7 @@ import { Engine } from "engine";
 import { DebugMode, DebugTypes } from "engine/debug/debug";
 import { RenderLayers } from "engine/graphics/render/render-layers";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
+import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
 import { TileChunk } from "engine/tiles/tile-chunk-object";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
@@ -59,22 +60,23 @@ export class TileMapTestScene extends GameScene {
 			),
 		);
 
-		const playerId = this.addEntity(
-			createPlayer({
-				position: new Vector2(VIEWPORT_HEIGHT_IN_METERS, -1.5),
-				skin: useGameStore.getState().currentSkin,
-			}),
-		);
-		this.player = this.getEntityById<GameObject>(playerId);
+		// const playerId = this.addEntity(
+		// 	createPlayer({
+		// 		position: new Vector2(VIEWPORT_HEIGHT_IN_METERS, -1.5),
+		// 		skin: useGameStore.getState().currentSkin,
+		// 	}),
+		// );
+		// this.player = this.getEntityById<GameObject>(playerId);
 
-		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
-		const weapon = this.getEntityById<GameObject>(weaponId);
-		weapon.setZindex(-1);
-		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
+		// const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
+		// const weapon = this.getEntityById<GameObject>(weaponId);
+		// weapon.setZindex(-1);
+		// this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 
 		const tilemap = new TileMap({
 			scene: this,
 		});
+		this.addEntity(createCameraNavigator());
 
 		const boxTexture: TileTexture = {
 			framePosition: new Vector2(0, 0),
@@ -100,8 +102,8 @@ export class TileMapTestScene extends GameScene {
 		});
 
 		tilemap
-		.addChunk(collidableFloor, 16, "horizontal").repeat(20, "horizontal")
-		.addChunk(notCollidableFloor, 16, "horizontal").fill(3)
+		.addChunk(collidableFloor, 100, "horizontal")
+		.addChunk(notCollidableFloor, 100, "horizontal").fill(3)
 
 		const stairPattern = tilemap
 			.createPattern()
@@ -130,6 +132,6 @@ export class TileMapTestScene extends GameScene {
 			city
 		).repeat(20, "horizontal")
 		
-		console.log('tilemap bounds',Array.from(tilemap.chunks.values()).map(chunk => chunk.chunkId));
+		console.log('tilemap bounds', tilemap.getBounds());
 	}
 }
