@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { currentGameInstance } from "../../../../game/game";
-import { LevelLoaderInstance } from "../../../../game/arcade-levels/level-loader";
+import { ArcadeLevelLoaderInstance } from "../../../../game/arcade-levels/level-loader";
 import { useGameStore } from "../../../../store/store";
 import { MouseManager } from "engine/input/mouse-manager";
 
@@ -14,12 +14,12 @@ export const useGameOverController = () => {
 	const goToMainMenu = () => {
 		clearCurrentGame();
 		setCurrentUI("global", "mainMenu");
-		LevelLoaderInstance.destroyCurrentLevel();
+		ArcadeLevelLoaderInstance.destroyCurrentLevel();
 	};
 
 	const restart = () => {
 		clearCurrentUI();
-		LevelLoaderInstance.restartCurrentRoom();
+		ArcadeLevelLoaderInstance.restartCurrentRoom();
 	};
 
 	useEffect(() => {

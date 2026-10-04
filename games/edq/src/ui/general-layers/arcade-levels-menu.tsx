@@ -4,7 +4,7 @@ import { DefaultMenuHeader } from "./default-menu-header";
 import { useEscapeBack } from "../shared/hooks/use-escape-back";
 import { useGameStore } from "../../store/store";
 import { BackButton } from "../shared/components/back-button";
-import { LevelLoaderInstance } from "../../game/arcade-levels/level-loader";
+import { ArcadeLevelLoaderInstance } from "../../game/arcade-levels/level-loader";
 
 export const ArcadeLevelsMenu = () => {
 	const sectionRef = useRef(null);
@@ -20,16 +20,16 @@ export const ArcadeLevelsMenu = () => {
 	const onExitCompleteRef = useRef<() => void>(() => {});
 
 	const arcadeLevels = useMemo(() => {
-		return LevelLoaderInstance.getLevelTypes().map((LevelType) => {
-				return {
-					...LevelType.displayInfo,
-					onClick: () => {
-						setClose(true);
-						onExitCompleteRef.current = () =>
-							LevelLoaderInstance.loadLevel(LevelType.id);
-					},
-				};
-			});
+		return ArcadeLevelLoaderInstance.getLevelTypes().map((LevelType) => {
+			return {
+				...LevelType.displayInfo,
+				onClick: () => {
+					setClose(true);
+					onExitCompleteRef.current = () =>
+						ArcadeLevelLoaderInstance.loadLevel(LevelType.id);
+				},
+			};
+		});
 	}, []);
 
 	const handleBack = () => {

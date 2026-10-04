@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Engine } from "engine";
 import { MouseManager } from "engine/input/mouse-manager";
 import { currentGameInstance } from "../../../../game/game";
-import { LevelLoaderInstance } from "../../../../game/arcade-levels/level-loader";
+import { ArcadeLevelLoaderInstance } from "../../../../game/arcade-levels/level-loader";
 import { useGameStore } from "../../../../store/store";
 
 export const usePauseController = () => {
@@ -62,7 +62,7 @@ export const usePauseController = () => {
 		MouseManager.setCursorRenderMode("system");
 		clearCurrentGame();
 		setCurrentUI("global", "mainMenu");
-		LevelLoaderInstance.destroyCurrentLevel();
+		ArcadeLevelLoaderInstance.destroyCurrentLevel();
 	};
 
 	const handlePauseMenuEnterComplete = () => {
