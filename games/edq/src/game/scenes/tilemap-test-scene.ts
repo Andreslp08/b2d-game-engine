@@ -12,7 +12,7 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
 import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_HEIGHT_IN_METERS, VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
 import { TileMap } from "engine/tiles/tilemap";
 import { createPlayer } from "../prefabs/player";
 import { PlayerSkin } from "../config/constants";
@@ -47,7 +47,7 @@ export class TileMapTestScene extends GameScene {
 	loadWorld() {
 		const leftWallId = this.addEntity(
 			createVerticalBounds(
-				{ position: new Vector2(-10, 0), size: new Vector2(3, 1000), rotation: 0 },
+				{ position: new Vector2(-1, 0), size: new Vector2(3, 1000), rotation: 0 },
 				"left",
 			),
 		);
@@ -61,7 +61,7 @@ export class TileMapTestScene extends GameScene {
 
 		const playerId = this.addEntity(
 			createPlayer({
-				position: new Vector2(0, -5),
+				position: new Vector2(VIEWPORT_HEIGHT_IN_METERS, -1.5),
 				skin: useGameStore.getState().currentSkin,
 			}),
 		);
@@ -82,7 +82,7 @@ export class TileMapTestScene extends GameScene {
 				image: AssetsManager.getImageByName("spritesheet:box"),
 		}
 
-		const boxSize = new Vector2(1, 1);
+		const boxSize = new Vector2(0.7, 0.7);
 
 		const collidableFloor = new TileChunk({
 			worldPosition: new Vector2(0, 0),
@@ -92,7 +92,7 @@ export class TileMapTestScene extends GameScene {
 			texture: boxTexture,
 		});
 		const notCollidableFloor = new TileChunk({
-			worldPosition: new Vector2(0, 1),
+			worldPosition: new Vector2(0, boxSize.y),
 			cellSizeInGameUnits: boxSize,
 			gridSize: new Vector2(16, 1),
 			collidable: false,
