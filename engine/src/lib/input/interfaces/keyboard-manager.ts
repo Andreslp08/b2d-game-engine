@@ -1,25 +1,45 @@
 export class KeyBoardManager {
-	private static _keys: object = {};
+	private static _keys: Record<string, "keydown" | "keyup"> = {};
+	private static isListening = false;
+	private static readonly onKeyDown = (event: KeyboardEvent) => {
+		KeyBoardManager._keys[event.key.toLowerCase()] = "keydown";
+	};
+	private static readonly onKeyUp = (event: KeyboardEvent) => {
+		KeyBoardManager._keys[event.key.toLowerCase()] = "keyup";
+	};
+	private static readonly clearKeys = () => {
+		KeyBoardManager._keys = {};
+	};
+	private static readonly onVisibilityChange = () => {
+		if (document.hidden) KeyBoardManager.clearKeys();
+	};
+	private static readonly onMouseOut = (event: MouseEvent) => {
+		if (event.relatedTarget === null) KeyBoardManager.clearKeys();
+	};
 
 	static listen() {
-		const onKeyDown = (e: KeyboardEvent) => {
-			KeyBoardManager._keys[e?.key?.toLowerCase()] = "keydown";
-		};
+		if (!KeyBoardManager.isListening) {
+			window.addEventListener("keydown", KeyBoardManager.onKeyDown);
+			window.addEventListener("keyup", KeyBoardManager.onKeyUp);
+			window.addEventListener("blur", KeyBoardManager.clearKeys);
+			window.addEventListener("mouseout", KeyBoardManager.onMouseOut);
+			document.addEventListener("visibilitychange", KeyBoardManager.onVisibilityChange);
+			KeyBoardManager.isListening = true;
+		}
 
-		const onKeyUp = (e: KeyboardEvent) => {
-			KeyBoardManager._keys[e?.key?.toLowerCase()] = "keyup";
-		};
+		return { unlisten: () => KeyBoardManager.unlisten() };
+	}
 
-		window.removeEventListener("keydown", onKeyDown);
-		window.removeEventListener("keyup", onKeyUp);
-		window.addEventListener("keydown", onKeyDown);
-		window.addEventListener("keyup", onKeyUp);
+	static unlisten() {
+		if (!KeyBoardManager.isListening) return;
 
-		return { unlisten: () => {
-			window.removeEventListener("keydown", onKeyDown);
-			window.removeEventListener("keyup", onKeyUp);
-			KeyBoardManager._keys = {};
-		} };
+		window.removeEventListener("keydown", KeyBoardManager.onKeyDown);
+		window.removeEventListener("keyup", KeyBoardManager.onKeyUp);
+		window.removeEventListener("blur", KeyBoardManager.clearKeys);
+		window.removeEventListener("mouseout", KeyBoardManager.onMouseOut);
+		document.removeEventListener("visibilitychange", KeyBoardManager.onVisibilityChange);
+		KeyBoardManager.clearKeys();
+		KeyBoardManager.isListening = false;
 	}
 
 	static keyDown(key: string): boolean {

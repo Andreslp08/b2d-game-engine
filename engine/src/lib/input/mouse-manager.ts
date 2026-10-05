@@ -14,53 +14,67 @@ export class MouseManager {
 	private static _clientPosition: Vector2 = new Vector2(0, 0);
 	private static _cursorInputEnabled: boolean = true;
 	private static _cursorRenderMode: MouseCursorRenderMode = "system";
-	private static clicksDown: object = {};
+	private static clicksDown: Partial<Record<"left" | "right", boolean>> = {};
+	private static isListening = false;
+	private static readonly clearClicks = () => {
+		MouseManager.clicksDown = {};
+	};
+	private static readonly onContextMenu = (event: Event) => {
+		event.preventDefault();
+	};
+	private static readonly onMouseMove = (event: MouseEvent) => {
+		const canvas = Screen.getInstance().getCanvasElement();
+		const canvasRect = canvas.getBoundingClientRect();
+		MouseManager._clientPosition = new Vector2(event.clientX, event.clientY);
+		MouseManager._canvasRelativePosition = new Vector2(
+			event.clientX - canvasRect.left,
+			event.clientY - canvasRect.top,
+		);
+	};
+	private static readonly onMouseDown = (event: MouseEvent) => {
+		if (event.button === 0) MouseManager.clicksDown.left = true;
+		if (event.button === 2) MouseManager.clicksDown.right = true;
+	};
+	private static readonly onMouseUp = (event: MouseEvent) => {
+		if (event.button === 0) MouseManager.clicksDown.left = false;
+		if (event.button === 2) MouseManager.clicksDown.right = false;
+	};
+	private static readonly onVisibilityChange = () => {
+		if (document.hidden) MouseManager.clearClicks();
+	};
+	private static readonly onMouseOut = (event: MouseEvent) => {
+		if (event.relatedTarget === null) MouseManager.clearClicks();
+	};
 
 	static listen() {
-		window.addEventListener("contextmenu", (e: Event) => {
-			e.preventDefault();
-		});
-		MouseManager._canvasRelativePosition = new Vector2(0, 0);
-		MouseManager._clientPosition = new Vector2(0, 0);
-		const onMouseMove = (e: MouseEvent) => {
-			const canvas = Screen.getInstance().getCanvasElement();
-			const canvasRect = canvas.getBoundingClientRect();
-			MouseManager._clientPosition = new Vector2(e.clientX, e.clientY);
-			MouseManager._canvasRelativePosition = new Vector2(
-				e.clientX - canvasRect.left,
-				e.clientY - canvasRect.top,
-			);
-		};
-		window.removeEventListener("mousemove", onMouseMove);
-		window.addEventListener("mousemove", onMouseMove);
+		if (!MouseManager.isListening) {
+			MouseManager._canvasRelativePosition = new Vector2(0, 0);
+			MouseManager._clientPosition = new Vector2(0, 0);
+			window.addEventListener("contextmenu", MouseManager.onContextMenu);
+			window.addEventListener("mousemove", MouseManager.onMouseMove);
+			window.addEventListener("mousedown", MouseManager.onMouseDown);
+			window.addEventListener("mouseup", MouseManager.onMouseUp);
+			window.addEventListener("blur", MouseManager.clearClicks);
+			window.addEventListener("mouseout", MouseManager.onMouseOut);
+			document.addEventListener("visibilitychange", MouseManager.onVisibilityChange);
+			MouseManager.isListening = true;
+		}
 
-		const onMouseDown = (e: MouseEvent) => {
-			if (e.button === 0) {
-				this.clicksDown["left"] = true;
-			} else if (e.button === 2) {
-				this.clicksDown["right"] = true;
-			}
-		};
-		const onMouseUp = (e: MouseEvent) => {
-			if (e.button === 0) {
-				this.clicksDown["left"] = false;
-			} else if (e.button === 2) {
-				this.clicksDown["right"] = false;
-			}
-		};
-		window.removeEventListener("mousedown", onMouseDown);
-		window.addEventListener("mousedown", onMouseDown);
-		window.removeEventListener("mouseup", onMouseUp);
-		window.addEventListener("mouseup", onMouseUp);
+		return { unlisten: () => MouseManager.unlisten() };
+	}
 
-		return {
-			unlisten: () => {
-				MouseManager.clicksDown = {};
-				window.removeEventListener("mousemove", onMouseMove);
-				window.removeEventListener("mousedown", onMouseDown);
-				window.removeEventListener("mouseup", onMouseUp);
-			},
-		};
+	static unlisten() {
+		if (!MouseManager.isListening) return;
+
+		window.removeEventListener("contextmenu", MouseManager.onContextMenu);
+		window.removeEventListener("mousemove", MouseManager.onMouseMove);
+		window.removeEventListener("mousedown", MouseManager.onMouseDown);
+		window.removeEventListener("mouseup", MouseManager.onMouseUp);
+		window.removeEventListener("blur", MouseManager.clearClicks);
+		window.removeEventListener("mouseout", MouseManager.onMouseOut);
+		document.removeEventListener("visibilitychange", MouseManager.onVisibilityChange);
+		MouseManager.clearClicks();
+		MouseManager.isListening = false;
 	}
 
 	public static onWheel(wheelEventListener: WheelEventListener): void {
