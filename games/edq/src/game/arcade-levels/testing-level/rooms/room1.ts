@@ -1,6 +1,5 @@
 import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
-import { createBox } from "../../../prefabs/box";
 import { createPlayer } from "../../../prefabs/player";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
@@ -20,8 +19,9 @@ import { PlayerSkinComponent } from "../../../script-components/player/player-sk
 import { createTailGunner } from "../../../prefabs/tail-gunner";
 import { Room } from "../../../levels/room";
 import { createGameZone } from "../../../prefabs/game-zone";
-import { createStaticGameZone } from "../../../prefabs/static-game-zone";
 import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { TileMap } from "engine/tiles/tilemap";
+import type { TileTexture } from "engine/tiles/definitions";
 
 // room to test world, player and enemies
 export class Room1 extends Room {
@@ -39,7 +39,6 @@ export class Room1 extends Room {
 		Cameras.currentCamera.setFieldOfView(1);
 
 		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
-		this.loadBackground();
 		this.loadWorld();
 	}
 
@@ -67,47 +66,120 @@ export class Room1 extends Room {
 	}
 
 	loadWorld() {
-		for (let i = 0; i < 50; i++) {
-			for (let j = 0; j < 5; j++) {
-				this.addEntity(createBox(new Vector2((j + 10) * 0.7 + i * 2, i * -2.8)));
-			}
-		}
+		const tilemap = new TileMap({ scene: this });
+		const terrainImage = AssetsManager.getImageByName("spritesheet:terrain-tiles");
+		const floorStartTexture: TileTexture = {
+			framePosition: new Vector2(0, 0),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
+		const floorMiddleTexture: TileTexture = {
+			framePosition: new Vector2(500, 0),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
+		const floorEndTexture: TileTexture = {
+			framePosition: new Vector2(1000, 0),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
+		const groundStartTexture: TileTexture = {
+			framePosition: new Vector2(0, 500),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
+		const groundMiddleTexture: TileTexture = {
+			framePosition: new Vector2(500, 500),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
+		const groundEndTexture: TileTexture = {
+			framePosition: new Vector2(1000, 500),
+			frameSize: { w: 500, h: 500 },
+			image: terrainImage,
+		};
 
-		for (let i = 0; i < 200; i++) {
-			const box = createBox(new Vector2((i - 20) * 0.7, 1).multiplyBy(1));
-			box.getComponent(Collider).ignoreZIndex = true;
-			this.addEntity(box);
+		const floorCellSize = new Vector2(1, 1);
+		const middleTileCount = VIEWPORT_WIDTH_IN_METERS;
+		const middleRepeatCount = 3;
+		const totalMiddleTileCount = middleTileCount * (middleRepeatCount + 1);
+		const floorEndX = floorCellSize.x * (1 + totalMiddleTileCount);
+
+		tilemap.addChunk({
+			worldPosition: new Vector2(0, 0),
+			cellSizeInGameUnits: floorCellSize,
+			gridSize: new Vector2(1, 1),
+			collidable: true,
+			texture: floorStartTexture,
+		});
+		tilemap
+			.addChunk({
+				worldPosition: new Vector2(floorCellSize.x, 0),
+				cellSizeInGameUnits: floorCellSize,
+				gridSize: new Vector2(middleTileCount, 1),
+				collidable: true,
+				texture: floorMiddleTexture,
+			})
+			.repeat(middleRepeatCount, "horizontal");
+		tilemap.addChunk({
+			worldPosition: new Vector2(floorEndX, 0),
+			cellSizeInGameUnits: floorCellSize,
+			gridSize: new Vector2(1, 1),
+			collidable: true,
+			texture: floorEndTexture,
+		});
+
+		const groundPattern = tilemap.createPattern();
+		groundPattern.add({
+			worldPosition: new Vector2(0, 0),
+			cellSizeInGameUnits: floorCellSize,
+			gridSize: new Vector2(1, 1),
+			collidable: false,
+			texture: groundStartTexture,
+		}, new Vector2(0, 0));
+		for (let index = 0; index <= middleRepeatCount; index++) {
+			groundPattern.add({
+				worldPosition: new Vector2(0, 0),
+				cellSizeInGameUnits: floorCellSize,
+				gridSize: new Vector2(middleTileCount, 1),
+				collidable: false,
+				texture: groundMiddleTexture,
+			}, new Vector2(floorCellSize.x * (1 + middleTileCount * index), 0));
 		}
+		groundPattern.add({
+			worldPosition: new Vector2(0, 0),
+			cellSizeInGameUnits: floorCellSize,
+			gridSize: new Vector2(1, 1),
+			collidable: false,
+			texture: groundEndTexture,
+		}, new Vector2(floorEndX, 0));
+		tilemap.addPattern(groundPattern, new Vector2(0, floorCellSize.y / 2)).fill(3);
 
 		const playerId = this.addEntity(
 			createPlayer({
-				position: new Vector2(0, -4),
+				position: new Vector2(VIEWPORT_WIDTH_IN_METERS, -4),
 				skin: useGameStore.getState().currentSkin,
 			}),
 		);
-		createGameZone({
-			startPoint: new Vector2(-VIEWPORT_WIDTH_IN_METERS / 2, 0),
-			endPoint: new Vector2(30, 0),
-			scene: this,
-		});
-		// createStaticGameZone({
-		// 	center: new Vector2(0, 0),
-		// 	player: this.player,
-		// 	scene: this,
-		// });
 		this.player = this.getEntityById<GameObject>(playerId);
+		createGameZone({
+			startPoint: new Vector2(-1, -5),
+			endPoint: new Vector2(floorEndX, 0),
+			scene: this,
+			player:this.player
+		});
 		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
 		const weapon = this.getEntityById<GameObject>(weaponId);
 		weapon.setZindex(-1);
 		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
 		//soldier
-		const soldier = createSoldier(new Vector2(20, -3));
+		const soldier = createSoldier(new Vector2(40, -3));
 		this.addEntity(soldier);
 
-		const spinesBug = createSpinesBug(new Vector2(-5, -3));
+		const spinesBug = createSpinesBug(new Vector2(20, -3));
 		this.addEntity(spinesBug);
 
-		const tailGunner = createTailGunner(new Vector2(40, -3));
+		const tailGunner = createTailGunner(new Vector2(60, -3));
 		this.addEntity(tailGunner);
 	}
 
