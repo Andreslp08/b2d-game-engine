@@ -69,7 +69,7 @@ export const PauseMenuLayer = ({ onEnterComplete, onResume, onMainMenu }: PauseM
 			initial="hidden"
 			animate="visible"
 			exit="exit"
-			className="w-full h-screen flex items-center justify-center"
+			className="w-full h-screen flex items-center justify-center pointer-events-auto"
 		>
 			<motion.div
 				key="pause-menu-modal"

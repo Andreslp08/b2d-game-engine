@@ -33,12 +33,9 @@ function App() {
 				)}
 
 				{currentGame === "arcade" && (
-					<div
-						key="arcade-layer"
-						className="w-full h-screen  flex items-center justify-center"
-					>
+					
 						<ArcadeLayer />
-					</div>
+					
 				)}
 			</AnimatePresence>
 		</>

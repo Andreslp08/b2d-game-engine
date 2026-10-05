@@ -108,7 +108,7 @@ export const InventoryMenu = () => {
 			initial="hidden"
 			animate="visible"
 			exit="exit"
-			className="w-full h-screen flex overflow-x-hidden overflow-y-auto"
+			className="w-full h-screen flex overflow-x-hidden overflow-y-auto pointer-events-auto"
 		>
 			<motion.div
 				className="w-full p-10 flex flex-col container mx-auto"
