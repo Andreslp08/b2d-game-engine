@@ -1,7 +1,8 @@
 import Vector2 from "../math/vector2";
 import { Scene } from "../scenes/scene";
-import { TileChunk } from "./tile-chunk-object";
+import { TiledMapAdapter, type TiledMapLoadResult } from "./adapters/tiled/tiled-map-adapter";
 import { ITileChunk } from "./definitions";
+import { TileChunk } from "./tile-chunk-object";
 
 type TileChunkDirection = "horizontal" | "vertical";
 type TileChunkDefinition = ITileChunk & { chunkId: string };
@@ -13,6 +14,12 @@ interface ITileMapArgs {
 export interface TileMapBounds {
 	position: Vector2;
 	size: Vector2;
+}
+
+export interface TileChunkEntityOptions {
+	chunkId?: string;
+	rotation?: number;
+	zIndex?: number;
 }
 
 export class TilePattern {
@@ -54,8 +61,23 @@ export class TileMap implements ITileMapArgs {
 		this.scene = params.scene;
 	}
 
+	static async generateMapFromTiled(scene: Scene, path: string): Promise<TiledMapLoadResult> {
+		const tileMap = new TileMap({ scene });
+		return new TiledMapAdapter(tileMap).generate(path);
+	}
+
 	addChunk(params: ITileChunk, length = 1, direction: TileChunkDirection = "horizontal") {
 		return this.addChunks(params, length, direction, params.worldPosition);
+	}
+
+	addChunkEntity(params: ITileChunk, options: TileChunkEntityOptions = {}): TileChunk {
+		const chunk = new TileChunk(params);
+		chunk.chunkId = options.chunkId ?? `chunk_${this.nextChunkId++}`;
+		chunk.setZindex(options.zIndex ?? 1);
+		chunk.transform.rotation = options.rotation ?? 0;
+		this.scene.addEntity(chunk);
+		this.chunks.set(chunk.chunkId, chunk);
+		return chunk;
 	}
 
 	createPattern() {
@@ -72,7 +94,7 @@ export class TileMap implements ITileMapArgs {
 			worldPosition: origin.clone().add(chunk.worldPosition),
 		}));
 		for (const chunkDefinition of definitions) {
-			this.addChunkEntity(chunkDefinition);
+			this.addChunkEntity(chunkDefinition, { chunkId: chunkDefinition.chunkId });
 		}
 		this.lastPattern = definitions;
 		this.repeatCount = 0;
@@ -88,13 +110,14 @@ export class TileMap implements ITileMapArgs {
 		for (let i = 1; i <= amount; i++) {
 			const repeatIndex = this.repeatCount + i;
 			for (const chunkDefinition of pattern) {
-				this.addChunkEntity({
+				const repeatedDefinition = {
 					...chunkDefinition,
 					chunkId: `${chunkDefinition.chunkId}_${direction}_${repeatIndex}`,
 					worldPosition: chunkDefinition.worldPosition
 						.clone()
 						.add(step.clone().multiplyBy(repeatIndex)),
-				});
+				};
+				this.addChunkEntity(repeatedDefinition, { chunkId: repeatedDefinition.chunkId });
 			}
 		}
 		this.repeatCount += amount;
@@ -118,10 +141,11 @@ export class TileMap implements ITileMapArgs {
 
 		for (const chunk of this.chunks.values()) {
 			const size = chunk.getFinalSize();
-			minX = Math.min(minX, chunk.worldPosition.x);
-			minY = Math.min(minY, chunk.worldPosition.y);
-			maxX = Math.max(maxX, chunk.worldPosition.x + size.x);
-			maxY = Math.max(maxY, chunk.worldPosition.y + size.y);
+			const position = chunk.transform.position;
+			minX = Math.min(minX, position.x - size.x / 2);
+			minY = Math.min(minY, position.y - size.y / 2);
+			maxX = Math.max(maxX, position.x + size.x / 2);
+			maxY = Math.max(maxY, position.y + size.y / 2);
 		}
 
 		return {
@@ -147,21 +171,13 @@ export class TileMap implements ITileMapArgs {
 				chunkId: `chunk_${this.nextChunkId++}`,
 				worldPosition: startPosition.clone().add(step.clone().multiplyBy(i)),
 			};
-			this.addChunkEntity(chunkDefinition);
+			this.addChunkEntity(chunkDefinition, { chunkId: chunkDefinition.chunkId });
 			pattern.push(chunkDefinition);
 		}
 		this.lastPattern = pattern;
 		this.repeatCount = 0;
 
 		return this;
-	}
-
-	private addChunkEntity(chunkDefinition: TileChunkDefinition) {
-		const { chunkId, ...parameters } = chunkDefinition;
-		const chunk = new TileChunk(parameters);
-		chunk.chunkId = chunkId;
-		this.scene.addEntity(chunk);
-		this.chunks.set(chunk.chunkId, chunk);
 	}
 
 	private getStep(params: ITileChunk, direction: TileChunkDirection) {
