@@ -12,6 +12,7 @@ import { createWeapon } from "../../../prefabs/weapon";
 import { createGameZone } from "../../../prefabs/game-zone";
 import { WeaponHolder } from "../../../script-components/weapon/weapon";
 import { useGameStore } from "../../../../store/store";
+import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
 
 const enemyFactories = {
 	Soldier: createSoldier,
@@ -27,7 +28,7 @@ export class Room3 extends Room {
 		super();
 			Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 			// Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
-			DebugMode.enabled = true;
+			DebugMode.enabled = false;
 			DebugMode.setMode(DebugTypes.ALL);
 		// Cameras.currentCamera.setFieldOfView(1);
 		void this.loadWorld();
@@ -39,7 +40,8 @@ export class Room3 extends Room {
 				this,
 				"/assets/maps/map1/room1/test-map.json",
 			);
-
+					// this.addEntity(createCameraNavigator());
+			
 			this.createMapEntities(this.tiledMap);
 		} catch (error) {
 			console.error("Unable to render Tiled map", error);
@@ -73,7 +75,8 @@ export class Room3 extends Room {
 
 		}
 
-		for (const enemySpawn of map.objects.filter((object) => this.isFromLayer(object, "EnemySpawnPoint"))) {
+		const createEnemies = ()=>{
+for (const enemySpawn of map.objects.filter((object) => this.isFromLayer(object, "EnemySpawnPoint"))) {
 			const enemyType = this.getPropertyIgnoringCase(enemySpawn.layerProperties, "EnemyType");
 			const factory = typeof enemyType === "string"
 				? enemyFactories[enemyType as keyof typeof enemyFactories]
@@ -84,6 +87,11 @@ export class Room3 extends Room {
 			}
 			this.addEntity(factory(this.getSpawnCenter(enemySpawn.position, enemySpawn.size)));
 		}
+		}
+
+		createEnemies();
+
+		
 	}
 
 	private isFromLayer(
