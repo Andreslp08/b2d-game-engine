@@ -5,7 +5,7 @@ import { RenderLayerTypes } from "../../../graphics/enum/render-layer-types.enum
 import Vector2 from "../../../math/vector2";
 import { Collider } from "../../../physics/components/collider";
 import { StaticBody } from "../../../physics/components/static-body";
-import { TileTextureData } from "../../definitions";
+import { TileAnimation, TileTextureData } from "../../definitions";
 import type { TileMap, TileMapBounds } from "../../tilemap";
 import {
 	TiledLayer,
@@ -22,6 +22,11 @@ interface TiledLayerContext {
 	parallaxOriginOffset: Vector2;
 	renderLayer?: RenderLayerTypes;
 	visible: boolean;
+}
+
+interface TiledTileVisual {
+	animation?: TileAnimation;
+	texture: TileTextureData;
 }
 
 export interface TiledMapObjectData {
@@ -174,9 +179,11 @@ export class TiledMapAdapter {
 						(tiledChunk.data[row * tiledChunk.width + column + length] & 0x0fffffff) === gid
 					) length++;
 
+					const tile = this.getTileVisual(mapData, gid, context.opacity);
 					this.addVisualChunk({
+						animation: tile.animation,
 						collidable: false,
-						texture: this.getTexture(mapData, gid, context.opacity),
+						texture: tile.texture,
 						renderLayer: context.renderLayer,
 						worldPosition: this.getVisualPosition(context, tiledChunk.x + column + 0.5, tiledChunk.y + row + 0.5),
 						cellSizeInGameUnits: new Vector2(1, 1),
@@ -207,9 +214,11 @@ export class TiledMapAdapter {
 		zIndex: number,
 	): void {
 		const size = new Vector2(object.width / mapData.tilewidth, object.height / mapData.tileheight);
+		const tile = this.getTileVisual(mapData, object.gid! & 0x0fffffff, context.opacity * (object.opacity ?? 1));
 		this.addVisualChunk({
+			animation: tile.animation,
 			collidable: false,
-			texture: this.getTexture(mapData, object.gid! & 0x0fffffff, context.opacity * (object.opacity ?? 1)),
+			texture: tile.texture,
 			renderLayer: context.renderLayer,
 			worldPosition: this.getVisualPosition(
 				context,
@@ -292,7 +301,7 @@ export class TiledMapAdapter {
 		);
 	}
 
-	private getTexture(mapData: TiledMapData, gid: number, opacity: number): TileTextureData {
+	private getTileVisual(mapData: TiledMapData, gid: number, opacity: number): TiledTileVisual {
 		const tileset = [...mapData.tilesets]
 			.sort((a, b) => b.firstgid - a.firstgid)
 			.find((candidate) => candidate.firstgid <= gid);
@@ -300,10 +309,27 @@ export class TiledMapAdapter {
 
 		const localTileId = gid - tileset.firstgid;
 		const tile = tileset.tiles?.find((candidate) => candidate.id === localTileId);
+		const texture = this.getTilesetTexture(tileset, localTileId, opacity);
+		const animation = tile?.animation?.map((frame) => ({
+			duration: frame.duration,
+			texture: this.getTilesetTexture(tileset, frame.tileid, opacity),
+		}));
+
+		return {
+			texture,
+			animation: animation && animation.length > 0 ? { frames: animation } : undefined,
+		};
+	}
+
+	private getTilesetTexture(
+		tileset: TiledTileset,
+		localTileId: number,
+		opacity: number,
+	): TileTextureData {
+		const tile = tileset.tiles?.find((candidate) => candidate.id === localTileId);
 		const assetId = this.getStringProperty(tile?.properties, "engine.assetId")
 			?? this.getStringProperty(tileset.properties, "engine.assetId");
-		if (!assetId) throw new Error(`Tiled tileset gid ${gid} is missing 'engine.assetId'`);
-
+		if (!assetId) throw new Error(`Tiled tileset '${tileset.firstgid}' is missing 'engine.assetId'`);
 		const image = AssetsManager.getImageByName(assetId);
 		if (!image) throw new Error(`Tiled asset '${assetId}' has not been preloaded`);
 
@@ -315,16 +341,6 @@ export class TiledMapAdapter {
 				opacity,
 			};
 		}
-
-		return this.getTilesetTexture(tileset, localTileId, image, opacity);
-	}
-
-	private getTilesetTexture(
-		tileset: TiledTileset,
-		localTileId: number,
-		image: TileTextureData["image"],
-		opacity: number,
-	): TileTextureData {
 		if (tileset.columns <= 0) throw new Error(`Tiled tileset '${tileset.firstgid}' has no tile columns`);
 		const column = localTileId % tileset.columns;
 		const row = Math.floor(localTileId / tileset.columns);

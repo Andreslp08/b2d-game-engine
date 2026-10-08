@@ -11,9 +11,19 @@ export interface TileTextureData {
 	opacity?: number;
 }
 
+export interface TileAnimationFrame {
+	duration: number;
+	texture: TileTextureData;
+}
+
+export interface TileAnimation {
+	frames: TileAnimationFrame[];
+}
+
 export type TileTexture = TileTextureData | { atlas: GameAtlas; image: GameImage; frame: string | number };
 
 export interface ITileChunk {
+	animation?: TileAnimation;
 	collidable: boolean;
 	texture: TileTexture;
 	renderLayer?: RenderLayerTypes;

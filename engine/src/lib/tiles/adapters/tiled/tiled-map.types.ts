@@ -46,6 +46,7 @@ export interface TiledLayer {
 }
 
 export interface TiledTile {
+	animation?: { duration: number; tileid: number }[];
 	id: number;
 	image?: string;
 	imageheight?: number;

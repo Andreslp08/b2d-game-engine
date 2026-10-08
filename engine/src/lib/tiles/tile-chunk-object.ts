@@ -1,6 +1,6 @@
 import { ITranform } from "../input/interfaces/transform.interface";
 import { GameObject } from "../common/entities/game-object";
-import { ITileChunk, TileTexture, TileTextureData } from "./definitions";
+import { ITileChunk, TileAnimation, TileTexture, TileTextureData } from "./definitions";
 import Vector2 from "../math/vector2";
 import { Transform } from "../common/components/transform";
 import { Collider } from "../physics/components/collider";
@@ -10,6 +10,7 @@ type Parameters = ITileChunk;
 
 export class TileChunk extends GameObject implements ITileChunk {
 	chunkId: string;
+	animation?: TileAnimation;
 	collidable: boolean;
 	texture: TileTexture;
 	worldPosition: Vector2;
@@ -26,6 +27,7 @@ export class TileChunk extends GameObject implements ITileChunk {
 		this.chunkId = '';
 		if (parameters.renderLayer !== undefined) this.renderLayer = parameters.renderLayer;
 		this.collidable = parameters.collidable;
+		this.animation = parameters.animation;
 		this.texture = parameters.texture;
 		this.worldPosition = parameters.worldPosition;
 		this.cellSizeInGameUnits = parameters.cellSizeInGameUnits;
@@ -62,7 +64,12 @@ export class TileChunk extends GameObject implements ITileChunk {
 	}
 
 	generateTiles() {
-		this.addComponent(new TileChunkBatch(this.getTextureData(), this.cellSizeInGameUnits, this.gridSize));
+		this.addComponent(new TileChunkBatch(
+			this.getTextureData(),
+			this.cellSizeInGameUnits,
+			this.gridSize,
+			this.animation,
+		));
 	}
 
 	private getTextureData(): TileTextureData {

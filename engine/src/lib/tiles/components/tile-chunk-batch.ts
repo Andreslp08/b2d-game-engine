@@ -1,7 +1,8 @@
 import { PIXELS_PER_METER } from "../../common/constants";
+import { Time } from "../../common/interfaces/time";
 import { Component } from "../../ecs/component";
 import Vector2 from "../../math/vector2";
-import { TileTextureData } from "../definitions";
+import { TileAnimation, TileTextureData } from "../definitions";
 
 export class TileChunkBatch extends Component {
 	private static readonly cache = new Map<
@@ -11,7 +12,9 @@ export class TileChunkBatch extends Component {
 	canvas: OffscreenCanvas | HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
 	readonly worldSize: Vector2;
-	private readonly definition: TileTextureData;
+	private definition: TileTextureData;
+	private readonly animation?: TileAnimation;
+	private animationFrameIndex = -1;
 	private readonly gridSize: Vector2;
 	private pixelsPerMeter = 0;
 
@@ -19,10 +22,12 @@ export class TileChunkBatch extends Component {
 		definition: TileTextureData,
 		cellSize: Vector2,
 		gridSize: Vector2,
+		animation?: TileAnimation,
 	) {
 		super();
 		this.unique = false;
 		this.definition = definition;
+		this.animation = animation;
 		this.gridSize = gridSize.clone();
 		this.worldSize = new Vector2(cellSize.x * gridSize.x, cellSize.y * gridSize.y);
 		this.setResolution(PIXELS_PER_METER);
@@ -35,18 +40,21 @@ export class TileChunkBatch extends Component {
 			Math.hypot(transform.c, transform.d),
 		);
 		this.setResolution(Math.max(1, Math.ceil(pixelsPerMeter)));
+		this.updateAnimationFrame();
 	}
 
 	private setResolution(pixelsPerMeter: number): void {
 		if (pixelsPerMeter === this.pixelsPerMeter) return;
 
-		const cacheKey = this.getCacheKey(pixelsPerMeter);
-		const cachedBatch = TileChunkBatch.cache.get(cacheKey);
-		if (cachedBatch) {
-			this.canvas = cachedBatch.canvas;
-			this.context = cachedBatch.context;
-			this.pixelsPerMeter = pixelsPerMeter;
-			return;
+		if (!this.animation) {
+			const cacheKey = this.getCacheKey(pixelsPerMeter);
+			const cachedBatch = TileChunkBatch.cache.get(cacheKey);
+			if (cachedBatch) {
+				this.canvas = cachedBatch.canvas;
+				this.context = cachedBatch.context;
+				this.pixelsPerMeter = pixelsPerMeter;
+				return;
+			}
 		}
 
 		const width = Math.max(1, Math.ceil(this.worldSize.x * pixelsPerMeter));
@@ -56,8 +64,33 @@ export class TileChunkBatch extends Component {
 			: Object.assign(document.createElement("canvas"), { width, height });
 		this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 		this.rebuild();
-		TileChunkBatch.cache.set(cacheKey, { canvas: this.canvas, context: this.context });
+		if (!this.animation) {
+			TileChunkBatch.cache.set(this.getCacheKey(pixelsPerMeter), { canvas: this.canvas, context: this.context });
+		}
 		this.pixelsPerMeter = pixelsPerMeter;
+	}
+
+	private updateAnimationFrame(): void {
+		if (!this.animation || this.animation.frames.length === 0) return;
+
+		const totalDuration = this.animation.frames.reduce((total, frame) => total + frame.duration, 0);
+		if (totalDuration <= 0) return;
+
+		let elapsed = (Time.time * 1000) % totalDuration;
+		let frameIndex = this.animation.frames.length - 1;
+		for (let index = 0; index < this.animation.frames.length; index++) {
+			const frame = this.animation.frames[index];
+			if (elapsed < frame.duration) {
+				frameIndex = index;
+				break;
+			}
+			elapsed -= frame.duration;
+		}
+
+		if (frameIndex === this.animationFrameIndex) return;
+		this.animationFrameIndex = frameIndex;
+		this.definition = this.animation.frames[frameIndex].texture;
+		this.rebuild();
 	}
 
 	private getCacheKey(pixelsPerMeter: number): string {
