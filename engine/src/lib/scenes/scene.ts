@@ -11,6 +11,7 @@ import { System } from "../ecs/system";
 import { Component, ComponentClass } from "../ecs/component";
 import { Entity } from "../ecs/entity";
 import { RenderSystem } from "../graphics/render/render-system";
+import type { SceneFadeOptions } from "../graphics/render/scene-fade-controller";
 import Vector2 from "../math/vector2";
 import { ScriptComponent } from "../scripts/script-component";
 import { CullingSystem } from "../performance/culling-system";
@@ -45,9 +46,11 @@ export class Scene implements Updatable {
 		RenderLayers.reset();
 		Cameras.removeAllCameras();
 		const worldCamera = new OrthographicCamera(new Vector2(0, 0), this);
+		worldCamera.tags.add("default-world-camera");
 		Cameras.setCurrentCamera(worldCamera);
 
 		const uiCamera = new ScreenCamera(this);
+		uiCamera.tags.add("default-ui-camera");
 		Cameras.setCurrentScreenCamera(uiCamera);
 	}
 
