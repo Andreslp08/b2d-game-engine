@@ -1,11 +1,13 @@
 import { Scene } from "../../scenes/scene";
 import Vector2 from "../../math/vector2";
+import { Tags } from "../../common/tags";
 
 export abstract class Camera {
 	protected _fieldOfView: number = 1;
 	protected position: Vector2;
 	scene: Scene;
 	private _rotation: number = 0;
+	tags:Tags = new Tags();
 
 	constructor(initialPosition: Vector2, scene: Scene) {
 		this.position = initialPosition;
