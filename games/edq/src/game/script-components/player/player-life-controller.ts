@@ -19,6 +19,8 @@ export class PlayerLifeController extends ScriptComponent {
 	prevShield = -1;
 	private disableInputStartTime = 0;
 	private disableInputDuration = 0.3;
+	private damageInputLocked = false;
+	private controllerDisabledOnDeath = false;
 
 	isDead = false;
 	onPlayerDie = new GameEvent<void>();
@@ -76,17 +78,20 @@ export class PlayerLifeController extends ScriptComponent {
 		if (this.prevHealth !== -1 && this.prevHealth > health) {
 			playerController.enableInputController = false;
 			this.disableInputStartTime = Time.time;
+			this.damageInputLocked = true;
 		}
 
 		if (this.prevShield !== -1 && this.prevShield > shield) {
 			playerController.enableInputController = false;
 			this.disableInputStartTime = Time.time;
+			this.damageInputLocked = true;
 		}
 
-		if (!playerController.enableInputController) {
+		if (this.damageInputLocked) {
 			const elapsed = Time.time - this.disableInputStartTime;
 			if (elapsed >= this.disableInputDuration) {
 				playerController.enableInputController = true;
+				this.damageInputLocked = false;
 			}
 		}
 
@@ -106,7 +111,10 @@ export class PlayerLifeController extends ScriptComponent {
 
 		if (health.getHealth() <= 0) {
 			const playerController = entity.getComponent(PlayerController);
-			playerController.enabled = false;
+			if (playerController && !this.controllerDisabledOnDeath) {
+				playerController.enabled = false;
+				this.controllerDisabledOnDeath = true;
+			}
 
 			this.cameraShakeTimer += Time.unscaledDeltaTime;
 			const shakeSpeed = 1.5; // Oscilaciones por segundo
