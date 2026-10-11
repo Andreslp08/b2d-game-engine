@@ -93,6 +93,13 @@ export class Scene implements Updatable {
 	}
 
 	/**
+	 * Animates a fade for the final screen output or selected render layers.
+	 * @param options Fade target, final alpha, color, delay, and duration in seconds.
+	 */
+	fade(options: SceneFadeOptions): void {
+		this._renderer?.fade(options);
+	}
+	/**
 	 * Indexes an entity by all of its component types (including inherited ones).
 	 * @param entity - The entity to index.
 	 */

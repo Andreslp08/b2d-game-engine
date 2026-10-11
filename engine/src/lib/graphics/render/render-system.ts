@@ -19,19 +19,28 @@ import { ParticleRenderer } from "./particle-renderer";
 import { Parallax } from "../components/parallax";
 import { OrthographicCamera } from "../cameras/orthographic-camera";
 import { RenderLayer } from "./render-layer";
+import { SceneFadeController, SceneFadeOptions } from "./scene-fade-controller";
+import { Time } from "../../common/interfaces/time";
 import { RenderLayers } from "./render-layers";
 import { TileChunkBatch } from "../../tiles/components/tile-chunk-batch";
 import { TileChunkRenderer } from "./tile-chunk-renderer";
 
 export class RenderSystem extends System {
 	private readonly warnedParallaxColliderEntities = new Set<string>();
+	readonly fadeController = new SceneFadeController();
 
 	constructor(scene: Scene) {
 		super(scene);
 		this.setName("RenderSystem");
 	}
-	update(): void {}
+	update(): void {
+		this.fadeController.update(Time.deltaTime);
+	}
 	fixedUpdate(): void {}
+
+	fade(options: SceneFadeOptions): void {
+		this.fadeController.fade(options);
+	}
 
 	fadeLayerHandler(context: CanvasRenderingContext2D, layer: RenderLayer) {
 		if (!layer.isFade) return;
@@ -146,6 +155,7 @@ export class RenderSystem extends System {
 			this.fadeLayerHandler(renderingContext, layer);
 			renderingContext.restore();
 		}
+		this.fadeController.render(renderingContext);
 
 		renderingContext.restore();
 	}
