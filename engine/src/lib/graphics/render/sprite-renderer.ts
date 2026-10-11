@@ -4,7 +4,6 @@ import { GameObject } from "../../common/entities/game-object";
 import { Sprite } from "../sprites/components/sprite";
 import { SpriteAnimation } from "../sprites/components/sprite-animation";
 import { Renderer } from "./render";
-import { PIXELS_PER_METER } from "../../common/constants";
 
 export class SpriteRenderer extends Renderer {
 	renderSprite(renderingContext: CanvasRenderingContext2D, sprite: Sprite) {
@@ -64,8 +63,8 @@ export class SpriteRenderer extends Renderer {
 			frameSize.h,
 			0,
 			0,
-			sourceSize.w / PIXELS_PER_METER,
-			sourceSize.h / PIXELS_PER_METER
+			sourceSize.w,
+			sourceSize.h
 		);
 	}
 
@@ -104,8 +103,8 @@ export class SpriteRenderer extends Renderer {
 		const anchor = sprite.getAnchor();
 
 		const sourceSize = sprite.getSourceSize(); // tamaño original del sprite en px
-		const spriteW = sourceSize.w / PIXELS_PER_METER;
-		const spriteH = sourceSize.h / PIXELS_PER_METER;
+		const spriteW = sourceSize.w;
+		const spriteH = sourceSize.h;
 
 		// Escala visual para que el sprite quepa en el size definido por el transform
 		const visualScale = { x: 1, y: 1 };

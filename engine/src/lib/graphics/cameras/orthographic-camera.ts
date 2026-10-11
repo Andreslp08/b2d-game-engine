@@ -1,8 +1,4 @@
-import {
-	PIXELS_PER_METER,
-	VIEWPORT_HEIGHT_IN_METERS,
-	VIEWPORT_WIDTH_IN_METERS,
-} from "../../common/constants";
+import { VIEWPORT_HEIGHT_IN_WORLD_UNITS, VIEWPORT_WIDTH_IN_WORLD_UNITS } from "../../common/constants";
 import { MathUtil } from "../../math/math-util";
 import Vector2 from "../../math/vector2";
 import { Scene } from "../../scenes/scene";
@@ -23,14 +19,13 @@ export class OrthographicCamera extends Camera {
 
 	protected calculateScale(renderingContext: CanvasRenderingContext2D) {
 		const canvas = renderingContext.canvas;
-		const PPM = PIXELS_PER_METER;
 		const canvasWidth = canvas.width;
 		const canvasHeight = canvas.height;
 
-		const scaleX = canvasWidth / (VIEWPORT_WIDTH_IN_METERS * PPM);
-		const scaleY = canvasHeight / (VIEWPORT_HEIGHT_IN_METERS * PPM);
-		const uniformScale = Math.min(scaleX, scaleY);
-		const baseScale = PPM * uniformScale;
+		const baseScale = Math.min(
+			canvasWidth / VIEWPORT_WIDTH_IN_WORLD_UNITS,
+			canvasHeight / VIEWPORT_HEIGHT_IN_WORLD_UNITS,
+		);
 
 		const totalScaleX = baseScale * this._fieldOfView;
 		const totalScaleY = baseScale * this._fieldOfView;
@@ -43,8 +38,8 @@ export class OrthographicCamera extends Camera {
 		const canvasWidth = canvas.width;
 		const canvasHeight = canvas.height;
 		const totalScale = this.calculateScale(renderingContext);
-		const renderWidth = VIEWPORT_WIDTH_IN_METERS * totalScale.x;
-		const renderHeight = VIEWPORT_HEIGHT_IN_METERS * totalScale.y;
+		const renderWidth = VIEWPORT_WIDTH_IN_WORLD_UNITS * totalScale.x;
+		const renderHeight = VIEWPORT_HEIGHT_IN_WORLD_UNITS * totalScale.y;
 		const offsetX = (canvasWidth - renderWidth) / 2;
 		const offsetY = (canvasHeight - renderHeight) / 2;
 
@@ -52,8 +47,8 @@ export class OrthographicCamera extends Camera {
 	}
 
 	protected calculateCameraPositionWithParallax(parallax: Vector2) {
-		const cameraX = this.position.x * parallax.x - VIEWPORT_WIDTH_IN_METERS / 2;
-		const cameraY = this.position.y * parallax.y - VIEWPORT_HEIGHT_IN_METERS / 2;
+		const cameraX = this.position.x * parallax.x - VIEWPORT_WIDTH_IN_WORLD_UNITS / 2;
+		const cameraY = this.position.y * parallax.y - VIEWPORT_HEIGHT_IN_WORLD_UNITS / 2;
 		return new Vector2(cameraX, cameraY);
 	}
 
@@ -72,9 +67,9 @@ export class OrthographicCamera extends Camera {
 
 		renderingContext.translate(offset.x, offset.y);
 		renderingContext.scale(totalScale.x, totalScale.y);
-		renderingContext.translate(VIEWPORT_WIDTH_IN_METERS / 2, VIEWPORT_HEIGHT_IN_METERS / 2);
+		renderingContext.translate(VIEWPORT_WIDTH_IN_WORLD_UNITS / 2, VIEWPORT_HEIGHT_IN_WORLD_UNITS / 2);
 		renderingContext.rotate(MathUtil.degToRad(this.getRotation()));
-		renderingContext.translate(-VIEWPORT_WIDTH_IN_METERS / 2, -VIEWPORT_HEIGHT_IN_METERS / 2);
+		renderingContext.translate(-VIEWPORT_WIDTH_IN_WORLD_UNITS / 2, -VIEWPORT_HEIGHT_IN_WORLD_UNITS / 2);
 		renderingContext.translate(-cameraPosition.x, -cameraPosition.y);
 	}
 
