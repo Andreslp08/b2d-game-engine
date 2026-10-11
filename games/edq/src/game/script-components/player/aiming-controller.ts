@@ -55,9 +55,11 @@ export class AimingController extends ScriptComponent {
 		const mousePos = MouseManager.getRelativePosition();
 		const mouseWorldPos = Cameras.currentCamera
 			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
-					mousePos,
-				)
-			: new Vector2(0, 0);
+				mousePos,
+			)
+			: null;
+		if (!mouseWorldPos) return;
+
 		const mouseDirection = mouseWorldPos
 			.clone()
 			.substract(this.gameObject.transform.position)
@@ -88,9 +90,8 @@ export class AimingController extends ScriptComponent {
 		this.debugAngleX.end = transform.position.clone().add(new Vector2(1, 0));
 
 		const mousePos = MouseManager.getRelativePosition();
-		const mouseWorldPos = (
-			Cameras.currentCamera as OrthographicCamera
-		).getWorldPositionFromScreenPosition(mousePos);
+		const camera = Cameras.currentCamera as OrthographicCamera | undefined;
+		const mouseWorldPos = camera?.getWorldPositionFromScreenPosition(mousePos);
 		if (!mouseWorldPos) return;
 
 		this.debugAimingLine.start = transform.position.clone();
