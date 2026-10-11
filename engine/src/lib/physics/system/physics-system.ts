@@ -62,7 +62,6 @@ export class PhysicsSystem extends System {
 			let collided = false;
 			for (const entity of entities) {
 				if (!this.isCollision(targetEntity, entity)) continue;
-				collided = true;
 
 				const colliderA = targetCollider;
 				const colliderB = entity.getComponent(Collider);
@@ -70,8 +69,13 @@ export class PhysicsSystem extends System {
 					colliderA,
 					colliderB
 				);
+				const penetrationY = CollisionUtil.getVerticalCollisionPenetration(
+					colliderA,
+					colliderB,
+				);
 
-				if (penetrationX !== 0) {
+				if (penetrationX !== 0 && Math.abs(penetrationX) <= Math.abs(penetrationY)) {
+					collided = true;
 					targetTransform.position.x -= stepX;
 					const normalX = penetrationX > 0 ? Vector2.RIGHT : Vector2.LEFT;
 
@@ -108,7 +112,6 @@ export class PhysicsSystem extends System {
 			let collided = false;
 			for (const entity of entities) {
 				if (!this.isCollision(targetEntity, entity)) continue;
-				collided = true;
 
 				const colliderA = targetCollider;
 				const colliderB = entity.getComponent(Collider);
@@ -116,8 +119,13 @@ export class PhysicsSystem extends System {
 					colliderA,
 					colliderB
 				);
+				const penetrationX = CollisionUtil.getHorizontalCollisionPenetration(
+					colliderA,
+					colliderB,
+				);
 
-				if (penetrationY !== 0) {
+				if (penetrationY !== 0 && Math.abs(penetrationY) <= Math.abs(penetrationX)) {
+					collided = true;
 					targetTransform.position.y -= stepY;
 					const normalY = penetrationY > 0 ? Vector2.DOWN : Vector2.UP;
 
