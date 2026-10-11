@@ -16,6 +16,7 @@ export class TileChunk extends GameObject implements ITileChunk {
 	worldPosition: Vector2;
 	cellSizeInGameUnits: Vector2;
 	gridSize: Vector2;
+	tileTransform?: Parameters["tileTransform"];
 
 	constructor(parameters: Parameters) {
 		const transform: ITranform = {
@@ -32,6 +33,7 @@ export class TileChunk extends GameObject implements ITileChunk {
 		this.worldPosition = parameters.worldPosition;
 		this.cellSizeInGameUnits = parameters.cellSizeInGameUnits;
 		this.gridSize = parameters.gridSize;
+		this.tileTransform = parameters.tileTransform;
 
 		const transformComponent = this.getComponent(Transform);
 		if (transformComponent) {
@@ -69,6 +71,7 @@ export class TileChunk extends GameObject implements ITileChunk {
 			this.cellSizeInGameUnits,
 			this.gridSize,
 			this.animation,
+			this.tileTransform,
 		));
 	}
 

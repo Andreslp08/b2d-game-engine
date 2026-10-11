@@ -33,6 +33,7 @@ export class TilePattern {
 			worldPosition: position.clone(),
 			cellSizeInGameUnits: chunk.cellSizeInGameUnits.clone(),
 			gridSize: chunk.gridSize.clone(),
+			tileTransform: chunk.tileTransform,
 		});
 
 		return this;
@@ -46,6 +47,7 @@ export class TilePattern {
 			worldPosition: chunk.worldPosition.clone(),
 			cellSizeInGameUnits: chunk.cellSizeInGameUnits.clone(),
 			gridSize: chunk.gridSize.clone(),
+			tileTransform: chunk.tileTransform,
 		}));
 	}
 }

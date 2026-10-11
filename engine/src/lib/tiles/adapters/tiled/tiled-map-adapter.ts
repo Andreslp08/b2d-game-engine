@@ -5,7 +5,7 @@ import { RenderLayerTypes } from "../../../graphics/enum/render-layer-types.enum
 import Vector2 from "../../../math/vector2";
 import { Collider } from "../../../physics/components/collider";
 import { StaticBody } from "../../../physics/components/static-body";
-import { TileAnimation, TileTextureData } from "../../definitions";
+import { TileAnimation, TileTextureData, TileTransform } from "../../definitions";
 import type { TileMap, TileMapBounds } from "../../tilemap";
 import {
 	TiledLayer,
@@ -50,6 +50,10 @@ export interface TiledMapLoadResult {
 }
 
 export class TiledMapAdapter {
+	private static readonly FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+	private static readonly FLIPPED_VERTICALLY_FLAG = 0x40000000;
+	private static readonly FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+	private static readonly TILE_ID_MASK = 0x0fffffff;
 	private readonly objects: TiledMapObjectData[] = [];
 
 	constructor(private readonly tileMap: TileMap) {}
@@ -167,7 +171,8 @@ export class TiledMapAdapter {
 			for (let row = 0; row < tiledChunk.height; row++) {
 				let column = 0;
 				while (column < tiledChunk.width) {
-					const gid = tiledChunk.data[row * tiledChunk.width + column] & 0x0fffffff;
+					const rawGid = tiledChunk.data[row * tiledChunk.width + column] >>> 0;
+					const gid = this.getTileId(rawGid);
 					if (gid === 0) {
 						column++;
 						continue;
@@ -176,7 +181,7 @@ export class TiledMapAdapter {
 					let length = 1;
 					while (
 						column + length < tiledChunk.width &&
-						(tiledChunk.data[row * tiledChunk.width + column + length] & 0x0fffffff) === gid
+						(tiledChunk.data[row * tiledChunk.width + column + length] >>> 0) === rawGid
 					) length++;
 
 					const tile = this.getTileVisual(mapData, gid, context.opacity);
@@ -188,6 +193,7 @@ export class TiledMapAdapter {
 						worldPosition: this.getVisualPosition(context, tiledChunk.x + column + 0.5, tiledChunk.y + row + 0.5),
 						cellSizeInGameUnits: new Vector2(1, 1),
 						gridSize: new Vector2(length, 1),
+						tileTransform: this.getTileTransform(rawGid),
 					}, context, { zIndex });
 					column += length;
 				}
@@ -214,7 +220,12 @@ export class TiledMapAdapter {
 		zIndex: number,
 	): void {
 		const size = new Vector2(object.width / mapData.tilewidth, object.height / mapData.tileheight);
-		const tile = this.getTileVisual(mapData, object.gid! & 0x0fffffff, context.opacity * (object.opacity ?? 1));
+		const rawGid = object.gid! >>> 0;
+		const tile = this.getTileVisual(
+			mapData,
+			this.getTileId(rawGid),
+			context.opacity * (object.opacity ?? 1),
+		);
 		this.addVisualChunk({
 			animation: tile.animation,
 			collidable: false,
@@ -227,6 +238,7 @@ export class TiledMapAdapter {
 			),
 			cellSizeInGameUnits: size,
 			gridSize: new Vector2(1, 1),
+			tileTransform: this.getTileTransform(rawGid),
 		}, context, { rotation: object.rotation ?? 0, zIndex });
 	}
 
@@ -319,6 +331,19 @@ export class TiledMapAdapter {
 			texture,
 			animation: animation && animation.length > 0 ? { frames: animation } : undefined,
 		};
+	}
+
+	private getTileId(rawGid: number): number {
+		return rawGid & TiledMapAdapter.TILE_ID_MASK;
+	}
+
+	private getTileTransform(rawGid: number): TileTransform | undefined {
+		const transform: TileTransform = {
+			diagonal: (rawGid & TiledMapAdapter.FLIPPED_DIAGONALLY_FLAG) !== 0,
+			flipX: (rawGid & TiledMapAdapter.FLIPPED_HORIZONTALLY_FLAG) !== 0,
+			flipY: (rawGid & TiledMapAdapter.FLIPPED_VERTICALLY_FLAG) !== 0,
+		};
+		return transform.diagonal || transform.flipX || transform.flipY ? transform : undefined;
 	}
 
 	private getTilesetTexture(

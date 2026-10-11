@@ -20,6 +20,12 @@ export interface TileAnimation {
 	frames: TileAnimationFrame[];
 }
 
+export interface TileTransform {
+	diagonal?: boolean;
+	flipX?: boolean;
+	flipY?: boolean;
+}
+
 export type TileTexture = TileTextureData | { atlas: GameAtlas; image: GameImage; frame: string | number };
 
 export interface ITileChunk {
@@ -30,4 +36,5 @@ export interface ITileChunk {
 	worldPosition: Vector2;
 	cellSizeInGameUnits: Vector2;
 	gridSize: Vector2;
+	tileTransform?: TileTransform;
 }

@@ -1,7 +1,7 @@
 import { Time } from "../../common/interfaces/time";
 import { Component } from "../../ecs/component";
 import Vector2 from "../../math/vector2";
-import { TileAnimation, TileTextureData } from "../definitions";
+import { TileAnimation, TileTextureData, TileTransform } from "../definitions";
 
 export class TileChunkBatch extends Component {
 	private static readonly cache = new Map<
@@ -15,6 +15,7 @@ export class TileChunkBatch extends Component {
 	private readonly animation?: TileAnimation;
 	private animationFrameIndex = -1;
 	private readonly gridSize: Vector2;
+	private readonly tileTransform?: TileTransform;
 	private pixelsPerWorldUnit = 0;
 
 	constructor(
@@ -22,12 +23,14 @@ export class TileChunkBatch extends Component {
 		cellSize: Vector2,
 		gridSize: Vector2,
 		animation?: TileAnimation,
+		tileTransform?: TileTransform,
 	) {
 		super();
 		this.unique = false;
 		this.definition = definition;
 		this.animation = animation;
 		this.gridSize = gridSize.clone();
+		this.tileTransform = tileTransform;
 		this.worldSize = new Vector2(cellSize.x * gridSize.x, cellSize.y * gridSize.y);
 		this.setResolution(1);
 	}
@@ -102,6 +105,9 @@ export class TileChunkBatch extends Component {
 			this.definition.scale?.x ?? 1,
 			this.definition.scale?.y ?? 1,
 			this.definition.opacity ?? 1,
+			this.tileTransform?.diagonal ?? false,
+			this.tileTransform?.flipX ?? false,
+			this.tileTransform?.flipY ?? false,
 			pixelsPerWorldUnit,
 			this.worldSize.x,
 			this.worldSize.y,
@@ -122,17 +128,30 @@ export class TileChunkBatch extends Component {
 			for (let col = 0; col < this.gridSize.x; col++) {
 				const drawWidth = tileWidth * scale.x;
 				const drawHeight = tileHeight * scale.y;
+				const centerX = col * tileWidth + tileWidth / 2;
+				const centerY = row * tileHeight + tileHeight / 2;
+				const flipX = this.tileTransform?.flipX ? -1 : 1;
+				const flipY = this.tileTransform?.flipY ? -1 : 1;
+
+				this.context.save();
+				this.context.translate(centerX, centerY);
+				if (this.tileTransform?.diagonal) {
+					this.context.transform(0, -flipY, -flipX, 0, 0, 0);
+				} else {
+					this.context.scale(flipX, flipY);
+				}
 				this.context.drawImage(
 					this.definition.image.nativeElement,
 					this.definition.framePosition.x,
 					this.definition.framePosition.y,
 					this.definition.frameSize.w,
 					this.definition.frameSize.h,
-					col * tileWidth + (tileWidth - drawWidth) / 2,
-					row * tileHeight + (tileHeight - drawHeight) / 2,
+					-drawWidth / 2,
+					-drawHeight / 2,
 					drawWidth,
 					drawHeight,
 				);
+				this.context.restore();
 			}
 		}
 		this.context.restore();
