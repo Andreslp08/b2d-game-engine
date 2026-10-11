@@ -1,4 +1,4 @@
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { GameObject } from "engine/common/entities/game-object";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
@@ -14,7 +14,9 @@ type GameZoneArgs = {
 };
 
 export const createGameZone = ({ startPoint, endPoint, scene, player }: GameZoneArgs) => {
-	const size = new Vector2(VIEWPORT_WIDTH_IN_METERS, 1000);
+	const visibleViewportWidth =
+		VIEWPORT_WIDTH_IN_WORLD_UNITS / scene.getCurrentCamera().getFieldOfView();
+	const size = new Vector2(visibleViewportWidth, 1000);
 	const halfSize = size.clone().divide(new Vector2(2, 1));
 
 	const playerSize = player.transform.size;

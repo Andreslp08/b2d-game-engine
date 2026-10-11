@@ -1,6 +1,5 @@
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { GameObject } from "engine/common/entities/game-object";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import type { Scene } from "engine/scenes/scene";
@@ -13,7 +12,8 @@ type StaticGameZoneArgs = {
 };
 
 export const createStaticGameZone = ({ center, player, scene }: StaticGameZoneArgs) => {
-	const halfViewportWidth = VIEWPORT_WIDTH_IN_METERS / 2;
+	const camera = scene.getCurrentCamera();
+	const halfViewportWidth = VIEWPORT_WIDTH_IN_WORLD_UNITS / camera.getFieldOfView() / 2;
 	const wallSize = new Vector2(1, 1000);
 
 	const leftBound = new GameObject({
@@ -34,7 +34,7 @@ export const createStaticGameZone = ({ center, player, scene }: StaticGameZoneAr
 	if (playerCameraController) {
 		playerCameraController.enabled = false;
 	}
-	Cameras.currentCamera.setPosition(center);
+	camera.setPosition(center);
 	scene.addEntity(leftBound);
 	scene.addEntity(rightBound);
 };

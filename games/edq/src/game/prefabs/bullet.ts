@@ -14,7 +14,7 @@ import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
 import type { ProjectileDefinition } from "../items/definitions/projectile-definition";
 
@@ -27,7 +27,7 @@ export class BulletController extends ScriptComponent {
 	/** Creates a projectile controller with weapon-specific damage and range. */
 	constructor(
 		private readonly damage = 10,
-		private readonly maxDistance = VIEWPORT_WIDTH_IN_METERS,
+		private readonly maxDistance = VIEWPORT_WIDTH_IN_WORLD_UNITS,
 		private readonly projectileDefinition: ProjectileDefinition
 	) {
 		super();
@@ -101,7 +101,7 @@ export class BulletController extends ScriptComponent {
 		if (!transform || !body) return;
 		transform.position = body.move(transform.position, Time.fixedDeltaTime);
 		const distance = Vector2.distance(this.startPosition, transform.position);
-		const MAX_DISTANCE = VIEWPORT_WIDTH_IN_METERS;
+		const MAX_DISTANCE = VIEWPORT_WIDTH_IN_WORLD_UNITS;
 		if (distance > Math.min(MAX_DISTANCE, this.maxDistance)) {
 			this.destroyBullet();
 		}
@@ -112,7 +112,7 @@ export class BulletController extends ScriptComponent {
 export const createBullet = (
 	position: Vector2,
 	damage = 10,
-	maxDistance = VIEWPORT_WIDTH_IN_METERS,
+	maxDistance = VIEWPORT_WIDTH_IN_WORLD_UNITS,
 	definition: ProjectileDefinition,
 ) => {
 	const image = AssetsManager.getImageByName(definition.image);

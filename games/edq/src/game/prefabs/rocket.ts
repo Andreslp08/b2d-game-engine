@@ -12,7 +12,7 @@ import { Time } from "engine/common/interfaces/time";
 import { Transform } from "engine/common/components/transform";
 import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
 import type { ProjectileDefinition } from "../items/definitions/projectile-definition";
 import type { GameSound } from "engine/common/assets-manager/game-sound";
@@ -118,7 +118,7 @@ class RocketController extends ScriptComponent {
 
 		transform.position = body.move(transform.position, Time.fixedDeltaTime);
 		const distance = Vector2.distance(this.startPosition, transform.position);
-		if (distance > Math.min(VIEWPORT_WIDTH_IN_METERS, this.maxDistance)) this.destroyRocket();
+		if (distance > Math.min(VIEWPORT_WIDTH_IN_WORLD_UNITS, this.maxDistance)) this.destroyRocket();
 	}
 }
 

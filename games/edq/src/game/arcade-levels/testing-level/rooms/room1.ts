@@ -19,7 +19,7 @@ import { PlayerSkinComponent } from "../../../script-components/player/player-sk
 import { createTailGunner } from "../../../prefabs/tail-gunner";
 import { Room } from "../../../levels/room";
 import { createGameZone } from "../../../prefabs/game-zone";
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { TileMap } from "engine/tiles/tilemap";
 import type { TileTexture } from "engine/tiles/definitions";
 
@@ -100,7 +100,7 @@ export class Room1 extends Room {
 		};
 
 		const floorCellSize = new Vector2(1, 1);
-		const middleTileCount = VIEWPORT_WIDTH_IN_METERS;
+		const middleTileCount = VIEWPORT_WIDTH_IN_WORLD_UNITS;
 		const middleRepeatCount = 3;
 		const totalMiddleTileCount = middleTileCount * (middleRepeatCount + 1);
 		const floorEndX = floorCellSize.x * (1 + totalMiddleTileCount);
@@ -157,7 +157,7 @@ export class Room1 extends Room {
 
 		const playerId = this.addEntity(
 			createPlayer({
-				position: new Vector2(VIEWPORT_WIDTH_IN_METERS, -4),
+				position: new Vector2(VIEWPORT_WIDTH_IN_WORLD_UNITS, -4),
 				skin: useGameStore.getState().currentSkin,
 			}),
 		);

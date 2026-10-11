@@ -9,47 +9,64 @@ import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera"
 
 export class PlayerCameraController extends ScriptComponent {
 
-	playerCamera: OrthographicCamera;
+	playerCamera: OrthographicCamera = null;
+	initialCameraPosition: Vector2 = null;
 	enabled = true;
 	lockAxis = {
 		x: false,
 		y: false
 	}
+	verticalLookAheadDistance = 1;
+	airborneVerticalDeadZone = 0.5;
+	private verticalLookAhead = 0;
 
-	onStart(): void {
-		this.createCamera();
-	}
 	createCamera(): void {
-		this.playerCamera = new OrthographicCamera(new Vector2(0, 0), this.entity.getScene());
+		this.playerCamera = new OrthographicCamera( this.initialCameraPosition, this.entity.getScene());
+		this.playerCamera.tags.add("player-camera");
 		Cameras.setCurrentCamera(this.playerCamera);
 	}
 	onFixedUpdate(): void {
+		if(!this.initialCameraPosition) return;
 		if(!this.enabled) return;
 		const camera = this.playerCamera;
 		if(!camera) return;
 		if(Cameras.currentCamera !== camera) return;
 		const targetGameObject = this.entity as GameObject;
 		if(!camera || !targetGameObject) throw new Error("Camera or target game object not found");
+		const dynamicBody = this.entity.getComponent(DynamicBody);
 		const cameraFOV = camera.getFieldOfView();
-		const thresholdY = targetGameObject.transform.size.y / 2 / cameraFOV;
+		const isAirborne = !!dynamicBody && !dynamicBody.isOnGround;
+		const followAmount = MathUtil.clamp(20 * Time.fixedDeltaTime, 0, 1);
+		const velocityY = dynamicBody?.velocity.y ?? 0;
+		const targetLookAhead = !isAirborne
+			? 0
+			: velocityY < 0
+				? -this.verticalLookAheadDistance
+				: velocityY > 0
+					? this.verticalLookAheadDistance
+					: this.verticalLookAhead;
+		this.verticalLookAhead = MathUtil.lerp(
+			this.verticalLookAhead,
+			targetLookAhead,
+			followAmount,
+		);
+		const thresholdY = isAirborne
+			? this.airborneVerticalDeadZone
+			: targetGameObject.transform.size.y / 2 / cameraFOV;
 
 		const targetPos = targetGameObject.transform.position.clone();
 		const cameraPos = camera.getPosition().clone();
 
-		const dy = targetPos.y - cameraPos.y;
+		const dy = targetPos.y + this.verticalLookAhead - cameraPos.y;
 
 		if (Math.abs(dy) > thresholdY) {
-			cameraPos.y = targetPos.y - Math.sign(dy) * thresholdY;
+			cameraPos.y = targetPos.y + this.verticalLookAhead - Math.sign(dy) * thresholdY;
 		}
 
-		const newCameraPos = new Vector2(
-			MathUtil.lerp(camera.getPosition().x, cameraPos.x, 1),
-			MathUtil.lerp(camera.getPosition().y, cameraPos.y, 20 * Time.deltaTime),
+		const finalCameraPosition = new Vector2(
+			MathUtil.lerp(camera.getPosition().x, targetPos.x, followAmount),
+			MathUtil.lerp(camera.getPosition().y, cameraPos.y, followAmount),
 		);
-
-
-		const db = this.entity.getComponent(DynamicBody);
-		const finalCameraPosition = db?.isMoving ? newCameraPos : targetPos;
 		if(!this.lockAxis.x && !this.lockAxis.y){
 			camera.setPosition(finalCameraPosition);
 		}

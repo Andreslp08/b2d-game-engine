@@ -10,7 +10,7 @@ import { AssetsManager } from "engine/common/assets-manager/assets-manager";
 import { TileMap } from "engine/tiles/tilemap";
 import type { TileTexture } from "engine/tiles/definitions";
 import { Room } from "../../../levels/room";
-import { VIEWPORT_WIDTH_IN_METERS } from "engine/common/constants";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 
 // room to test tilemap
 export class Room2 extends Room {
@@ -72,7 +72,7 @@ export class Room2 extends Room {
 		};
 
 		const floorCellSize = new Vector2(1, 1);
-		const middleTileCount = VIEWPORT_WIDTH_IN_METERS;
+		const middleTileCount = VIEWPORT_WIDTH_IN_WORLD_UNITS;
 		const middleRepeatCount = 20;
 
 		tilemap.addChunk({
