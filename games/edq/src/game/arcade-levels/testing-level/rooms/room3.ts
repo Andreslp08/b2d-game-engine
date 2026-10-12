@@ -18,6 +18,7 @@ import type { GameObject } from "engine/common/entities/game-object";
 import { PlayerCameraController } from "../../../script-components/player/player-camera-controller";
 import { GAME_FOV } from "../../../config/constants";
 import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
+import { Collider } from "engine/physics/components/collider";
 
 const enemyFactories = {
 	Soldier: createSoldier,
@@ -35,8 +36,8 @@ export class Room3 extends Room {
 		super();
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
-		DebugMode.enabled = true;
-		DebugMode.setMode(DebugTypes.TRIGGER_AREAS);
+		DebugMode.enabled = false;
+		DebugMode.setMode(DebugTypes.ALL);
 		void this.loadWorld();
 		console.log('static camera created')
 		this.onFadeFinished.subscribe(() => {
@@ -156,7 +157,9 @@ export class Room3 extends Room {
 					);
 					continue;
 				}
-				this.addEntity(factory(this.getSpawnCenter(enemySpawn.position, enemySpawn.size)));
+				const enemy = factory(this.getSpawnCenter(enemySpawn.position, enemySpawn.size));
+				this.placeOnSpawnFloor(enemy, enemySpawn);
+				this.addEntity(enemy);
 			}
 		};
 
@@ -169,6 +172,18 @@ export class Room3 extends Room {
 
 	private getSpawnCenter(position: Vector2, size: Vector2): Vector2 {
 		return position.clone().add(size.clone().multiplyBy(0.5));
+	}
+
+	private placeOnSpawnFloor(
+		enemy: GameObject,
+		spawn: TiledMapLoadResult["objects"][number],
+	): void {
+		const collider = enemy.getComponent(Collider);
+		if (!collider) return;
+
+		const floorY = spawn.position.y + spawn.size.y;
+		enemy.transform.position.y =
+			floorY - collider.getOffsetPosition().y - collider.getSize().y / 2;
 	}
 
 	private getPropertyIgnoringCase(
