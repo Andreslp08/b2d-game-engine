@@ -29,7 +29,7 @@ export class LevelManager {
 
 		const level = new LevelType();
 		const targetRoomId = roomId ?? level.getInitialRoomId();
-		if (!targetRoomId) {
+		if (!targetRoomId || !level.getRoomType(targetRoomId)) {
 			level.destroy();
 			return;
 		}
