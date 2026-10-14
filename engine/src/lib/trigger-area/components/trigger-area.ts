@@ -30,6 +30,20 @@ export class TriggerArea extends Component {
 		);
 	}
 
+	contains(other: TriggerArea): boolean {
+		const position = this.getPosition();
+		const otherPosition = other.getPosition();
+		const size = this.size;
+		const otherSize = other.getSize();
+
+		return (
+			otherPosition.x - otherSize.x / 2 >= position.x - size.x / 2 &&
+			otherPosition.x + otherSize.x / 2 <= position.x + size.x / 2 &&
+			otherPosition.y - otherSize.y / 2 >= position.y - size.y / 2 &&
+			otherPosition.y + otherSize.y / 2 <= position.y + size.y / 2
+		);
+	}
+
 	ignoreEntity(entity: Entity) {
 		this._ignoreEntities.push(entity);
 		return this;
