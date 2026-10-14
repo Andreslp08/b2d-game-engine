@@ -1,8 +1,6 @@
 import { Level } from "../../levels/level";
 import { Room1 } from "./rooms/room1";
 import { Room2 } from "./rooms/room2";
-import { Room3 } from "./rooms/room3";
-
 export class TestingLevel extends Level {
 	static readonly id = "testing-level";
 	static readonly displayInfo = {
@@ -15,7 +13,6 @@ export class TestingLevel extends Level {
 	currentIndex = 0;
 	constructor() {
 		super();
-		this.addRoom(Room3);
 		this.addRoom(Room1);
 		this.addRoom(Room2);
 

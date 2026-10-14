@@ -1,0 +1,697 @@
+{ "compressionlevel":-1,
+ "height":500,
+ "infinite":true,
+ "layers":[
+        {
+         "class":"MapBounds",
+         "draworder":"topdown",
+         "id":16,
+         "name":"bounds",
+         "objects":[
+                {
+                 "height":10000,
+                 "id":35,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":15500,
+                 "x":1500,
+                 "y":-7500
+                }],
+         "opacity":1,
+         "properties":[
+                {
+                 "name":"side",
+                 "type":"int",
+                 "value":1
+                }],
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "class":"RenderLayer",
+         "id":7,
+         "layers":[
+                {
+                 "class":"Layer",
+                 "draworder":"topdown",
+                 "id":8,
+                 "name":"city",
+                 "objects":[
+                        {
+                         "gid":101,
+                         "height":8472,
+                         "id":5,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"engine.assetId",
+                                 "type":"string",
+                                 "value":"spritesheet:city"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":8472,
+                         "x":0,
+                         "y":1000
+                        }, 
+                        {
+                         "gid":101,
+                         "height":8472,
+                         "id":6,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"engine.assetId",
+                                 "type":"string",
+                                 "value":"spritesheet:city"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":8472,
+                         "x":8500,
+                         "y":1000
+                        }, 
+                        {
+                         "gid":101,
+                         "height":8472,
+                         "id":7,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"engine.assetId",
+                                 "type":"string",
+                                 "value":"spritesheet:city"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":8472,
+                         "x":17000,
+                         "y":1000
+                        }],
+                 "opacity":1,
+                 "parallaxx":0.5,
+                 "parallaxy":0.5,
+                 "properties":[
+                        {
+                         "name":"engine.zIndex",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }],
+         "locked":true,
+         "name":"Background-layer",
+         "offsetx":-2000,
+         "offsety":1000,
+         "opacity":1,
+         "properties":[
+                {
+                 "name":"engine.renderLayer",
+                 "propertytype":"RenderLayerTypes",
+                 "type":"string",
+                 "value":"Background"
+                }],
+         "type":"group",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "class":"RenderLayer",
+         "id":2,
+         "layers":[
+                {
+                 "draworder":"topdown",
+                 "id":22,
+                 "name":"player-spawn-points",
+                 "objects":[
+                        {
+                         "height":1000,
+                         "id":57,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"spawnDirection",
+                                 "propertytype":"SpawnPointDirection",
+                                 "type":"string",
+                                 "value":"right"
+                                }, 
+                                {
+                                 "name":"spawnPointId",
+                                 "type":"string",
+                                 "value":"spawn3"
+                                }],
+                         "rotation":0,
+                         "type":"PlayerSpawnPoint",
+                         "visible":true,
+                         "width":500,
+                         "x":2000,
+                         "y":-1000
+                        }, 
+                        {
+                         "height":1000,
+                         "id":60,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"spawnDirection",
+                                 "propertytype":"SpawnPointDirection",
+                                 "type":"string",
+                                 "value":"left"
+                                }, 
+                                {
+                                 "name":"spawnPointId",
+                                 "type":"string",
+                                 "value":"spawn4"
+                                }],
+                         "rotation":0,
+                         "type":"PlayerSpawnPoint",
+                         "visible":true,
+                         "width":500,
+                         "x":12500,
+                         "y":-1000
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":21,
+                 "name":"teleports",
+                 "objects":[
+                        {
+                         "height":3000,
+                         "id":52,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"direction",
+                                 "propertytype":"TeleportDirection",
+                                 "type":"string",
+                                 "value":"None"
+                                }, 
+                                {
+                                 "name":"levelId",
+                                 "type":"string",
+                                 "value":"testing-level"
+                                }, 
+                                {
+                                 "name":"markerType",
+                                 "propertytype":"MarkerType",
+                                 "type":"string",
+                                 "value":"Corona"
+                                }, 
+                                {
+                                 "name":"roomId",
+                                 "type":"string",
+                                 "value":"room1"
+                                }, 
+                                {
+                                 "name":"spawnPointId",
+                                 "type":"string",
+                                 "value":"spawn1"
+                                }],
+                         "rotation":0,
+                         "type":"Teleport",
+                         "visible":true,
+                         "width":3000,
+                         "x":14000,
+                         "y":-2500
+                        }, 
+                        {
+                         "height":3000,
+                         "id":56,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"direction",
+                                 "propertytype":"TeleportDirection",
+                                 "type":"string",
+                                 "value":"None"
+                                }, 
+                                {
+                                 "name":"levelId",
+                                 "type":"string",
+                                 "value":"testing-level"
+                                }, 
+                                {
+                                 "name":"markerType",
+                                 "propertytype":"MarkerType",
+                                 "type":"string",
+                                 "value":"Corona"
+                                }, 
+                                {
+                                 "name":"roomId",
+                                 "type":"string",
+                                 "value":"room1"
+                                }, 
+                                {
+                                 "name":"spawnPointId",
+                                 "type":"string",
+                                 "value":"spawn2"
+                                }],
+                         "rotation":0,
+                         "type":"Teleport",
+                         "visible":true,
+                         "width":3000,
+                         "x":-1500,
+                         "y":-2500
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "chunks":[
+                        {
+                         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0, 0, 0,
+                            51, 52, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":0,
+                         "y":-16
+                        }, 
+                        {
+                         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 53, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 51, 52, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":16,
+                         "y":-16
+                        }, 
+                        {
+                         "data":[8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+                            18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+                            18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+                            18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+                            28, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "data":[9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 0,
+                            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0,
+                            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0,
+                            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0,
+                            29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":16,
+                         "y":0
+                        }],
+                 "class":"Layer",
+                 "height":32,
+                 "id":1,
+                 "name":"terrain",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"engine.zIndex",
+                         "type":"int",
+                         "value":2
+                        }],
+                 "startx":0,
+                 "starty":-16,
+                 "type":"tilelayer",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "chunks":[
+                        {
+                         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                            1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":0,
+                         "y":-16
+                        }, 
+                        {
+                         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":16,
+                         "y":-16
+                        }, 
+                        {
+                         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         "height":16,
+                         "width":16,
+                         "x":16,
+                         "y":0
+                        }],
+                 "class":"CollisionLayer",
+                 "height":32,
+                 "id":5,
+                 "name":"collisions",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"engine.collision",
+                         "propertytype":"CollisionTypes",
+                         "type":"string",
+                         "value":"Static"
+                        }, 
+                        {
+                         "name":"engine.zIndex",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "startx":0,
+                 "starty":-16,
+                 "type":"tilelayer",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":0
+                }],
+         "name":"World-layer",
+         "offsetx":1500,
+         "offsety":0,
+         "opacity":1,
+         "properties":[
+                {
+                 "name":"engine.renderLayer",
+                 "propertytype":"RenderLayerTypes",
+                 "type":"string",
+                 "value":"World"
+                }],
+         "type":"group",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "class":"RenderLayer",
+         "id":3,
+         "layers":[],
+         "locked":true,
+         "name":"Foreground-layer",
+         "offsetx":-2192,
+         "offsety":-440,
+         "opacity":1,
+         "properties":[
+                {
+                 "name":"engine.renderLayer",
+                 "propertytype":"RenderLayerTypes",
+                 "type":"string",
+                 "value":"Foreground"
+                }],
+         "type":"group",
+         "visible":false,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":23,
+ "nextobjectid":61,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.2",
+ "tileheight":500,
+ "tilesets":[
+        {
+         "columns":10,
+         "firstgid":1,
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/Bound to red skies -  documents\/bound-to-red-skies-maps\/textures\/terrain-tiles.png",
+         "imageheight":5000,
+         "imagewidth":5000,
+         "margin":0,
+         "name":"terrain",
+         "properties":[
+                {
+                 "name":"engine.assetId",
+                 "type":"string",
+                 "value":"spritesheet:terrain-tiles"
+                }],
+         "spacing":0,
+         "tilecount":100,
+         "tileheight":500,
+         "tiles":[
+                {
+                 "animation":[
+                        {
+                         "duration":200,
+                         "tileid":3
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":4
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":5
+                        }],
+                 "id":3
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":200,
+                         "tileid":13
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":14
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":15
+                        }],
+                 "id":13
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":200,
+                         "tileid":23
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":24
+                        }, 
+                        {
+                         "duration":200,
+                         "tileid":25
+                        }],
+                 "id":23
+                }],
+         "tilewidth":500
+        }, 
+        {
+         "columns":0,
+         "firstgid":101,
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"buildings",
+         "spacing":0,
+         "tilecount":2,
+         "tileheight":5000,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/Bound to red skies -  documents\/bound-to-red-skies-maps\/textures\/city.png",
+                 "imageheight":5000,
+                 "imagewidth":5000,
+                 "properties":[
+                        {
+                         "name":"engine.assetId",
+                         "type":"string",
+                         "value":"spritesheet:city"
+                        }]
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/Bound to red skies -  documents\/bound-to-red-skies-maps\/textures\/box.png",
+                 "imageheight":500,
+                 "imagewidth":500,
+                 "properties":[
+                        {
+                         "name":"engine.assetId",
+                         "type":"string",
+                         "value":"spritesheet:box"
+                        }]
+                }],
+         "tilewidth":5000
+        }, 
+        {
+         "columns":10,
+         "firstgid":103,
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/Bound to red skies -  documents\/bound-to-red-skies-maps\/textures\/markers.png",
+         "imageheight":5000,
+         "imagewidth":5000,
+         "margin":0,
+         "name":"markers",
+         "properties":[
+                {
+                 "name":"engine.assetId",
+                 "type":"string",
+                 "value":"spritesheet:markers"
+                }],
+         "spacing":0,
+         "tilecount":100,
+         "tileheight":500,
+         "tiles":[
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"engine.assetId",
+                         "type":"string",
+                         "value":"spritesheet:markers"
+                        }]
+                }],
+         "tilewidth":500
+        }],
+ "tilewidth":500,
+ "type":"map",
+ "version":"1.10",
+ "width":500
+}

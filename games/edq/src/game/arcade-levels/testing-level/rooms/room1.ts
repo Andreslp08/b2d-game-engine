@@ -1,254 +1,198 @@
-import { GameObject } from "engine/common/entities/game-object";
+import { Engine } from "engine";
+import { TileMap } from "engine/tiles/tilemap";
+import type { TiledMapLoadResult } from "engine/tiles/adapters/tiled/tiled-map-adapter";
+import { Room } from "../../../levels/room";
+import { DebugMode, DebugTypes } from "engine/debug/debug";
 import Vector2 from "engine/math/vector2";
 import { createPlayer } from "../../../prefabs/player";
-import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { createWeapon } from "../../../prefabs/weapon";
-import { WeaponHolder } from "../../../script-components/weapon/weapon";
-import { Engine } from "engine";
 import { createSoldier } from "../../../prefabs/soldier";
-import { DebugMode, DebugTypes } from "engine/debug/debug";
-import { Collider } from "engine/physics/components/collider";
 import { createSpinesBug } from "../../../prefabs/spines-enemy";
-import { Parallax } from "engine/graphics/components/parallax";
-import { RenderLayers } from "engine/graphics/render/render-layers";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { useGameStore } from "../../../../store/store";
-import { PlayerSkinComponent } from "../../../script-components/player/player-skin-component";
 import { createTailGunner } from "../../../prefabs/tail-gunner";
-import { Room } from "../../../levels/room";
-import { createGameZone } from "../../../prefabs/game-zone";
-import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
-import { TileMap } from "engine/tiles/tilemap";
-import type { TileTexture } from "engine/tiles/definitions";
+import { createWeapon } from "../../../prefabs/weapon";
+import { createMapGameZone } from "../../../prefabs/game-zone";
+import { WeaponHolder } from "../../../script-components/weapon/weapon";
+import { useGameStore } from "../../../../store/store";
+import { createToxicWater } from "../../../prefabs/toxic-water";
+import { PlayerController } from "../../../script-components/player/player-controller";
+import type { GameObject } from "engine/common/entities/game-object";
+import {  MarkerType } from "../../../config/constants";
+import { Collider } from "engine/physics/components/collider";
+import { createTeleport } from "../../../prefabs/teleport";
+import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { PlayerMovement } from "../../../script-components/player/player-movement";
+import { isFromLayer } from "../../../util/map-layer";
+import { generatePlayerSpawnPointFromMap } from "../../../util/spawn-player";
+import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
 
-// room to test world, player and enemies
+const enemyFactories = {
+	Soldier: createSoldier,
+	SpinesBug: createSpinesBug,
+	TailGunner: createTailGunner,
+} as const;
 export class Room1 extends Room {
 	static readonly id = "room1";
+	tiledMap?: TiledMapLoadResult;
+	player?: GameObject;
 
-	player: GameObject;
-	floor: GameObject;
-	wall: GameObject;
-
-	constructor() {
-		super();
-		Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
+	async load(): Promise<void> {
+		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
+		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
 		DebugMode.enabled = true;
-		DebugMode.setMode(DebugTypes.ALL);
-		Cameras.currentCamera.setFieldOfView(1);
+		DebugMode.setMode(DebugTypes.TRIGGER_AREAS);
 
-		RenderLayers.setLayerParallax(RenderLayerTypes.Background, new Vector2(0.05, 0.05));
-		this.loadWorld();
-	}
-
-	updatePlayerSkinFromCustomMenu() {
-		useGameStore.subscribe((state) => {
-			if (state.currentSkin && this.player) {
-				const playerSkinComponent = this.player.getComponent(PlayerSkinComponent);
-				if (playerSkinComponent) {
-					this.player.getComponent(PlayerSkinComponent).changeSkin(state.currentSkin);
-				}
-			}
-		});
-	}
-
-	loadEffects() {
-		const effect = new GameObject({
-			position: new Vector2(3, 0),
-			rotation: 0,
-			size: new Vector2(4, 4),
-		});
-		effect.addComponent(new Parallax(0.8));
-		effect.renderLayer = RenderLayerTypes.Effects;
-
-		this.addEntity(effect);
-	}
-
-	loadWorld() {
-		const tilemap = new TileMap({ scene: this });
-		const terrainImage = AssetsManager.getImageByName("spritesheet:terrain-tiles");
-		const floorStartTexture: TileTexture = {
-			framePosition: new Vector2(0, 0),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-		const floorMiddleTexture: TileTexture = {
-			framePosition: new Vector2(500, 0),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-		const floorEndTexture: TileTexture = {
-			framePosition: new Vector2(1000, 0),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-		const groundStartTexture: TileTexture = {
-			framePosition: new Vector2(0, 500),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-		const groundMiddleTexture: TileTexture = {
-			framePosition: new Vector2(500, 500),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-		const groundEndTexture: TileTexture = {
-			framePosition: new Vector2(1000, 500),
-			frameSize: { w: 500, h: 500 },
-			image: terrainImage,
-		};
-
-		const floorCellSize = new Vector2(1, 1);
-		const middleTileCount = VIEWPORT_WIDTH_IN_WORLD_UNITS;
-		const middleRepeatCount = 3;
-		const totalMiddleTileCount = middleTileCount * (middleRepeatCount + 1);
-		const floorEndX = floorCellSize.x * (1 + totalMiddleTileCount);
-
-		tilemap.addChunk({
-			worldPosition: new Vector2(0, 0),
-			cellSizeInGameUnits: floorCellSize,
-			gridSize: new Vector2(1, 1),
-			collidable: true,
-			texture: floorStartTexture,
-		});
-		tilemap
-			.addChunk({
-				worldPosition: new Vector2(floorCellSize.x, 0),
-				cellSizeInGameUnits: floorCellSize,
-				gridSize: new Vector2(middleTileCount, 1),
-				collidable: true,
-				texture: floorMiddleTexture,
-			})
-			.repeat(middleRepeatCount, "horizontal");
-		tilemap.addChunk({
-			worldPosition: new Vector2(floorEndX, 0),
-			cellSizeInGameUnits: floorCellSize,
-			gridSize: new Vector2(1, 1),
-			collidable: true,
-			texture: floorEndTexture,
-		});
-
-		const groundPattern = tilemap.createPattern();
-		groundPattern.add({
-			worldPosition: new Vector2(0, 0),
-			cellSizeInGameUnits: floorCellSize,
-			gridSize: new Vector2(1, 1),
-			collidable: false,
-			texture: groundStartTexture,
-		}, new Vector2(0, 0));
-		for (let index = 0; index <= middleRepeatCount; index++) {
-			groundPattern.add({
-				worldPosition: new Vector2(0, 0),
-				cellSizeInGameUnits: floorCellSize,
-				gridSize: new Vector2(middleTileCount, 1),
-				collidable: false,
-				texture: groundMiddleTexture,
-			}, new Vector2(floorCellSize.x * (1 + middleTileCount * index), 0));
+		try {
+			this.tiledMap = await TileMap.generateMapFromTiled(
+				this,
+				"/assets/maps/map1/room1/test-map.json",
+			);
+		} catch (error) {
+			console.error("Unable to render Tiled map", error);
 		}
-		groundPattern.add({
-			worldPosition: new Vector2(0, 0),
-			cellSizeInGameUnits: floorCellSize,
-			gridSize: new Vector2(1, 1),
-			collidable: false,
-			texture: groundEndTexture,
-		}, new Vector2(floorEndX, 0));
-		tilemap.addPattern(groundPattern, new Vector2(0, floorCellSize.y / 2)).fill(3);
+		// this.addEntity(createCameraNavigator());
+	}
 
-		const playerId = this.addEntity(
-			createPlayer({
-				position: new Vector2(VIEWPORT_WIDTH_IN_WORLD_UNITS, -4),
-				skin: useGameStore.getState().currentSkin,
-			}),
-		);
-		this.player = this.getEntityById<GameObject>(playerId);
-		createGameZone({
-			startPoint: new Vector2(-1, -5),
-			endPoint: new Vector2(floorEndX, 0),
-			scene: this,
-			player:this.player
+	spawn(): void {
+		if (!this.tiledMap) return;
+
+		this.createPlayer(this.tiledMap);
+		this.createMapEnemies(this.tiledMap);
+		this.createToxicWaterAreas(this.tiledMap);
+		this.createTeleports(this.tiledMap);
+		this.onFadeFinished.subscribe(() => {
+			this.enablePlayerInput(this.player, true);
 		});
-		const weaponId = this.addEntity(createWeapon(new Vector2(0, 0)));
-		const weapon = this.getEntityById<GameObject>(weaponId);
+	}
+
+	private createTeleports(map: TiledMapLoadResult) {
+		const teleports = map.objects.filter((object) => isFromLayer(object, "Teleport"));
+		if (!teleports.length) return;
+
+		for (const teleport of teleports) {
+			console.log(teleport.properties);
+			this.addEntity(
+				createTeleport({
+					position: teleport.position.clone().add(teleport.size.clone().multiplyBy(0.5)),
+					size: teleport.size,
+					levelId: teleport.properties.get("levelId") as string,
+					roomId: teleport.properties.get("roomId") as string,
+					markerType: teleport.properties.get("markerType") as MarkerType,
+					arrowDirection: teleport.properties.get("direction") as any,
+					loadContext: {
+						spawnPointId: teleport.properties.get("spawnPointId") as string | undefined,
+					},
+				}),
+			);
+		}
+	}
+
+	private createToxicWaterAreas(map: TiledMapLoadResult): void {
+		const areas = map.objects.filter((object) => isFromLayer(object, "ToxicWater"));
+
+		if (!areas.length) return;
+
+		// this.addEntity(createToxicWater({
+		// 		position: new Vector2(20, 0),
+		// 		size: new Vector2(8,1),
+		// 	}));
+
+		for (const area of areas) {
+			this.addEntity(
+				createToxicWater({
+					position: area.position.clone().add(area.size.clone().multiplyBy(0.5)),
+					size: area.size,
+				}),
+			);
+		}
+	}
+
+	private enablePlayerInput(player: GameObject, enable: boolean) {
+		const playerController = player.getComponent(PlayerController);
+		if (playerController) {
+			playerController.enableInputController = enable;
+		}
+	}
+
+	private createPlayer(map: TiledMapLoadResult) {
+		const mapBounds = map.objects.find((object) => isFromLayer(object, "MapBounds"));
+		const spawnPoint = generatePlayerSpawnPointFromMap({
+			map,
+			roomLoadContext: this.getLoadContext(),
+		});
+
+		const player = createPlayer({
+			position: spawnPoint.position,
+			skin: useGameStore.getState().currentSkin,
+		}) as GameObject;
+		this.player = player;
+		this.enablePlayerInput(player, false);
+		this.addEntity(player);
+		const direction = spawnPoint.facingDirection === "left" ? -1 : 1;
+		player.getComponent(PlayerMovement).direction.x = direction;
+		player.getComponent(DynamicBody).direction.x = direction;
+		const weapon = createWeapon(Vector2.ZERO.clone());
 		weapon.setZindex(-1);
-		this.player.getComponent(WeaponHolder).attachWeapon(weapon);
-		//soldier
-		const soldier = createSoldier(new Vector2(40, -3));
-		this.addEntity(soldier);
+		this.addEntity(weapon);
+		player.getComponent(WeaponHolder).attachWeapon(weapon);
 
-		const spinesBug = createSpinesBug(new Vector2(20, -3));
-		this.addEntity(spinesBug);
-
-		const tailGunner = createTailGunner(new Vector2(60, -3));
-		this.addEntity(tailGunner);
-	}
-
-	loadForeground() {
-		const parallaxObject = new GameObject(
-			{
-				position: new Vector2(0, 0),
-				rotation: 0,
-				size: new Vector2(2, 2),
-			},
-			null,
-		);
-		parallaxObject.renderLayer = RenderLayerTypes.Foreground;
-		parallaxObject.addComponent(new Parallax(0.5));
-		parallaxObject.addComponent(new Collider(new Vector2(0, 0), new Vector2(2, 2)));
-		this.addEntity(parallaxObject);
-	}
-
-	loadDebug() {
-		const d = new GameObject({
-			position: new Vector2(0, 0),
-			rotation: 0,
-			size: new Vector2(40, 40),
-		});
-		d.renderLayer = RenderLayerTypes.Debug;
-
-		this.addEntity(d);
-	}
-
-	loadUI() {}
-
-	loadBackground() {
-		const w = 8;
-		const h = 8;
-		const x = -4;
-		const y = 1;
-
-		for (let i = 0; i < 10; i++) {
-			const bg = new GameObject(
-				{
-					position: new Vector2(x + i * w + i * 0.5, y),
-					rotation: 0,
-					size: new Vector2(w, h),
-				},
-				new Sprite({
-					image: AssetsManager.getImageByName("spritesheet:city"),
-					framePosition: new Vector2(0, 0),
-					frameSize: { w: 5000, h: 5000 },
-				}),
-			);
-			bg.addTag("background");
-			bg.renderLayer = RenderLayerTypes.Background;
-			this.addEntity(bg);
-			const bg2 = new GameObject(
-				{
-					position: new Vector2(x + i * w + i * 0.5, y + 0.5),
-					rotation: 0,
-					size: new Vector2(w, h),
-				},
-				new Sprite({
-					image: AssetsManager.getImageByName("spritesheet:city"),
-					framePosition: new Vector2(0, 0),
-					frameSize: { w: 5000, h: 5000 },
-				}),
-			);
-			bg2.addComponent(new Parallax(0.8));
-			bg2.addTag("background2");
-			bg2.renderLayer = RenderLayerTypes.Background;
-			this.addEntity(bg2);
+		if (!mapBounds) {
+			console.warn("Room1 requires a MapBounds object to constrain the player and camera.");
+			return;
 		}
+
+		createMapGameZone({ bounds: mapBounds, scene: this, player });
+	}
+
+	private createMapEnemies(map: TiledMapLoadResult): void {
+		const createEnemies = () => {
+			for (const enemySpawn of map.objects.filter((object) =>
+				isFromLayer(object, "EnemySpawnPoint"),
+			)) {
+				const enemyType = this.getPropertyIgnoringCase(
+					enemySpawn.layerProperties,
+					"EnemyType",
+				);
+				const factory =
+					typeof enemyType === "string"
+						? enemyFactories[enemyType as keyof typeof enemyFactories]
+						: undefined;
+				if (!factory) {
+					console.warn(
+						`Unsupported enemy type '${String(enemyType)}' at Tiled object ${enemySpawn.id}`,
+					);
+					continue;
+				}
+				const enemy = factory(this.getSpawnCenter(enemySpawn.position, enemySpawn.size));
+				this.placeOnSpawnFloor(enemy, enemySpawn);
+				this.addEntity(enemy);
+			}
+		};
+
+		createEnemies();
+	}
+
+	private getSpawnCenter(position: Vector2, size: Vector2): Vector2 {
+		return position.clone().add(size.clone().multiplyBy(0.5));
+	}
+
+	private placeOnSpawnFloor(
+		enemy: GameObject,
+		spawn: TiledMapLoadResult["objects"][number],
+	): void {
+		const collider = enemy.getComponent(Collider);
+		if (!collider) return;
+
+		const floorY = spawn.position.y + spawn.size.y;
+		enemy.transform.position.y =
+			floorY - collider.getOffsetPosition().y - collider.getSize().y / 2;
+	}
+
+	private getPropertyIgnoringCase(
+		properties: ReadonlyMap<string, unknown>,
+		name: string,
+	): unknown {
+		const property = Array.from(properties.entries()).find(
+			([key]) => key.toLowerCase() === name.toLowerCase(),
+		);
+		return property?.[1];
 	}
 }

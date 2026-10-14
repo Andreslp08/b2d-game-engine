@@ -4,7 +4,9 @@ import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import type { Scene } from "engine/scenes/scene";
 import { TriggerArea } from "engine/trigger-area";
+import { StaticBody } from "engine/physics/components/static-body";
 import { CameraZoneController } from "../script-components/camera-zones/camera-zone-controller";
+import { PlayerCameraController } from "../script-components/player/player-camera-controller";
 
 type GameZoneArgs = {
 	startPoint: Vector2;
@@ -45,4 +47,39 @@ export const createGameZone = ({ startPoint, endPoint, scene, player }: GameZone
 
 	scene.addEntity(leftBound);
 	scene.addEntity(rightBound);
+};
+
+type MapGameZoneArgs = {
+	bounds: { position: Vector2; size: Vector2 };
+	scene: Scene;
+	player: GameObject;
+};
+
+export const createMapGameZone = ({ bounds, scene, player }: MapGameZoneArgs) => {
+	const wallThickness = 1;
+	const center = bounds.position.clone().add(bounds.size.clone().multiplyBy(0.5));
+	const horizontalWallSize = new Vector2(bounds.size.x + wallThickness * 2, wallThickness);
+	const verticalWallSize = new Vector2(wallThickness, bounds.size.y + wallThickness * 2);
+	const left = bounds.position.x - wallThickness / 2;
+	const right = bounds.position.x + bounds.size.x + wallThickness / 2;
+	const top = bounds.position.y - wallThickness / 2;
+	const bottom = bounds.position.y + bounds.size.y + wallThickness / 2;
+
+	const addWall = (position: Vector2, size: Vector2) => {
+		const wall = new GameObject({ position, rotation: 0, size });
+		wall.addComponent(new Collider(Vector2.ZERO.clone(), size));
+		wall.addComponent(new StaticBody());
+		scene.addEntity(wall);
+	};
+
+	addWall(new Vector2(left, center.y), verticalWallSize);
+	addWall(new Vector2(right, center.y), verticalWallSize);
+	addWall(new Vector2(center.x, top), horizontalWallSize);
+	addWall(new Vector2(center.x, bottom), horizontalWallSize);
+
+	const cameraController = player.getComponent(PlayerCameraController);
+	if (!cameraController) return;
+
+	cameraController.setBounds(center, bounds.size);
+	cameraController.snapToTarget();
 };

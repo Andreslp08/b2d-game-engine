@@ -5,7 +5,7 @@ import { Screen } from "engine/graphics/screen/screen";
 import { useGameStore } from "../store/store";
 import { ArcadeLevelManagerInstance } from "./arcade-levels/level-manager";
 import { TestingLevel } from "./arcade-levels/testing-level/level";
-import { Room3 } from "./arcade-levels/testing-level/rooms/room3";
+import { Room2 } from "./arcade-levels/testing-level/rooms/room2";
 import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
 import { DEV_MODE } from "./config/constants";
 
@@ -23,7 +23,7 @@ addEventListener("resize", () => {
 export const preloadGame = () => {
 	const testLevel = () => {
 		setTimeout(() => {
-			ArcadeLevelManagerInstance.loadLevel(TestingLevel.id, Room3.id);
+			ArcadeLevelManagerInstance.loadLevel(TestingLevel.id, Room2.id);
 			console.log(AssetsPreloader.assets);
 		}, 0);
 	};

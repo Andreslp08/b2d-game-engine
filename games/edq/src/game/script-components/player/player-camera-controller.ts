@@ -6,6 +6,16 @@ import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { Time } from "engine/common/interfaces/time";
 import Vector2 from "engine/math/vector2";
 import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import {
+	VIEWPORT_HEIGHT_IN_WORLD_UNITS,
+	VIEWPORT_WIDTH_IN_WORLD_UNITS,
+} from "engine/common/constants";
+import { GAME_FOV } from "../../config/constants";
+
+type CameraBounds = {
+	position: Vector2;
+	size: Vector2;
+};
 
 export class PlayerCameraController extends ScriptComponent {
 
@@ -18,12 +28,52 @@ export class PlayerCameraController extends ScriptComponent {
 	}
 	verticalLookAheadDistance = 1;
 	airborneVerticalDeadZone = 0.5;
+	fieldOfView = GAME_FOV;
 	private verticalLookAhead = 0;
+	private bounds: CameraBounds | null = null;
 
+
+	onStart(): void {
+		if (!this.playerCamera) {
+			const player = this.entity as GameObject;
+			this.initialCameraPosition = player.transform.position.clone();
+			this.createCamera();
+		}
+		this.snapToTarget();
+	}
 	createCamera(): void {
 		this.playerCamera = new OrthographicCamera( this.initialCameraPosition, this.entity.getScene());
+		this.playerCamera.setFieldOfView(this.fieldOfView);
+
 		this.playerCamera.tags.add("player-camera");
 		Cameras.setCurrentCamera(this.playerCamera);
+	}
+
+	setBounds(position: Vector2, size: Vector2): void {
+		this.bounds = { position: position.clone(), size: size.clone() };
+	}
+
+	snapToTarget(): void {
+		if (!this.playerCamera) return;
+		const player = this.entity as GameObject;
+		this.playerCamera.setPosition(this.constrainToBounds(player.transform.position.clone()));
+	}
+
+	private constrainToBounds(position: Vector2): Vector2 {
+		if (!this.bounds || !this.playerCamera) return position;
+
+		const fieldOfView = this.playerCamera.getFieldOfView();
+		const halfViewportWidth = VIEWPORT_WIDTH_IN_WORLD_UNITS / fieldOfView / 2;
+		const halfViewportHeight = VIEWPORT_HEIGHT_IN_WORLD_UNITS / fieldOfView / 2;
+		const minX = this.bounds.position.x - this.bounds.size.x / 2 + halfViewportWidth;
+		const maxX = this.bounds.position.x + this.bounds.size.x / 2 - halfViewportWidth;
+		const minY = this.bounds.position.y - this.bounds.size.y / 2 + halfViewportHeight;
+		const maxY = this.bounds.position.y + this.bounds.size.y / 2 - halfViewportHeight;
+
+		return new Vector2(
+			minX > maxX ? this.bounds.position.x : MathUtil.clamp(position.x, minX, maxX),
+			minY > maxY ? this.bounds.position.y : MathUtil.clamp(position.y, minY, maxY),
+		);
 	}
 	onFixedUpdate(): void {
 		if(!this.initialCameraPosition) return;
@@ -63,10 +113,10 @@ export class PlayerCameraController extends ScriptComponent {
 			cameraPos.y = targetPos.y + this.verticalLookAhead - Math.sign(dy) * thresholdY;
 		}
 
-		const finalCameraPosition = new Vector2(
+		const finalCameraPosition = this.constrainToBounds(new Vector2(
 			MathUtil.lerp(camera.getPosition().x, targetPos.x, followAmount),
 			MathUtil.lerp(camera.getPosition().y, cameraPos.y, followAmount),
-		);
+		));
 		if(!this.lockAxis.x && !this.lockAxis.y){
 			camera.setPosition(finalCameraPosition);
 		}

@@ -6,8 +6,7 @@ import { Engine } from "engine";
 export class Room1 extends Room {
 	static readonly id = "room1";
 
-	constructor() {
-		super();
+	spawn(): void {
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		this.loadWorld();
 	}

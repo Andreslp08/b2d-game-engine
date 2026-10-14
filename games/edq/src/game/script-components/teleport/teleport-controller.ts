@@ -15,7 +15,7 @@ export class TeleportController extends ScriptComponent {
 	private readonly fadeDuration = 0.5;
 	private teleportStartedAt: number | null = null;
 
-	constructor(private params: Pick<TeleportParams, "roomId" | "levelId">) {
+	constructor(private params: Pick<TeleportParams, "roomId" | "levelId" | "loadContext">) {
 		super();
 	}
 
@@ -60,7 +60,9 @@ export class TeleportController extends ScriptComponent {
 		if (Time.time - this.teleportStartedAt < this.fadeDuration) return;
 
 		this.isIntersecting = false;
-		ArcadeLevelManagerInstance.loadLevel(this.params.levelId, this.params.roomId);
+		void ArcadeLevelManagerInstance.loadLevel(this.params.levelId, this.params.roomId, {
+			loadContext: this.params.loadContext,
+		});
 	}
 
 	onFixedUpdate(): void {

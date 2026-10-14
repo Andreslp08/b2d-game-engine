@@ -8,6 +8,7 @@ export const createTeleport = (params: TeleportParams) => {
 		new TeleportController({
 			roomId: params.roomId,
 			levelId: params.levelId,
+			loadContext: params.loadContext,
 		}),
 	);
 	return teleport;
