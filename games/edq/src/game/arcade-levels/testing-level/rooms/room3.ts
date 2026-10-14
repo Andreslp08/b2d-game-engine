@@ -16,9 +16,10 @@ import { createToxicWater } from "../../../prefabs/toxic-water";
 import { PlayerController } from "../../../script-components/player/player-controller";
 import type { GameObject } from "engine/common/entities/game-object";
 import { PlayerCameraController } from "../../../script-components/player/player-camera-controller";
-import { GAME_FOV } from "../../../config/constants";
+import { GAME_FOV, MarkerType } from "../../../config/constants";
 import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
 import { Collider } from "engine/physics/components/collider";
+import { createTeleport } from "../../../prefabs/teleport";
 
 const enemyFactories = {
 	Soldier: createSoldier,
@@ -36,10 +37,9 @@ export class Room3 extends Room {
 		super();
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
-		DebugMode.enabled = false;
-		DebugMode.setMode(DebugTypes.ALL);
+		DebugMode.enabled = true;
+		DebugMode.setMode(DebugTypes.TRIGGER_AREAS);
 		void this.loadWorld();
-		console.log('static camera created')
 		this.onFadeFinished.subscribe(() => {
 			this.enablePlayerInput(this.player, true);
 		});
@@ -55,8 +55,27 @@ export class Room3 extends Room {
 			this.createPlayer(this.tiledMap);
 			this.createMapEnemies(this.tiledMap);
 			this.createToxicWaterAreas(this.tiledMap);
+			this.createTeleports(this.tiledMap);
 		} catch (error) {
 			console.error("Unable to render Tiled map", error);
+		}
+	}
+
+	private createTeleports(map: TiledMapLoadResult) {
+		const teleports = map.objects.filter((object) => this.isFromLayer(object, "Teleport"));
+		if (!teleports.length) return;
+
+		for (const teleport of teleports) {
+			this.addEntity(
+				createTeleport({
+					position: teleport.position.clone().add(teleport.size.clone().multiplyBy(0.5)),
+					size: teleport.size,
+					levelId: teleport.properties.get("levelId") as string,
+					roomId: teleport.properties.get("roomId") as string,
+					markerType: teleport.properties.get("markerType") as MarkerType,
+					arrowDirection: teleport.properties.get("direction") as any,
+				}),
+			);
 		}
 	}
 
@@ -71,24 +90,23 @@ export class Room3 extends Room {
 		// 	}));
 
 		for (const area of areas) {
-			console.log('toxic water',area)
-			this.addEntity(createToxicWater({
-				position: area.position.clone().add(area.size.clone().multiplyBy(0.5)),
-				size: area.size,
-			}));
+			this.addEntity(
+				createToxicWater({
+					position: area.position.clone().add(area.size.clone().multiplyBy(0.5)),
+					size: area.size,
+				}),
+			);
 		}
 	}
 
-	private enablePlayerInput(player:GameObject, enable: boolean){
+	private enablePlayerInput(player: GameObject, enable: boolean) {
 		const playerController = player.getComponent(PlayerController);
-		if(playerController){
+		if (playerController) {
 			playerController.enableInputController = enable;
 		}
-
 	}
 
 	private createPlayer(map: TiledMapLoadResult) {
-		
 		const playerSpawn = map.objects.find((object) =>
 			this.isFromLayer(object, "PlayerSpawnPoint"),
 		);
@@ -109,7 +127,7 @@ export class Room3 extends Room {
 				playerCameraController.createCamera();
 				playerCameraController.playerCamera.setFieldOfView(GAME_FOV);
 			}
-			this.enablePlayerInput(player,false)
+			this.enablePlayerInput(player, false);
 			this.addEntity(player);
 
 			const weapon = createWeapon(Vector2.ZERO.clone());
@@ -128,7 +146,6 @@ export class Room3 extends Room {
 					this.isFromLayer(object, "MapBounds") &&
 					object.layerProperties.get("side")?.toString()?.toLowerCase() === "right",
 			);
-			console.log(leftBound, rightBound);
 			createGameZone({
 				startPoint: new Vector2(leftBound.position.x, map.bounds.position.y),
 				endPoint: new Vector2(rightBound.position.x, map.bounds.position.y),
