@@ -12,12 +12,18 @@ export class TileChunkRenderer extends Renderer {
 		renderingContext.save();
 		renderingContext.translate(transform.position.x, transform.position.y);
 		renderingContext.rotate((transform.rotation * Math.PI) / 180);
+		const matrix = renderingContext.getTransform();
+		const pixelsPerWorldUnit = Math.max(
+			Math.hypot(matrix.a, matrix.b),
+			Math.hypot(matrix.c, matrix.d),
+		);
+		const overdraw = 1 / pixelsPerWorldUnit;
 		renderingContext.drawImage(
 			batch.canvas,
-			-transform.size.x / 2,
-			-transform.size.y / 2,
-			transform.size.x,
-			transform.size.y,
+			-transform.size.x / 2 - overdraw,
+			-transform.size.y / 2 - overdraw,
+			transform.size.x + overdraw * 2,
+			transform.size.y + overdraw * 2,
 		);
 
 		renderingContext.restore();
