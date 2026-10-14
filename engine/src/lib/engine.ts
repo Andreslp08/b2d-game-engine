@@ -222,15 +222,16 @@ export class Engine {
 		const dt = elapsed / 1000;
 		this.accumulator = Math.min(this.accumulator + dt, 0.25);
 
-		if (this.scene) {
+		const scene = this.scene;
+		if (scene) {
 			while (this.accumulator >= this.fixedDelta * Time.timeScale) {
-				this.scene.fixedUpdate?.();
+				scene.fixedUpdate?.();
 				Time.fixedUpdate(this.fixedDelta);
 				this.accumulator -= this.fixedDelta;
 			}
 			Time.update(dt);
 			Time.setFixedUpdateAccumulator(this.accumulator);
-			this.scene.update();
+			if (this.scene === scene) scene.update();
 		}
 
 		this.clearCanvas();
