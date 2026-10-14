@@ -100,7 +100,7 @@ export const createPlayer = (params: Params): GameObject => {
 	const playerBody = entity.getComponent(DynamicBody);
 	const playerMovement = entity.getComponent(PlayerMovement);
 	playerMovement.direction.x = 1;
-	collider.setSize(new Vector2(0.5, entity.transform.size.y));
+	collider.setSize(new Vector2(0.5, entity.transform.size.y * 0.95));
 	collider.setOffsetPosition(new Vector2(0, 0));
 	playerBody.gravity = 60;
 	playerBody.mass = 80;

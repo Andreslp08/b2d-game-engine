@@ -37,7 +37,7 @@ export class Room1 extends Room {
 	async load(): Promise<void> {
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
-		DebugMode.enabled = true;
+		DebugMode.enabled = false;
 		DebugMode.setMode(DebugTypes.TRIGGER_AREAS);
 
 		try {

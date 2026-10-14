@@ -119,7 +119,7 @@ export const WEAPON_DEFINITIONS: readonly WeaponDefinition[] = [
 		weaponType: "rocket_launcher",
 		ammoId: "explosive_ammo",
 		magazineSize: 3,
-		baseDamage: 100,
+		baseDamage: 500,
 		fireRate: 1,
 		range: 15,
 		projectileCount: 1,
