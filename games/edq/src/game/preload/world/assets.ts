@@ -18,4 +18,9 @@ export const WORLD_ASSETS: AssetToPreload<any>[] = [
 		name: "spritesheet:terrain-tiles",
 		path: "/assets/textures/world/terrain-tiles.png",
 	},
+	{
+		type: GameAssetsTypes.Image,
+		name: "spritesheet:markers",
+		path: "/assets/textures/world/markers.png",
+	},
 ];
