@@ -26,6 +26,8 @@ import { QuickSlotsComponent } from "../items/components/quick-slots-component";
 import { EquipmentComponent } from "../items/components/equipment-component";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { TriggerArea } from "engine/trigger-area";
+import { Culling, CullingConfigComponent } from "engine/performance/culling";
+import { CullingType } from "engine/performance/enum/culling-type";
 
 type Params = {
 	position: Vector2;
@@ -43,6 +45,8 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(new PlayerSpriteController());
 	entity.addComponent(new DynamicBody());
 	entity.addComponent(new Collider(new Vector2(0, 0), new Vector2(0.5, 1)));
+	const cullingConfig = entity.getComponent(CullingConfigComponent);
+	if (cullingConfig) cullingConfig.cullingType = CullingType.NONE;
 	const triggerArea = new TriggerArea(new Vector2(0, 0), new Vector2(0.5, 1.7));
 	entity.addComponent(triggerArea);
 	entity.addComponent(new PlayerMovement());
