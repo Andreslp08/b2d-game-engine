@@ -388,6 +388,87 @@
          "id":2,
          "layers":[
                 {
+                 "draworder":"topdown",
+                 "id":21,
+                 "name":"teleports",
+                 "objects":[
+                        {
+                         "height":1000,
+                         "id":51,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"direction",
+                                 "propertytype":"TeleportDirection",
+                                 "type":"string",
+                                 "value":"Down"
+                                }, 
+                                {
+                                 "name":"levelId",
+                                 "type":"string",
+                                 "value":""
+                                }, 
+                                {
+                                 "name":"markerType",
+                                 "propertytype":"MarkerType",
+                                 "type":"string",
+                                 "value":"Cylinder"
+                                }, 
+                                {
+                                 "name":"roomId",
+                                 "type":"string",
+                                 "value":""
+                                }],
+                         "rotation":0,
+                         "type":"Teleport",
+                         "visible":true,
+                         "width":500,
+                         "x":7500,
+                         "y":-1000
+                        }, 
+                        {
+                         "height":3000,
+                         "id":52,
+                         "name":"",
+                         "opacity":1,
+                         "properties":[
+                                {
+                                 "name":"direction",
+                                 "propertytype":"TeleportDirection",
+                                 "type":"string",
+                                 "value":"None"
+                                }, 
+                                {
+                                 "name":"levelId",
+                                 "type":"string",
+                                 "value":"level1"
+                                }, 
+                                {
+                                 "name":"markerType",
+                                 "propertytype":"MarkerType",
+                                 "type":"string",
+                                 "value":"Corona"
+                                }, 
+                                {
+                                 "name":"roomId",
+                                 "type":"string",
+                                 "value":"room1"
+                                }],
+                         "rotation":0,
+                         "type":"Teleport",
+                         "visible":true,
+                         "width":3000,
+                         "x":-1500,
+                         "y":-2000
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
                  "class":"ToxicWater",
                  "draworder":"topdown",
                  "id":18,
@@ -444,71 +525,6 @@
                  "opacity":1,
                  "type":"objectgroup",
                  "visible":true,
-                 "x":0,
-                 "y":0
-                }, 
-                {
-                 "chunks":[
-                        {
-                         "data":[0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 14, 14, 14,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         "height":16,
-                         "width":16,
-                         "x":96,
-                         "y":0
-                        }, 
-                        {
-                         "data":[14, 14, 14, 0, 0, 0, 24, 24, 24, 24, 24, 24, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         "height":16,
-                         "width":16,
-                         "x":112,
-                         "y":0
-                        }],
-                 "class":"Layer",
-                 "height":16,
-                 "id":17,
-                 "name":"water",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"engine.zIndex",
-                         "type":"int",
-                         "value":2
-                        }],
-                 "startx":96,
-                 "starty":0,
-                 "type":"tilelayer",
-                 "visible":true,
-                 "width":32,
                  "x":0,
                  "y":0
                 }, 
@@ -823,7 +839,7 @@
                          "y":0
                         }, 
                         {
-                         "data":[9, 9, 9, 10, 0, 0, 0, 0, 0, 0, 8, 9, 10, 0, 0, 0,
+                         "data":[9, 9, 9, 10, 4, 4, 4, 4, 4, 4, 8, 9, 10, 14, 14, 14,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
@@ -845,7 +861,7 @@
                          "y":0
                         }, 
                         {
-                         "data":[0, 0, 0, 8, 9, 10, 0, 0, 0, 0, 0, 0, 8, 10, 0, 0,
+                         "data":[14, 14, 14, 8, 9, 10, 24, 24, 24, 24, 24, 24, 8, 10, 0, 0,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0,
                             19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0,
@@ -867,7 +883,7 @@
                          "y":0
                         }],
                  "class":"Layer",
-                 "height":48,
+                 "height":32,
                  "id":1,
                  "name":"terrain",
                  "opacity":1,
@@ -878,7 +894,7 @@
                          "value":2
                         }],
                  "startx":0,
-                 "starty":-32,
+                 "starty":-16,
                  "type":"tilelayer",
                  "visible":true,
                  "width":128,
@@ -1240,7 +1256,7 @@
                          "y":0
                         }],
                  "class":"CollisionLayer",
-                 "height":48,
+                 "height":32,
                  "id":5,
                  "name":"collisions",
                  "opacity":1,
@@ -1257,7 +1273,7 @@
                          "value":0
                         }],
                  "startx":0,
-                 "starty":-32,
+                 "starty":-16,
                  "type":"tilelayer",
                  "visible":true,
                  "width":128,
@@ -1295,7 +1311,7 @@
                  "type":"PlayerSpawnPoint",
                  "visible":true,
                  "width":500,
-                 "x":3000,
+                 "x":3500,
                  "y":-1000
                 }],
          "opacity":1,
@@ -1594,8 +1610,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":19,
- "nextobjectid":46,
+ "nextlayerid":22,
+ "nextobjectid":54,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",
@@ -1709,6 +1725,35 @@
                         }]
                 }],
          "tilewidth":5000
+        }, 
+        {
+         "columns":10,
+         "firstgid":103,
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/..\/Bound to red skies -  documents\/bound-to-red-skies-maps\/textures\/markers.png",
+         "imageheight":5000,
+         "imagewidth":5000,
+         "margin":0,
+         "name":"markers",
+         "properties":[
+                {
+                 "name":"engine.assetId",
+                 "type":"string",
+                 "value":"spritesheet:markers"
+                }],
+         "spacing":0,
+         "tilecount":100,
+         "tileheight":500,
+         "tiles":[
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"engine.assetId",
+                         "type":"string",
+                         "value":"spritesheet:markers"
+                        }]
+                }],
+         "tilewidth":500
         }],
  "tilewidth":500,
  "type":"map",
