@@ -21,7 +21,7 @@ import { EquipmentComponent } from "../../items/components/equipment-component";
 import { itemRegistry } from "../../items/item-catalog";
 import type { WeaponDefinition } from "../../items/definitions/item-definition";
 import { getProjectileDefinition } from "../../items/item-catalog/projectile-catalog";
-import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
+import { KeyBoardManager } from "engine/input/keyboard-manager";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { CullingConfigComponent } from "engine/performance/culling";
@@ -37,7 +37,7 @@ export class WeaponHolder extends ScriptComponent {
 		this.weapon = weapon;
 		const weaponController = this.weapon.getComponent(WeaponController);
 		weaponController.setWeaponHolder(this.entity as GameObject);
-		const cullingConfig =this.weapon.getComponent(CullingConfigComponent);
+		const cullingConfig = this.weapon.getComponent(CullingConfigComponent);
 		cullingConfig.cullingType = CullingType.FRUSTRUM;
 		cullingConfig.cullingTarget = CullingTarget.RENDER;
 	}
@@ -50,9 +50,8 @@ export class WeaponHolder extends ScriptComponent {
 		const equipment = this.entity.getComponent(EquipmentComponent);
 		const referenceId = equipment?.getEquippedReferenceId();
 		const entry = referenceId && inventory ? inventory.inventory.get(referenceId) : undefined;
-		const definition = entry && inventory
-			? inventory.inventory.getDefinition(entry.definitionId)
-			: undefined;
+		const definition =
+			entry && inventory ? inventory.inventory.getDefinition(entry.definitionId) : undefined;
 		const weaponController = this.weapon.getComponent(WeaponController);
 		if (!weaponController) return;
 		if (definition?.type === "weapon") weaponController.setDefinition(definition.id);
@@ -82,7 +81,7 @@ export class WeaponController extends ScriptComponent {
 		super();
 		this.definitionId = definitionId;
 	}
-	weaponEffectSprite:Sprite = new Sprite({
+	weaponEffectSprite: Sprite = new Sprite({
 		image: AssetsManager.getImageByName("spritesheet:gunfire-effect1"),
 		framePosition: new Vector2(0, 0),
 		frameSize: { w: 951, h: 616 },
@@ -178,9 +177,11 @@ export class WeaponController extends ScriptComponent {
 		if (!this.enableController) return false;
 		const definition = this.getDefinition();
 		const { inventory, state } = this.getEquippedWeaponState();
-		return !!state &&
+		return (
+			!!state &&
 			state.currentAmmo === 0 &&
-			(inventory?.inventory.countAmmo(definition.ammoId) ?? 0) === 0;
+			(inventory?.inventory.countAmmo(definition.ammoId) ?? 0) === 0
+		);
 	}
 
 	private cancelReload(): void {
@@ -247,7 +248,10 @@ export class WeaponController extends ScriptComponent {
 	): void {
 		const visual = definition.weaponVisual;
 		const image = AssetsManager.getImageByName(visual.image);
-		const imageSize = { w: image.nativeElement.naturalWidth, h: image.nativeElement.naturalHeight };
+		const imageSize = {
+			w: image.nativeElement.naturalWidth,
+			h: image.nativeElement.naturalHeight,
+		};
 		weaponTransform.size = new Vector2(visual.size.x, visual.size.y);
 		weaponSprite.setImage(image);
 		weaponSprite.setFramePosition(new Vector2(0, 0));
@@ -272,8 +276,10 @@ export class WeaponController extends ScriptComponent {
 		return new Vector2(
 			(spawnPoint.x - pivot.x) * weapon.size.x * scale.x * flip.x,
 			(spawnPoint.y - pivot.y) * weapon.size.y * scale.y * flip.y,
-		).rotate(MathUtil.degToRad(weapon.rotation + sprite.getRotation()))
-			.add(weapon.position).substract(sprite.getAnchor());
+		)
+			.rotate(MathUtil.degToRad(weapon.rotation + sprite.getRotation()))
+			.add(weapon.position)
+			.substract(sprite.getAnchor());
 	}
 
 	private emitRocketMuzzleEffect(position: Vector2, rotation: number): void {
@@ -337,7 +343,9 @@ export class WeaponController extends ScriptComponent {
 		const holderVelocity = holderBody?.velocity ?? new Vector2(0, 0);
 
 		const compensation = holderVelocity.clone().multiplyBy(Time.deltaTime);
-		const spawnPosition = this.getMuzzlePosition(weaponTransform, weaponSprite, definition).add(compensation);
+		const spawnPosition = this.getMuzzlePosition(weaponTransform, weaponSprite, definition).add(
+			compensation,
+		);
 		const mousePosition = MouseManager.getRelativePosition();
 		const targetWorldPosition = Cameras.currentCamera
 			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
@@ -366,25 +374,28 @@ export class WeaponController extends ScriptComponent {
 		if (!scene) return;
 		const projectileCount = Math.max(1, definition.projectileCount);
 		for (let index = 0; index < projectileCount; index++) {
-			const spread = projectileCount === 1
-				? 0
-				: -definition.spreadDegrees / 2 + (definition.spreadDegrees * index) / (projectileCount - 1);
+			const spread =
+				projectileCount === 1
+					? 0
+					: -definition.spreadDegrees / 2 +
+						(definition.spreadDegrees * index) / (projectileCount - 1);
 			const direction = aimDir.clone().rotate(MathUtil.degToRad(spread)).normalize();
 			const projectileAngle = angleInRads + MathUtil.degToRad(spread);
-			const bullet = projectileDefinition.kind === "rocket"
-				? createRocket(
-					spawnPosition.clone(),
-					definition.baseDamage,
-					definition.range,
-					projectileDefinition,
-					projectileDefinition.explosionRadius ?? 2.5,
-				)
-				: createBullet(
-					spawnPosition.clone(),
-					definition.baseDamage,
-					definition.range,
-					projectileDefinition,
-				);
+			const bullet =
+				projectileDefinition.kind === "rocket"
+					? createRocket(
+							spawnPosition.clone(),
+							definition.baseDamage,
+							definition.range,
+							projectileDefinition,
+							projectileDefinition.explosionRadius ?? 2.5,
+						)
+					: createBullet(
+							spawnPosition.clone(),
+							definition.baseDamage,
+							definition.range,
+							projectileDefinition,
+						);
 			bullet.setZindex(0);
 			bullet.getComponent(Transform).rotation = MathUtil.radToDeg(projectileAngle);
 
@@ -448,15 +459,15 @@ export class WeaponController extends ScriptComponent {
 		if (!aimingController) return;
 
 		const isAiming = aimingController.isAiming();
-if (!isAiming) {
-	this.enableController = false;
-	weaponSprite.setVisible(false);
-	this.weaponEffectRemainingTime = 0;
-	this.weaponEffectSprite.setVisible(false);
-} else {
-	this.enableController = true;
-	weaponSprite.setVisible(true);
-}
+		if (!isAiming) {
+			this.enableController = false;
+			weaponSprite.setVisible(false);
+			this.weaponEffectRemainingTime = 0;
+			this.weaponEffectSprite.setVisible(false);
+		} else {
+			this.enableController = true;
+			weaponSprite.setVisible(true);
+		}
 
 		const aimingDirectionInX = aimingController.getAimingDirection().x;
 		const handOffset = new Vector2(

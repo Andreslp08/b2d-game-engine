@@ -1,11 +1,11 @@
-import  { GameObject } from "engine/common/entities/game-object";
+import { GameObject } from "engine/common/entities/game-object";
 import { Time } from "engine/common/interfaces/time";
 import type { Updatable } from "engine/common/interfaces/updatable";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 import { Screen } from "engine/graphics/screen/screen";
 import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
-import type { ITranform } from "engine/input/interfaces/transform.interface";
+import type { ITranform } from "engine/common/interfaces/transform";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { ScriptComponent } from "engine/scripts/script-component";
@@ -18,7 +18,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 	constructor(
 		public transform: ITranform,
 		private health: number = 100,
-		private maxHealth: number = 100
+		private maxHealth: number = 100,
 	) {
 		super(transform);
 		this.displayedHealth = this.health;
@@ -80,9 +80,7 @@ export class HealthBarComponent extends UIComponent implements Updatable {
 		this.displayedHealth = MathUtil.lerp(this.displayedHealth, this.health, 5 * Time.deltaTime);
 	}
 
-	fixedUpdate(): void {
-		
-	}
+	fixedUpdate(): void {}
 }
 
 export class HealthUI extends UIObject {
@@ -130,7 +128,7 @@ export class HealthComponent extends ScriptComponent {
 	constructor(
 		private health: number = 100,
 		private maxHealth: number = 100,
-		private showHealthBar: boolean = true
+		private showHealthBar: boolean = true,
 	) {
 		super();
 		this.health = health;
@@ -202,7 +200,7 @@ export class HealthComponent extends ScriptComponent {
 				this.healthUI.setPosition(
 					screenPos,
 					this.healthUI._healthBar.transform.size.x / 2,
-					this.healthUI._healthBar.transform.size.y
+					this.healthUI._healthBar.transform.size.y,
 				);
 			}
 		}

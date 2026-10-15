@@ -1,7 +1,10 @@
-import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
+import { KeyBoardManager } from "engine/input/keyboard-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
-import { QUICK_SLOT_BINDINGS, QuickSlotsComponent } from "../../items/components/quick-slots-component";
+import {
+	QUICK_SLOT_BINDINGS,
+	QuickSlotsComponent,
+} from "../../items/components/quick-slots-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 
 /** Maps keyboard shortcuts to inventory references and equipment selection. */

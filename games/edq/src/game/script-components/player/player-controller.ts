@@ -1,4 +1,4 @@
-import { KeyBoardManager } from "engine/input/interfaces/keyboard-manager";
+import { KeyBoardManager } from "engine/input/keyboard-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { PlayerMovement } from "./player-movement";
 import Vector2 from "engine/math/vector2";
@@ -102,7 +102,7 @@ export class PlayerController extends ScriptComponent {
 
 	private stopDash(dynamicBody: DynamicBody): void {
 		const movement = dynamicBody.getEntity().getComponent(PlayerMovement);
-		if(!movement) return;
+		if (!movement) return;
 		if (!movement.isDashing) return;
 
 		movement.isDashing = false;
