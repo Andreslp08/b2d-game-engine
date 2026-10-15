@@ -107,10 +107,17 @@ export class SpriteRenderer extends Renderer {
 		const spriteH = sourceSize.h;
 
 		// Escala visual para que el sprite quepa en el size definido por el transform
-		const visualScale = { x: 1, y: 1 };
-
-		visualScale.x = transform.size.x / spriteW;
-		visualScale.y = transform.size.y / spriteH;
+		const stretchScaleX = transform.size.x / spriteW;
+		const stretchScaleY = transform.size.y / spriteH;
+		const aspectMode = sprite.getAspectMode();
+		const uniformScale =
+			aspectMode === "contain"
+				? Math.min(stretchScaleX, stretchScaleY)
+				: Math.max(stretchScaleX, stretchScaleY);
+		const visualScale =
+			aspectMode === "stretch"
+				? { x: stretchScaleX, y: stretchScaleY }
+				: { x: uniformScale, y: uniformScale };
 
 		// Orden correcto de transformaciones
 		renderingContext.translate(pos.x - anchor.x, pos.y - anchor.y);
