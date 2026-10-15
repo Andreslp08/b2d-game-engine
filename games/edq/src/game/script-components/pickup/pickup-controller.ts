@@ -6,6 +6,7 @@ import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
 import { InputManagerInstance } from "../../input/input-manager";
 import { PickupPrompt } from "./pickup-prompt";
+import { EquipmentComponent } from "../../items/components/equipment-component";
 
 export class PickupController extends ScriptComponent {
 	private playerInRange: GameObject | null = null;
@@ -68,10 +69,12 @@ export class PickupController extends ScriptComponent {
 	private collect(): void {
 		if (!this.playerInRange || this.collected) return;
 		const inventoryComponent = this.playerInRange.getComponent(InventoryComponent);
-		if (!inventoryComponent) return;
+		const equipmentComponent = this.playerInRange.getComponent(EquipmentComponent);
+		if (!inventoryComponent || !equipmentComponent) return;
 		const quickSlots = this.playerInRange.getComponent(QuickSlotsComponent);
 		const assignQuickSlot = (entryId: string): void => {
 			if (this.definition.quickAssignable) quickSlots?.assignFirstAvailable(entryId);
+			if(this.definition.equippable) equipmentComponent?.equip(entryId);
 		};
 
 		if (this.definition.stackable) {
