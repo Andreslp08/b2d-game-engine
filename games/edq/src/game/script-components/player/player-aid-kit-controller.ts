@@ -9,11 +9,10 @@ import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
 import { HealthComponent } from "../shared/health-component";
 import { HealingFlashEffect } from "../shared/healing-flash-effect";
-import { MouseManager } from "engine/input/mouse-manager";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 /** Consumes an equipped first-aid kit when the player clicks. */
 export class PlayerAidKitController extends ScriptComponent {
-	private wasLeftClickDown = false;
 	private aidKitVisual: GameObject;
 
 	onStart(): void {
@@ -44,10 +43,7 @@ export class PlayerAidKitController extends ScriptComponent {
 
 	onUpdate(): void {
 		this.updateAidKitVisual();
-		const leftClickDown = MouseManager.isLeftClickDown();
-		const clicked = leftClickDown && !this.wasLeftClickDown;
-		this.wasLeftClickDown = leftClickDown;
-		if (!clicked) return;
+		if (!InputManagerInstance.justPressed(GameplayAction.Fire)) return;
 
 		const equipment = this.entity.getComponent(EquipmentComponent);
 		const inventory = this.entity.getComponent(InventoryComponent);

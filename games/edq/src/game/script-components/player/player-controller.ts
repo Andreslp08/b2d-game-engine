@@ -1,4 +1,4 @@
-import { KeyBoardManager } from "engine/input/keyboard-manager";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { PlayerMovement } from "./player-movement";
 import Vector2 from "engine/math/vector2";
@@ -50,9 +50,10 @@ export class PlayerController extends ScriptComponent {
 		const dynamicBody = entity.getComponent(DynamicBody);
 		const movement = entity.getComponent(PlayerMovement);
 		if (!dynamicBody || !movement) return;
-		const dashKey = KeyBoardManager.physicalKeyDown(movement.inputCodes.horizontalDash);
-		const moveLeft = KeyBoardManager.physicalKeyDown(movement.inputCodes.left);
-		const moveRight = KeyBoardManager.physicalKeyDown(movement.inputCodes.right);
+		const dashKey = InputManagerInstance.isDown(GameplayAction.Dash);
+		const moveInput = InputManagerInstance.getVector2(GameplayAction.Move);
+		const moveLeft = moveInput.x < 0;
+		const moveRight = moveInput.x > 0;
 
 		this.dashCooldownTimer -= Time.fixedDeltaTime;
 		this.dashDurationTimer -= Time.fixedDeltaTime;
@@ -138,7 +139,7 @@ export class PlayerController extends ScriptComponent {
 			}
 		}
 
-		if (KeyBoardManager.physicalKeyDown(movement.inputCodes.up) && !this.debouncingJump) {
+		if (InputManagerInstance.isDown(GameplayAction.Jump) && !this.debouncingJump) {
 			if (dynamicBody.isOnGround && !movement.isJumping) {
 				movement.isJumping = true;
 				movement.jumpStartY = y;
@@ -155,7 +156,7 @@ export class PlayerController extends ScriptComponent {
 		}
 		if (
 			movement.isJumping &&
-			(!KeyBoardManager.physicalKeyDown(movement.inputCodes.up) || dynamicBody.velocity.y > 0)
+			(!InputManagerInstance.isDown(GameplayAction.Jump) || dynamicBody.velocity.y > 0)
 		) {
 			movement.isJumping = false;
 		}
@@ -167,8 +168,9 @@ export class PlayerController extends ScriptComponent {
 		const gameObject = dynamicBody.getEntity();
 		const movement = gameObject.getComponent(PlayerMovement);
 
-		const moveLeft = KeyBoardManager.physicalKeyDown(movement.inputCodes.left);
-		const moveRight = KeyBoardManager.physicalKeyDown(movement.inputCodes.right);
+		const moveInput = InputManagerInstance.getVector2(GameplayAction.Move);
+		const moveLeft = moveInput.x < 0;
+		const moveRight = moveInput.x > 0;
 
 		if (moveRight) dynamicBody.addForce(new Vector2(movement.forceX, 0));
 		else if (moveLeft) dynamicBody.addForce(new Vector2(-movement.forceX, 0));

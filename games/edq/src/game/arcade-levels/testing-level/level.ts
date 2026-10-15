@@ -18,7 +18,7 @@ export class TestingLevel extends Level {
 
 		this.roomsIds = this.getRoomTypes().map((room) => room.id);
 		this.currentIndex = 0;
-		addEventListener("keydown", this.handleKeyDown);
+		// addEventListener("keydown", this.handleKeyDown);
 	}
 
 	private readonly handleKeyDown = (event: KeyboardEvent) => {

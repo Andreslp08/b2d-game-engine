@@ -1,4 +1,3 @@
-import { KeyBoardManager } from "engine/input/keyboard-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import {
@@ -6,6 +5,16 @@ import {
 	QuickSlotsComponent,
 } from "../../items/components/quick-slots-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
+
+const quickSlotActions = [
+	GameplayAction.QuickSlot0,
+	GameplayAction.QuickSlot1,
+	GameplayAction.QuickSlot2,
+	GameplayAction.QuickSlot3,
+	GameplayAction.QuickSlot4,
+	GameplayAction.QuickSlot5,
+] as const;
 
 /** Maps keyboard shortcuts to inventory references and equipment selection. */
 export class QuickSlotInputController extends ScriptComponent {
@@ -18,7 +27,7 @@ export class QuickSlotInputController extends ScriptComponent {
 		quickSlots.removeInvalidReferences(inventory.inventory);
 		equipment.clearIfMissing(inventory.inventory);
 		for (const slot of QUICK_SLOT_BINDINGS) {
-			if (!KeyBoardManager.physicalKeyDown(slot.code)) continue;
+			if (!InputManagerInstance.isDown(quickSlotActions[slot.slot])) continue;
 			quickSlots.setActiveSlot(slot.slot);
 			const referenceId = quickSlots.get(slot.slot);
 			if (referenceId === null) {

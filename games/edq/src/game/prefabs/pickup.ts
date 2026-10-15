@@ -8,14 +8,12 @@ import type { GameImage } from "engine/common/assets-manager/game-image";
 import { createMarker } from "./marker";
 import { MarkerType } from "../config/constants";
 import type { Scene } from "engine/scenes/scene";
-import { PhysicalKey, type PhysicalKeyCode } from "engine/input/keyboard-manager";
 import { PickupController } from "../script-components/pickup/pickup-controller";
 
 type Params = {
 	scene: Scene;
 	position: Vector2;
 	size?: Vector2;
-	keybind?: PhysicalKeyCode;
 	amount: number;
 	definition: AnyItemDefinition;
 };
@@ -24,14 +22,12 @@ export const createPickup = ({
 	scene,
 	position,
 	size = new Vector2(1, 1),
-	keybind = PhysicalKey.E,
 	amount,
 	definition,
 }: Params) => {
 	if (!Number.isInteger(amount) || amount <= 0) {
 		throw new Error("Pickup amount must be a positive integer");
 	}
-	console.log(definition);
 	let spriteImageId: string = definition.icon;
 	let imageRotation = 0;
 	const isAmmo = definition.type === "ammo";
@@ -50,7 +46,7 @@ export const createPickup = ({
 	const spriteSize = isQuarterTurn
 		? new Vector2(size.y, size.y / aspectRatio)
 		: new Vector2(size.y * aspectRatio, size.y);
-	const controller = new PickupController(definition, amount, keybind);
+	const controller = new PickupController(definition, amount);
 	const marker = createMarker({
 		position,
 		size: size.clone().scale(2),

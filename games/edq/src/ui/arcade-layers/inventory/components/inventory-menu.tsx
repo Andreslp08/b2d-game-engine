@@ -77,7 +77,7 @@ export const InventoryMenu = () => {
 	}, [inventory.uiInventory, currentCategory]);
 
 	const [currentItemPreview, setCurrentItemPreview] = useState<InventoryItemView | null>(null);
-	console.log("Inventory", inventory);
+	// console.log("Inventory", inventory);
 
 	useEffect(() => {
 		setCurrentItemPreview(null);

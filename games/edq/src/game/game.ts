@@ -16,7 +16,7 @@ const gameStore = useGameStore.getState();
 Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 addEventListener("resize", () => {
-	console.log("updating resolution");
+	// console.log("updating resolution");
 	Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 });
 
@@ -24,7 +24,7 @@ export const preloadGame = () => {
 	const testLevel = () => {
 		setTimeout(() => {
 			ArcadeLevelManagerInstance.loadLevel(TestingLevel.id, Room2.id);
-			console.log(AssetsPreloader.assets);
+			// console.log(AssetsPreloader.assets);
 		}, 0);
 	};
 	const goToMainMenu = () => {
@@ -32,8 +32,8 @@ export const preloadGame = () => {
 			gameStore.setCurrentUI("global", "mainMenu");
 		}, 1000);
 	};
-	AssetsPreloader.set(ASSETS_TO_PRELOAD, (e) => {
-		console.log(`${e.progress}% Loading game assets '${e.currentAssetLoading}'`);
+	AssetsPreloader.preload(ASSETS_TO_PRELOAD, (e) => {
+		console.log(`${e.progress}% Loading game assets type:[${e.currentAssetLoading?.type}] name:[${e.currentAssetLoading?.name}] path:[${e.currentAssetLoading?.path}]`);
 		if (e.progress >= 100 && e.finished) {
 			if (DEV_MODE) {
 				testLevel();

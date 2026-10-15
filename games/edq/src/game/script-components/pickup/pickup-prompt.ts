@@ -1,5 +1,4 @@
 import { Screen } from "engine/graphics/screen/screen";
-import type { PhysicalKeyCode } from "engine/input/keyboard-manager";
 import Vector2 from "engine/math/vector2";
 import { UIComponent } from "engine/ui/components/ui-component";
 
@@ -7,13 +6,13 @@ export class PickupPrompt extends UIComponent {
 	private visible = false;
 	private keyLabel: string;
 
-	constructor(private readonly itemName: string, keybind: PhysicalKeyCode) {
+	constructor(private readonly itemName: string, keyLabel: string) {
 		super({
 			position: new Vector2(0, 0),
 			rotation: 0,
 			size: new Vector2(260, 78),
 		});
-		this.keyLabel = keybind.startsWith("Key") ? keybind.slice(3) : keybind;
+		this.keyLabel = keyLabel.startsWith("Key") ? keyLabel.slice(3) : keyLabel;
 	}
 
 	setVisible(visible: boolean): void {

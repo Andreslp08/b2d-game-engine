@@ -68,7 +68,6 @@ export class Room1 extends Room {
 		if (!teleports.length) return;
 
 		for (const teleport of teleports) {
-			console.log(teleport.properties);
 			this.addEntity(
 				createTeleport({
 					position: teleport.position.clone().add(teleport.size.clone().multiplyBy(0.5)),

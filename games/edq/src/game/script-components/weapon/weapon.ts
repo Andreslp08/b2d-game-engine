@@ -4,7 +4,6 @@ import { GameObject } from "engine/common/entities/game-object";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { MouseManager } from "engine/input/mouse-manager";
-import { KeyBoardManager, PhysicalKey } from "engine/input/keyboard-manager";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
@@ -26,6 +25,7 @@ import { ParticleEmitter } from "engine/particle-system/component/particle-emitt
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingTarget, CullingType } from "engine/performance/enum/culling-type";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 /** Synchronizes the equipped inventory weapon with its visual GameObject. */
 export class WeaponHolder extends ScriptComponent {
@@ -488,7 +488,7 @@ export class WeaponController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.enableController) return;
-		const reloadKey = KeyBoardManager.physicalKeyDown(PhysicalKey.R);
+		const reloadKey = InputManagerInstance.isDown(GameplayAction.Reload);
 		const reloadPressed = reloadKey && !this.previousReloadKey;
 		this.previousReloadKey = reloadKey;
 		const definition = this.getDefinition();
@@ -502,7 +502,7 @@ export class WeaponController extends ScriptComponent {
 		if (!aimingController?.isAiming()) return;
 		const fireRate = definition.fireRate;
 		this.fireCooldown -= Time.fixedDeltaTime;
-		if (MouseManager.isLeftClickDown() && this.fireCooldown <= 0) {
+		if (InputManagerInstance.isDown(GameplayAction.Fire) && this.fireCooldown <= 0) {
 			this.shot();
 			this.fireCooldown = fireRate;
 		}
