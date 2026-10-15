@@ -1,6 +1,6 @@
 import { GameImage } from "../../../common/assets-manager/game-image";
 import { Component } from "../../../ecs/component";
-import { ITranform } from "../../../input/interfaces/transform.interface";
+import { ITranform } from "../../../common/interfaces/transform";
 import Vector2 from "../../../math/vector2";
 
 export type SpriteData = {

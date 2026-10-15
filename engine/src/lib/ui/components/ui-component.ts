@@ -1,25 +1,21 @@
 import { Renderable } from "../../common/interfaces/renderable";
 import { Component } from "../../ecs/component";
-import { ITranform } from "../../input/interfaces/transform.interface";
+import { ITranform } from "../../common/interfaces/transform";
 import Vector2 from "../../math/vector2";
 
-export  class UIComponent extends Component implements Renderable{
+export class UIComponent extends Component implements Renderable {
+	constructor(protected transform: ITranform) {
+		super();
+		this.unique = false;
+	}
 
-    constructor(protected  transform:ITranform){
-        super();
-        this.unique = false;
-    }
+	setPosition(position: Vector2) {
+		this.transform.position = position;
+	}
 
-    setPosition(position:Vector2){
+	setSize(size: Vector2) {
+		this.transform.size = size;
+	}
 
-        this.transform.position = position;
-    }
-
-    setSize(size:Vector2){
-        this.transform.size = size;
-    }
-
-	render(_context: CanvasRenderingContext2D): void {
-
-    }
+	render(_context: CanvasRenderingContext2D): void {}
 }

@@ -1,6 +1,6 @@
 import { Entity } from "../../ecs/entity";
 import { Sprite } from "../../graphics/sprites/components/sprite";
-import { ITranform } from "../../input/interfaces/transform.interface";
+import { ITranform } from "../interfaces/transform";
 import { Transform } from "../components/transform";
 import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
 import { CullingConfigComponent } from "../../performance/culling";

@@ -5,7 +5,7 @@ import { OrthographicCamera } from "../../graphics/cameras/orthographic-camera";
 import { ScreenCamera } from "../../graphics/cameras/screen-camera";
 import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
 import { Screen } from "../../graphics/screen/screen";
-import { KeyBoardManager } from "../../input/interfaces/keyboard-manager";
+import { KeyBoardManager } from "../../input/keyboard-manager";
 import Vector2 from "../../math/vector2";
 import { ScriptComponent } from "../../scripts/script-component";
 import { UIComponent } from "../../ui/components/ui-component";
@@ -74,7 +74,10 @@ export class CameraNavigator extends ScriptComponent {
 		if (event.deltaY === 0) return;
 
 		const direction = event.deltaY < 0 ? 1 : -1;
-		this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom + direction * this.zoomStep));
+		this.zoom = Math.max(
+			this.minZoom,
+			Math.min(this.maxZoom, this.zoom + direction * this.zoomStep),
+		);
 		event.preventDefault();
 	};
 
@@ -102,16 +105,20 @@ export class CameraNavigator extends ScriptComponent {
 		const camera = Cameras.currentCamera;
 		if (!camera) return;
 
-		const horizontal = Number(KeyBoardManager.keyDown("d") || KeyBoardManager.keyDown("arrowright"))
-			- Number(KeyBoardManager.keyDown("a") || KeyBoardManager.keyDown("arrowleft"));
-		const vertical = Number(KeyBoardManager.keyDown("s") || KeyBoardManager.keyDown("arrowdown"))
-			- Number(KeyBoardManager.keyDown("w") || KeyBoardManager.keyDown("arrowup"));
+		const horizontal =
+			Number(KeyBoardManager.keyDown("d") || KeyBoardManager.keyDown("arrowright")) -
+			Number(KeyBoardManager.keyDown("a") || KeyBoardManager.keyDown("arrowleft"));
+		const vertical =
+			Number(KeyBoardManager.keyDown("s") || KeyBoardManager.keyDown("arrowdown")) -
+			Number(KeyBoardManager.keyDown("w") || KeyBoardManager.keyDown("arrowup"));
 		const magnitude = Math.hypot(horizontal, vertical);
 		const speed = this.speed * (KeyBoardManager.keyDown("shift") ? this.fastMultiplier : 1);
 
 		if (magnitude > 0) {
 			this.position.add(
-				new Vector2(horizontal / magnitude, vertical / magnitude).scale(speed * Time.unscaledDeltaTime),
+				new Vector2(horizontal / magnitude, vertical / magnitude).scale(
+					speed * Time.unscaledDeltaTime,
+				),
 			);
 		}
 

@@ -1,4 +1,4 @@
-import { ITranform } from "../input/interfaces/transform.interface";
+import { ITranform } from "../common/interfaces/transform";
 import { GameObject } from "../common/entities/game-object";
 import { ITileChunk, TileAnimation, TileTexture, TileTextureData } from "./definitions";
 import Vector2 from "../math/vector2";
@@ -25,7 +25,7 @@ export class TileChunk extends GameObject implements ITileChunk {
 			rotation: 0,
 		};
 		super(transform);
-		this.chunkId = '';
+		this.chunkId = "";
 		if (parameters.renderLayer !== undefined) this.renderLayer = parameters.renderLayer;
 		this.collidable = parameters.collidable;
 		this.animation = parameters.animation;
@@ -66,13 +66,15 @@ export class TileChunk extends GameObject implements ITileChunk {
 	}
 
 	generateTiles() {
-		this.addComponent(new TileChunkBatch(
-			this.getTextureData(),
-			this.cellSizeInGameUnits,
-			this.gridSize,
-			this.animation,
-			this.tileTransform,
-		));
+		this.addComponent(
+			new TileChunkBatch(
+				this.getTextureData(),
+				this.cellSizeInGameUnits,
+				this.gridSize,
+				this.animation,
+				this.tileTransform,
+			),
+		);
 	}
 
 	private getTextureData(): TileTextureData {
@@ -83,9 +85,10 @@ export class TileChunk extends GameObject implements ITileChunk {
 			throw new Error("Tile chunk atlas is not loaded");
 		}
 
-		const frame = typeof this.texture.frame === "number"
-			? Object.values(atlas.frames)[this.texture.frame]
-			: atlas.frames[this.texture.frame];
+		const frame =
+			typeof this.texture.frame === "number"
+				? Object.values(atlas.frames)[this.texture.frame]
+				: atlas.frames[this.texture.frame];
 		if (!frame) {
 			throw new Error(`Texture frame ${this.texture.frame} does not exist in the atlas`);
 		}

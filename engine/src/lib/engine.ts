@@ -1,5 +1,5 @@
 import { Scene } from "./scenes/scene";
-import { KeyBoardManager } from "./input/interfaces/keyboard-manager";
+import { KeyBoardManager } from "./input/keyboard-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
 import { Time } from "./common/interfaces/time";
@@ -34,7 +34,7 @@ export class Engine {
 
 		if (!gameRoot) {
 			throw new Error(
-				"'game-root' div not found in html, game cannot be loaded. Add a div in the html with id 'game-root', engine will load the game in this div."
+				"'game-root' div not found in html, game cannot be loaded. Add a div in the html with id 'game-root', engine will load the game in this div.",
 			);
 		}
 		gameRoot.style.display = "flex";

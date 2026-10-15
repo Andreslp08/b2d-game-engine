@@ -1,5 +1,5 @@
 import { Component } from "../../ecs/component";
-import { ITranform } from "../../input/interfaces/transform.interface";
+import { ITranform } from "../interfaces/transform";
 import Vector2 from "../../math/vector2";
 
 export class Transform extends Component implements ITranform {
