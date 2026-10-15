@@ -1,12 +1,16 @@
+/** Receives committed text produced by the active text input target. */
 export type TextInputListener = (text: string) => void;
 
+/** Represents provisional text while an IME composition is active. */
 export interface TextCompositionState {
 	text: string;
 	isComposing: boolean;
 }
 
+/** Receives IME composition state changes. */
 export type TextCompositionListener = (state: TextCompositionState) => void;
 
+/** Maps readable physical-key names to standard KeyboardEvent.code values. */
 export const PhysicalKey = {
 	A: "KeyA", B: "KeyB", C: "KeyC", D: "KeyD", E: "KeyE", F: "KeyF", G: "KeyG",
 	H: "KeyH", I: "KeyI", J: "KeyJ", K: "KeyK", L: "KeyL", M: "KeyM", N: "KeyN",
@@ -46,6 +50,7 @@ export const PhysicalKey = {
 	Hiragana: "Hiragana", Katakana: "Katakana",
 } as const;
 
+/** Any physical keyboard code declared in {@link PhysicalKey}. */
 export type PhysicalKeyCode = (typeof PhysicalKey)[keyof typeof PhysicalKey];
 
 interface KeyboardLayoutMap {
@@ -56,6 +61,7 @@ interface KeyboardApi {
 	getLayoutMap(): Promise<KeyboardLayoutMap>;
 }
 
+/** Tracks physical keys, logical keys, edge states, and browser text input events. */
 export class KeyBoardManager {
 	private static _logicalKeys: Record<string, "keydown" | "keyup"> = {};
 	private static _physicalKeys: Record<string, "keydown" | "keyup"> = {};
@@ -119,6 +125,7 @@ export class KeyBoardManager {
 		if (event.relatedTarget === null) KeyBoardManager.clearKeys();
 	};
 
+	/** Starts browser keyboard and text-input listeners. */
 	static listen() {
 		if (!KeyBoardManager.isListening) {
 			window.addEventListener("keydown", KeyBoardManager.onKeyDown);
@@ -136,6 +143,7 @@ export class KeyBoardManager {
 		return { unlisten: () => KeyBoardManager.unlisten() };
 	}
 
+	/** Stops listeners and clears all keyboard state. */
 	static unlisten() {
 		if (!KeyBoardManager.isListening) return;
 
@@ -152,38 +160,47 @@ export class KeyBoardManager {
 		KeyBoardManager.isListening = false;
 	}
 
+	/** Returns whether a logical key value is held. */
 	static logicalKeyDown(key: string): boolean {
 		return KeyBoardManager._logicalKeys?.[key] === "keydown" ? true : false;
 	}
 
+	/** Returns whether the last observed state for a logical key is released. */
 	static logicalKeyUp(key: string): boolean {
 		return KeyBoardManager._logicalKeys?.[key] === "keyup" ? true : false;
 	}
 
+	/** Returns whether a physical key is held. */
 	static physicalKeyDown(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager._physicalKeys?.[key] === "keydown" ? true : false;
 	}
 
+	/** Returns whether the last observed state for a physical key is released. */
 	static physicalKeyUp(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager._physicalKeys?.[key] === "keyup" ? true : false;
 	}
 
+	/** Returns whether a logical key value was pressed during this frame. */
 	static logicalKeyJustPressed(key: string): boolean {
 		return KeyBoardManager.logicalKeysJustPressed.has(key);
 	}
 
+	/** Returns whether a logical key value was released during this frame. */
 	static logicalKeyJustReleased(key: string): boolean {
 		return KeyBoardManager.logicalKeysJustReleased.has(key);
 	}
 
+	/** Returns whether a physical key was pressed during this frame. */
 	static physicalKeyJustPressed(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager.physicalKeysJustPressed.has(key);
 	}
 
+	/** Returns whether a physical key was released during this frame. */
 	static physicalKeyJustReleased(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager.physicalKeysJustReleased.has(key);
 	}
 
+	/** Clears transient pressed and released states after an engine frame. */
 	static endFrame(): void {
 		KeyBoardManager.logicalKeysJustPressed.clear();
 		KeyBoardManager.logicalKeysJustReleased.clear();
@@ -191,6 +208,7 @@ export class KeyBoardManager {
 		KeyBoardManager.physicalKeysJustReleased.clear();
 	}
 
+	/** Resolves a user-facing label for a physical key using the active keyboard layout. */
 	static async getPhysicalKeyLabel(key: PhysicalKeyCode): Promise<string> {
 		const keyboard = (navigator as Navigator & { keyboard?: KeyboardApi }).keyboard;
 		if (keyboard) {
@@ -206,20 +224,24 @@ export class KeyBoardManager {
 		return KeyBoardManager.getPhysicalKeyFallbackLabel(key);
 	}
 
+	/** Subscribes to committed text and returns an unsubscribe function. */
 	static onTextInput(listener: TextInputListener): () => void {
 		KeyBoardManager.textInputListeners.add(listener);
 		return () => KeyBoardManager.textInputListeners.delete(listener);
 	}
 
+	/** Subscribes to IME composition updates and returns an unsubscribe function. */
 	static onTextComposition(listener: TextCompositionListener): () => void {
 		KeyBoardManager.textCompositionListeners.add(listener);
 		return () => KeyBoardManager.textCompositionListeners.delete(listener);
 	}
 
+	/** Returns the raw logical-key state table for diagnostics. */
 	static get logicalKeys() {
 		return KeyBoardManager._logicalKeys;
 	}
 
+	/** Returns the raw physical-key state table for diagnostics. */
 	static get physicalKeys() {
 		return KeyBoardManager._physicalKeys;
 	}

@@ -1,5 +1,6 @@
 import { Scene } from "./scenes/scene";
 import { KeyBoardManager } from "./input/keyboard-manager";
+import { InputManager } from "./input/input-manager";
 import { Screen } from "./graphics/screen/screen";
 import { MouseManager } from "./input/mouse-manager";
 import { Time } from "./common/interfaces/time";
@@ -208,6 +209,7 @@ export class Engine {
 		this.lastFrameTime = currentTime;
 
 		if (Engine._isPaused || Engine._sleeping) {
+			InputManager.updateAll();
 			this.accumulator = 0;
 			Time.setFixedUpdateAccumulator(0);
 			this.clearCanvas();
@@ -216,6 +218,7 @@ export class Engine {
 				Engine.updateCanvasOverlayAfterRender(elapsed);
 			}
 			KeyBoardManager.endFrame();
+			MouseManager.endFrame();
 			requestAnimationFrame = window.requestAnimationFrame(this.loop);
 			return;
 		}
@@ -223,6 +226,7 @@ export class Engine {
 		const dt = elapsed / 1000;
 		this.accumulator = Math.min(this.accumulator + dt, 0.25);
 
+		InputManager.updateAll();
 		const scene = this.scene;
 		if (scene) {
 			while (this.accumulator >= this.fixedDelta * Time.timeScale) {
@@ -242,6 +246,7 @@ export class Engine {
 		}
 
 		KeyBoardManager.endFrame();
+		MouseManager.endFrame();
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }
