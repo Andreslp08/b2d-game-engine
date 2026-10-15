@@ -215,6 +215,7 @@ export class Engine {
 				this.scene.renderer.render(Engine._context);
 				Engine.updateCanvasOverlayAfterRender(elapsed);
 			}
+			KeyBoardManager.endFrame();
 			requestAnimationFrame = window.requestAnimationFrame(this.loop);
 			return;
 		}
@@ -240,6 +241,7 @@ export class Engine {
 			Engine.updateCanvasOverlayAfterRender(elapsed);
 		}
 
+		KeyBoardManager.endFrame();
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }

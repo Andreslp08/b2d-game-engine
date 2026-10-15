@@ -106,13 +106,28 @@ export class CameraNavigator extends ScriptComponent {
 		if (!camera) return;
 
 		const horizontal =
-			Number(KeyBoardManager.keyDown("d") || KeyBoardManager.keyDown("arrowright")) -
-			Number(KeyBoardManager.keyDown("a") || KeyBoardManager.keyDown("arrowleft"));
+			Number(
+				KeyBoardManager.physicalKeyDown("KeyD") ||
+					KeyBoardManager.physicalKeyDown("ArrowRight"),
+			) -
+			Number(
+				KeyBoardManager.physicalKeyDown("KeyA") ||
+					KeyBoardManager.physicalKeyDown("ArrowLeft"),
+			);
 		const vertical =
-			Number(KeyBoardManager.keyDown("s") || KeyBoardManager.keyDown("arrowdown")) -
-			Number(KeyBoardManager.keyDown("w") || KeyBoardManager.keyDown("arrowup"));
+			Number(
+				KeyBoardManager.physicalKeyDown("KeyS") ||
+					KeyBoardManager.physicalKeyDown("ArrowDown"),
+			) -
+			Number(
+				KeyBoardManager.physicalKeyDown("KeyW") ||
+					KeyBoardManager.physicalKeyDown("ArrowUp"),
+			);
 		const magnitude = Math.hypot(horizontal, vertical);
-		const speed = this.speed * (KeyBoardManager.keyDown("shift") ? this.fastMultiplier : 1);
+		const isFast =
+			KeyBoardManager.physicalKeyDown("ShiftLeft") ||
+			KeyBoardManager.physicalKeyDown("ShiftRight");
+		const speed = this.speed * (isFast ? this.fastMultiplier : 1);
 
 		if (magnitude > 0) {
 			this.position.add(
