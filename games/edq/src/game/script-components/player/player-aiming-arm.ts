@@ -8,6 +8,7 @@ import { AimingController } from "./aiming-controller";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { PlayerSkin } from "../../config/constants";
 import { PlayerSkinComponent } from "./player-skin-component";
+import { PLAYER_Z_INDEX } from "./constants";
 
 type PlayerArmSkinDefinition = {
 	imageKey: string;
@@ -50,6 +51,12 @@ export class PlayerAimingArm extends ScriptComponent {
 	constructor(private skin: PlayerSkin = PlayerSkin.SKIN1) {
 		super();
 			
+	}
+
+	setArmZIndex(zIndex: number): void {
+		if (this.arm) {
+			this.arm.setZindex(zIndex);
+		}
 	}
 
 	onStart(): void {
@@ -113,8 +120,6 @@ export class PlayerAimingArm extends ScriptComponent {
 		const idleOffset = new Vector2(-0.18, -0.15);
 		const runningOffset = new Vector2(-0.08, -0.18);
 		const jumpingOffset = new Vector2(-0.05, -0.16);
-
-		this.entity.setZindex(1);
 
 		const sprite = this.arm.getComponent(Sprite);
 		const transform = this.entity.getComponent(Transform);

@@ -175,7 +175,6 @@ export class PlayerSpriteController extends ScriptComponent {
 			frameSize: { w: 951, h: 616 },
 		})
 		this.dashSprite.setVisible(false);
-		this.dashSprite.setZindex(2);
 		this.entity.addComponent(this.dashSprite);
 
 		const spriteAnimation = new SpriteAnimation(
@@ -184,8 +183,6 @@ export class PlayerSpriteController extends ScriptComponent {
 			true,
 			this.animationSpeed,
 		);
-
-		spriteAnimation.setZindex(1);
 		this.gameObject.addComponent(spriteAnimation);
 	}
 
@@ -312,7 +309,6 @@ export class PlayerSpriteController extends ScriptComponent {
 
 		spriteAnimation.setAnimationDirectionInX(aimingDirection.x);
 	}
-
 	private shouldReverseRunAnimation(
 		movementDirectionX: number,
 		aimingDirectionX: number,

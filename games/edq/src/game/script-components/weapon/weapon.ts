@@ -480,7 +480,6 @@ export class WeaponController extends ScriptComponent {
 		weaponTransform.rotation = armTransform.rotation;
 		weaponSprite.setDirection({ x: aimingDirectionInX, y: 1 });
 		weaponSprite.setRotation(visual.rotationOffsetDegrees * aimingDirectionInX);
-		weaponObject.setZindex(1);
 		this.weaponEffectSprite.setDirection({ x: aimingDirectionInX, y: 1 });
 		this.weaponEffectSprite.setRotation(45 * aimingDirectionInX);
 		this.weaponEffectSprite.setPivot(new Vector2(-0.4, 0.6));
