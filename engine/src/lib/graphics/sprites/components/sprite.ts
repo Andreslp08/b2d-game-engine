@@ -3,11 +3,14 @@ import { Component } from "../../../ecs/component";
 import { ITranform } from "../../../common/interfaces/transform";
 import Vector2 from "../../../math/vector2";
 
+export type SpriteAspectMode = "stretch" | "contain" | "cover";
+
 export type SpriteData = {
 	image: GameImage;
 	framePosition: Vector2;
 	frameSize: { w: number; h: number };
 	scale?: Vector2;
+	aspectMode?: SpriteAspectMode;
 	spriteSourceSize?: { x: number; y: number; w: number; h: number };
 	sourceSize?: { w: number; h: number };
 	worldTransform?: ITranform;
@@ -30,6 +33,7 @@ export class Sprite extends Component {
 	private framePosition: Vector2;
 	private frameSize: { w: number; h: number };
 	private scale: Vector2;
+	private aspectMode: SpriteAspectMode;
 	private spriteSourceSize: { x: number; y: number; w: number; h: number };
 	private sourceSize: { w: number; h: number };
 	private image: GameImage;
@@ -63,6 +67,7 @@ export class Sprite extends Component {
 		this.framePosition = spriteData.framePosition;
 		this.frameSize = spriteData.frameSize;
 		this.scale = spriteData.scale ?? new Vector2(1, 1);
+		this.aspectMode = spriteData.aspectMode ?? "stretch";
 		this.spriteSourceSize = spriteData.spriteSourceSize || {
 			x: 0,
 			y: 0,
@@ -107,6 +112,10 @@ export class Sprite extends Component {
 
 	setScale(scale: Vector2) {
 		this.scale = scale;
+	}
+
+	setAspectMode(aspectMode: SpriteAspectMode) {
+		this.aspectMode = aspectMode;
 	}
 
 	setDirection(direction: { x: 1 | -1; y: 1 | -1 }) {
@@ -189,6 +198,10 @@ export class Sprite extends Component {
 
 	getScale() {
 		return this.scale;
+	}
+
+	getAspectMode() {
+		return this.aspectMode;
 	}
 
 	getDirection() {
