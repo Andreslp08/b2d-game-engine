@@ -24,4 +24,7 @@ export class ItemRegistry {
 	has(definitionId: string): boolean {
 		return this.definitions.has(definitionId);
 	}
+	getAll(): AnyItemDefinition[] {
+		return Array.from(this.definitions.values());
+	}
 }

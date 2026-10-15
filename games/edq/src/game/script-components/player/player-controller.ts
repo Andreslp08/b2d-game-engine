@@ -50,9 +50,9 @@ export class PlayerController extends ScriptComponent {
 		const dynamicBody = entity.getComponent(DynamicBody);
 		const movement = entity.getComponent(PlayerMovement);
 		if (!dynamicBody || !movement) return;
-		const dashKey = KeyBoardManager.keyDown(movement.inputKeys.horizontalDash);
-		const moveLeft = KeyBoardManager.keyDown(movement.inputKeys.left);
-		const moveRight = KeyBoardManager.keyDown(movement.inputKeys.right);
+		const dashKey = KeyBoardManager.physicalKeyDown(movement.inputCodes.horizontalDash);
+		const moveLeft = KeyBoardManager.physicalKeyDown(movement.inputCodes.left);
+		const moveRight = KeyBoardManager.physicalKeyDown(movement.inputCodes.right);
 
 		this.dashCooldownTimer -= Time.fixedDeltaTime;
 		this.dashDurationTimer -= Time.fixedDeltaTime;
@@ -138,7 +138,7 @@ export class PlayerController extends ScriptComponent {
 			}
 		}
 
-		if (KeyBoardManager.keyDown(movement.inputKeys.up) && !this.debouncingJump) {
+		if (KeyBoardManager.physicalKeyDown(movement.inputCodes.up) && !this.debouncingJump) {
 			if (dynamicBody.isOnGround && !movement.isJumping) {
 				movement.isJumping = true;
 				movement.jumpStartY = y;
@@ -155,7 +155,7 @@ export class PlayerController extends ScriptComponent {
 		}
 		if (
 			movement.isJumping &&
-			(!KeyBoardManager.keyDown(movement.inputKeys.up) || dynamicBody.velocity.y > 0)
+			(!KeyBoardManager.physicalKeyDown(movement.inputCodes.up) || dynamicBody.velocity.y > 0)
 		) {
 			movement.isJumping = false;
 		}
@@ -167,8 +167,8 @@ export class PlayerController extends ScriptComponent {
 		const gameObject = dynamicBody.getEntity();
 		const movement = gameObject.getComponent(PlayerMovement);
 
-		const moveLeft = KeyBoardManager.keyDown(movement.inputKeys.left);
-		const moveRight = KeyBoardManager.keyDown(movement.inputKeys.right);
+		const moveLeft = KeyBoardManager.physicalKeyDown(movement.inputCodes.left);
+		const moveRight = KeyBoardManager.physicalKeyDown(movement.inputCodes.right);
 
 		if (moveRight) dynamicBody.addForce(new Vector2(movement.forceX, 0));
 		else if (moveLeft) dynamicBody.addForce(new Vector2(-movement.forceX, 0));

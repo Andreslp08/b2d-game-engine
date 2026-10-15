@@ -8,13 +8,18 @@ import { createMapGameZone } from "../../../prefabs/game-zone";
 import { useGameStore } from "../../../../store/store";
 import { PlayerController } from "../../../script-components/player/player-controller";
 import type { GameObject } from "engine/common/entities/game-object";
-import {  MarkerType } from "../../../config/constants";
+import { MarkerType } from "../../../config/constants";
 import { createTeleport } from "../../../prefabs/teleport";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { PlayerMovement } from "../../../script-components/player/player-movement";
 import { isFromLayer } from "../../../util/map-layer";
 import { generatePlayerSpawnPointFromMap } from "../../../util/spawn-player";
 import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
+import { createPickup } from "../../../prefabs/pickup";
+import Vector2 from "engine/math/vector2";
+import { Transform } from "engine/common/components/transform";
+import type { WeaponDefinition } from "../../../items/definitions/item-definition";
+import { itemRegistry } from "../../../items/item-catalog";
 
 export class Room2 extends Room {
 	static readonly id = "room2";
@@ -25,7 +30,7 @@ export class Room2 extends Room {
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
 		Engine.canvas.style.background = "linear-gradient(3deg, rgb(128 3 3), rgb(0, 0, 0))"; // dark red sky
 		DebugMode.enabled = false;
-		DebugMode.setMode(DebugTypes.COLLIDERS);
+		DebugMode.setMode(DebugTypes.TRIGGER_AREAS);
 
 		try {
 			this.tiledMap = await TileMap.generateMapFromTiled(
@@ -45,6 +50,23 @@ export class Room2 extends Room {
 		this.createTeleports(this.tiledMap);
 		this.onFadeFinished.subscribe(() => {
 			this.enablePlayerInput(this.player, true);
+		});
+		this.createPickups();
+	}
+
+	private createPickups() {
+		itemRegistry.getAll().forEach((itemDefinition, i) => {
+			const pickup = createPickup({
+				scene: this,
+				position: this.player
+					.getComponent(Transform)
+					.position.clone()
+					.add(new Vector2(2, 0))
+					.add(new Vector2(i *2, 0)),
+				amount: itemDefinition.stackable ? 3 : 1,
+				definition: itemDefinition,
+			});
+			this.addEntity(pickup);
 		});
 	}
 
@@ -85,6 +107,7 @@ export class Room2 extends Room {
 		});
 
 		const player = createPlayer({
+			scene: this,
 			position: spawnPoint.position,
 			skin: useGameStore.getState().currentSkin,
 		}) as GameObject;

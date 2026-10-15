@@ -30,16 +30,16 @@ export const ItemActionBar = ({
 						<p className={actionButtonClassName}>Equip</p>
 						<div className="flex gap-3">
 							{QUICK_SLOT_BINDINGS.filter(({ slot }) => slot !== 0).map(
-								({ key, slot }) => {
+								({ code, label, slot }) => {
 									const isActiveSlot = item.quickSlot?.slot === slot;
 									return (
 										<button
-											key={key}
+										key={code}
 											className={`${isActiveSlot ? "bg-white text-[#ba0000]" : "bg-[#ba0000] text-white"} rounded-full w-7 h-7 flex items-center justify-center text-center`}
 											onClick={() => onAssignToQuickSlot(item.entryId, slot)}
 											type="button"
 										>
-											{key}
+										{label}
 										</button>
 									);
 								},

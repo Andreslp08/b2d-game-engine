@@ -4,6 +4,7 @@ import { GameObject } from "engine/common/entities/game-object";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { MouseManager } from "engine/input/mouse-manager";
+import { KeyBoardManager, PhysicalKey } from "engine/input/keyboard-manager";
 import { MathUtil } from "engine/math/math-util";
 import Vector2 from "engine/math/vector2";
 import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
@@ -21,7 +22,6 @@ import { EquipmentComponent } from "../../items/components/equipment-component";
 import { itemRegistry } from "../../items/item-catalog";
 import type { WeaponDefinition } from "../../items/definitions/item-definition";
 import { getProjectileDefinition } from "../../items/item-catalog/projectile-catalog";
-import { KeyBoardManager } from "engine/input/keyboard-manager";
 import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { CullingConfigComponent } from "engine/performance/culling";
@@ -488,7 +488,7 @@ export class WeaponController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.enableController) return;
-		const reloadKey = KeyBoardManager.keyDown("r");
+		const reloadKey = KeyBoardManager.physicalKeyDown(PhysicalKey.R);
 		const reloadPressed = reloadKey && !this.previousReloadKey;
 		this.previousReloadKey = reloadKey;
 		const definition = this.getDefinition();

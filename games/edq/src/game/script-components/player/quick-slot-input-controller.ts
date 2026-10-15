@@ -18,7 +18,7 @@ export class QuickSlotInputController extends ScriptComponent {
 		quickSlots.removeInvalidReferences(inventory.inventory);
 		equipment.clearIfMissing(inventory.inventory);
 		for (const slot of QUICK_SLOT_BINDINGS) {
-			if (!KeyBoardManager.keyDown(slot.key)) continue;
+			if (!KeyBoardManager.physicalKeyDown(slot.code)) continue;
 			quickSlots.setActiveSlot(slot.slot);
 			const referenceId = quickSlots.get(slot.slot);
 			if (referenceId === null) {

@@ -5,7 +5,7 @@ import { OrthographicCamera } from "../../graphics/cameras/orthographic-camera";
 import { ScreenCamera } from "../../graphics/cameras/screen-camera";
 import { RenderLayerTypes } from "../../graphics/enum/render-layer-types.enum";
 import { Screen } from "../../graphics/screen/screen";
-import { KeyBoardManager } from "../../input/keyboard-manager";
+import { KeyBoardManager, PhysicalKey } from "../../input/keyboard-manager";
 import Vector2 from "../../math/vector2";
 import { ScriptComponent } from "../../scripts/script-component";
 import { UIComponent } from "../../ui/components/ui-component";
@@ -107,26 +107,26 @@ export class CameraNavigator extends ScriptComponent {
 
 		const horizontal =
 			Number(
-				KeyBoardManager.physicalKeyDown("KeyD") ||
-					KeyBoardManager.physicalKeyDown("ArrowRight"),
+				KeyBoardManager.physicalKeyDown(PhysicalKey.D) ||
+					KeyBoardManager.physicalKeyDown(PhysicalKey.ArrowRight),
 			) -
 			Number(
-				KeyBoardManager.physicalKeyDown("KeyA") ||
-					KeyBoardManager.physicalKeyDown("ArrowLeft"),
+				KeyBoardManager.physicalKeyDown(PhysicalKey.A) ||
+					KeyBoardManager.physicalKeyDown(PhysicalKey.ArrowLeft),
 			);
 		const vertical =
 			Number(
-				KeyBoardManager.physicalKeyDown("KeyS") ||
-					KeyBoardManager.physicalKeyDown("ArrowDown"),
+				KeyBoardManager.physicalKeyDown(PhysicalKey.S) ||
+					KeyBoardManager.physicalKeyDown(PhysicalKey.ArrowDown),
 			) -
 			Number(
-				KeyBoardManager.physicalKeyDown("KeyW") ||
-					KeyBoardManager.physicalKeyDown("ArrowUp"),
+				KeyBoardManager.physicalKeyDown(PhysicalKey.W) ||
+					KeyBoardManager.physicalKeyDown(PhysicalKey.ArrowUp),
 			);
 		const magnitude = Math.hypot(horizontal, vertical);
 		const isFast =
-			KeyBoardManager.physicalKeyDown("ShiftLeft") ||
-			KeyBoardManager.physicalKeyDown("ShiftRight");
+			KeyBoardManager.physicalKeyDown(PhysicalKey.ShiftLeft) ||
+			KeyBoardManager.physicalKeyDown(PhysicalKey.ShiftRight);
 		const speed = this.speed * (isFast ? this.fastMultiplier : 1);
 
 		if (magnitude > 0) {

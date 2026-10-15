@@ -7,6 +7,47 @@ export interface TextCompositionState {
 
 export type TextCompositionListener = (state: TextCompositionState) => void;
 
+export const PhysicalKey = {
+	A: "KeyA", B: "KeyB", C: "KeyC", D: "KeyD", E: "KeyE", F: "KeyF", G: "KeyG",
+	H: "KeyH", I: "KeyI", J: "KeyJ", K: "KeyK", L: "KeyL", M: "KeyM", N: "KeyN",
+	O: "KeyO", P: "KeyP", Q: "KeyQ", R: "KeyR", S: "KeyS", T: "KeyT", U: "KeyU",
+	V: "KeyV", W: "KeyW", X: "KeyX", Y: "KeyY", Z: "KeyZ",
+	Digit0: "Digit0", Digit1: "Digit1", Digit2: "Digit2", Digit3: "Digit3", Digit4: "Digit4",
+	Digit5: "Digit5", Digit6: "Digit6", Digit7: "Digit7", Digit8: "Digit8", Digit9: "Digit9",
+	Backquote: "Backquote", Backslash: "Backslash", BracketLeft: "BracketLeft", BracketRight: "BracketRight",
+	Comma: "Comma", Equal: "Equal", IntlBackslash: "IntlBackslash", IntlRo: "IntlRo", IntlYen: "IntlYen",
+	Minus: "Minus", Period: "Period", Quote: "Quote", Semicolon: "Semicolon", Slash: "Slash",
+	AltLeft: "AltLeft", AltRight: "AltRight", Backspace: "Backspace", CapsLock: "CapsLock",
+	ContextMenu: "ContextMenu", ControlLeft: "ControlLeft", ControlRight: "ControlRight", Enter: "Enter",
+	MetaLeft: "MetaLeft", MetaRight: "MetaRight", ShiftLeft: "ShiftLeft", ShiftRight: "ShiftRight",
+	Space: "Space", Tab: "Tab", Convert: "Convert", KanaMode: "KanaMode", Lang1: "Lang1", Lang2: "Lang2",
+	Lang3: "Lang3", Lang4: "Lang4", Lang5: "Lang5", NonConvert: "NonConvert",
+	Delete: "Delete", End: "End", Help: "Help", Home: "Home", Insert: "Insert", PageDown: "PageDown",
+	PageUp: "PageUp", ArrowDown: "ArrowDown", ArrowLeft: "ArrowLeft", ArrowRight: "ArrowRight", ArrowUp: "ArrowUp",
+	Escape: "Escape", PrintScreen: "PrintScreen", ScrollLock: "ScrollLock", Pause: "Pause",
+	F1: "F1", F2: "F2", F3: "F3", F4: "F4", F5: "F5", F6: "F6", F7: "F7", F8: "F8",
+	F9: "F9", F10: "F10", F11: "F11", F12: "F12", F13: "F13", F14: "F14", F15: "F15", F16: "F16",
+	F17: "F17", F18: "F18", F19: "F19", F20: "F20", F21: "F21", F22: "F22", F23: "F23", F24: "F24",
+	NumLock: "NumLock", Numpad0: "Numpad0", Numpad1: "Numpad1", Numpad2: "Numpad2", Numpad3: "Numpad3",
+	Numpad4: "Numpad4", Numpad5: "Numpad5", Numpad6: "Numpad6", Numpad7: "Numpad7", Numpad8: "Numpad8",
+	Numpad9: "Numpad9", NumpadAdd: "NumpadAdd", NumpadBackspace: "NumpadBackspace", NumpadClear: "NumpadClear",
+	NumpadClearEntry: "NumpadClearEntry", NumpadComma: "NumpadComma", NumpadDecimal: "NumpadDecimal",
+	NumpadDivide: "NumpadDivide", NumpadEnter: "NumpadEnter", NumpadEqual: "NumpadEqual", NumpadHash: "NumpadHash",
+	NumpadMemoryAdd: "NumpadMemoryAdd", NumpadMemoryClear: "NumpadMemoryClear", NumpadMemoryRecall: "NumpadMemoryRecall",
+	NumpadMemoryStore: "NumpadMemoryStore", NumpadMemorySubtract: "NumpadMemorySubtract", NumpadMultiply: "NumpadMultiply",
+	NumpadParenLeft: "NumpadParenLeft", NumpadParenRight: "NumpadParenRight", NumpadSubtract: "NumpadSubtract",
+	BrowserBack: "BrowserBack", BrowserFavorites: "BrowserFavorites", BrowserForward: "BrowserForward", BrowserHome: "BrowserHome",
+	BrowserRefresh: "BrowserRefresh", BrowserSearch: "BrowserSearch", BrowserStop: "BrowserStop",
+	AudioVolumeDown: "AudioVolumeDown", AudioVolumeMute: "AudioVolumeMute", AudioVolumeUp: "AudioVolumeUp",
+	MediaPlayPause: "MediaPlayPause", MediaStop: "MediaStop", MediaTrackNext: "MediaTrackNext", MediaTrackPrevious: "MediaTrackPrevious",
+	LaunchApp1: "LaunchApp1", LaunchApp2: "LaunchApp2", LaunchMail: "LaunchMail", MediaSelect: "MediaSelect",
+	Eject: "Eject", Power: "Power", Sleep: "Sleep", WakeUp: "WakeUp", Fn: "Fn", FnLock: "FnLock",
+	Again: "Again", Copy: "Copy", Cut: "Cut", Find: "Find", Open: "Open", Paste: "Paste", Props: "Props", Select: "Select", Undo: "Undo",
+	Hiragana: "Hiragana", Katakana: "Katakana",
+} as const;
+
+export type PhysicalKeyCode = (typeof PhysicalKey)[keyof typeof PhysicalKey];
+
 interface KeyboardLayoutMap {
 	get(code: string): string | undefined;
 }
@@ -119,11 +160,11 @@ export class KeyBoardManager {
 		return KeyBoardManager._logicalKeys?.[key] === "keyup" ? true : false;
 	}
 
-	static physicalKeyDown(key: string): boolean {
+	static physicalKeyDown(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager._physicalKeys?.[key] === "keydown" ? true : false;
 	}
 
-	static physicalKeyUp(key: string): boolean {
+	static physicalKeyUp(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager._physicalKeys?.[key] === "keyup" ? true : false;
 	}
 
@@ -135,11 +176,11 @@ export class KeyBoardManager {
 		return KeyBoardManager.logicalKeysJustReleased.has(key);
 	}
 
-	static physicalKeyJustPressed(key: string): boolean {
+	static physicalKeyJustPressed(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager.physicalKeysJustPressed.has(key);
 	}
 
-	static physicalKeyJustReleased(key: string): boolean {
+	static physicalKeyJustReleased(key: PhysicalKeyCode): boolean {
 		return KeyBoardManager.physicalKeysJustReleased.has(key);
 	}
 
@@ -150,7 +191,7 @@ export class KeyBoardManager {
 		KeyBoardManager.physicalKeysJustReleased.clear();
 	}
 
-	static async getPhysicalKeyLabel(key: string): Promise<string> {
+	static async getPhysicalKeyLabel(key: PhysicalKeyCode): Promise<string> {
 		const keyboard = (navigator as Navigator & { keyboard?: KeyboardApi }).keyboard;
 		if (keyboard) {
 			try {
@@ -189,7 +230,7 @@ export class KeyBoardManager {
 		}
 	}
 
-	private static getPhysicalKeyFallbackLabel(key: string): string {
+	private static getPhysicalKeyFallbackLabel(key: PhysicalKeyCode): string {
 		if (key.startsWith("Key")) return key.slice(3);
 		if (key.startsWith("Digit")) return key.slice(5);
 		if (key.startsWith("Numpad")) return `Num ${key.slice(6)}`;

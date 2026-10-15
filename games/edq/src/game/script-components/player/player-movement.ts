@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component } from "engine/ecs/component";
+import { PhysicalKey } from "engine/input/keyboard-manager";
 
 export class PlayerMovement extends Component {
 	isJumping: boolean = false;
@@ -13,7 +14,13 @@ export class PlayerMovement extends Component {
 	dashCooldown: number = 0.5;
 	dashDuration: number = 0.16;
 	direction: { x: 1 | 0 | -1; y: 1 | 0 | -1 } = { x: 1, y: 0 };
-	inputKeys = { up: "w", down: "s", left: "a", right: "d", horizontalDash: "q" };
+	inputCodes = {
+		up: PhysicalKey.W,
+		down: PhysicalKey.S,
+		left: PhysicalKey.A,
+		right: PhysicalKey.D,
+		horizontalDash: PhysicalKey.Q,
+	};
 	jumpStartY: number | null = null;
 	maxJumpHeight: number = 150;
 	hasAppliedJumpForce: boolean = false;

@@ -89,7 +89,7 @@ const toItemView = (
 		quickSlot: quickSlot
 			? {
 					slot: quickSlot.slot,
-					key: quickSlot.key,
+					key: quickSlot.label,
 				}
 			: undefined,
 	};

@@ -120,6 +120,7 @@ export class Room1 extends Room {
 		});
 
 		const player = createPlayer({
+			scene:this,
 			position: spawnPoint.position,
 			skin: useGameStore.getState().currentSkin,
 		}) as GameObject;
@@ -129,10 +130,7 @@ export class Room1 extends Room {
 		const direction = spawnPoint.facingDirection === "left" ? -1 : 1;
 		player.getComponent(PlayerMovement).direction.x = direction;
 		player.getComponent(DynamicBody).direction.x = direction;
-		const weapon = createWeapon(Vector2.ZERO.clone());
-		weapon.setZindex(-1);
-		this.addEntity(weapon);
-		player.getComponent(WeaponHolder).attachWeapon(weapon);
+
 
 		if (!mapBounds) {
 			console.warn("Room1 requires a MapBounds object to constrain the player and camera.");

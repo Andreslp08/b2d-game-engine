@@ -28,13 +28,16 @@ import { Sprite } from "engine/graphics/sprites/components/sprite";
 import { TriggerArea } from "engine/trigger-area";
 import { Culling, CullingConfigComponent } from "engine/performance/culling";
 import { CullingType } from "engine/performance/enum/culling-type";
+import { createWeapon } from "./weapon";
+import type { Scene } from "engine/scenes/scene";
 
 type Params = {
+	scene: Scene;
 	position: Vector2;
 	skin?: PlayerSkin;
 };
 export const createPlayer = (params: Params): GameObject => {
-	const { position, skin = PlayerSkin.SKIN1 } = params;
+	const { position, skin = PlayerSkin.SKIN1, scene } = params;
 	const entity = new GameObject({
 		position: position,
 		rotation: 0,
@@ -61,27 +64,32 @@ export const createPlayer = (params: Params): GameObject => {
 	entity.addComponent(playerAimingArm);
 	entity.addComponent(new QuickSlotInputController());
 	entity.addComponent(new AimingController());
+	entity.addComponent(new WeaponHolder());
+	const weapon = createWeapon(Vector2.ZERO.clone());
+	scene.addEntity(weapon);
+	weapon.setZindex(-1);
+	entity.getComponent(WeaponHolder).attachWeapon(weapon);
 	const inventoryComponent = new InventoryComponent(itemRegistry);
 	const desertEagle = inventoryComponent.inventory.createInstance(itemRegistry.get("desert_eagle"));
-	const inventoryEntry = inventoryComponent.inventory.addInstance(desertEagle);
-	const m4 = inventoryComponent.inventory.createInstance(itemRegistry.get("m4"));
-	const m4Entry = inventoryComponent.inventory.addInstance(m4);
-	const shotgun = inventoryComponent.inventory.createInstance(itemRegistry.get("shotgun"));
-	const shotgunEntry = inventoryComponent.inventory.addInstance(shotgun);
-	const rocketLauncher = inventoryComponent.inventory.createInstance(itemRegistry.get("rocket_launcher"));
-	const rocketLauncherEntry = inventoryComponent.inventory.addInstance(rocketLauncher);
-	inventoryComponent.inventory.add("heavy_ammo", 42);
-	inventoryComponent.inventory.add("medium_ammo", 90);
-	inventoryComponent.inventory.add("shells_ammo", 24);
-	inventoryComponent.inventory.add("explosive_ammo", 3);
-	const firstAidEntry = inventoryComponent.inventory.add("first_aid", 3);
+	// const inventoryEntry = inventoryComponent.inventory.addInstance(desertEagle);
+	// const m4 = inventoryComponent.inventory.createInstance(itemRegistry.get("m4"));
+	// const m4Entry = inventoryComponent.inventory.addInstance(m4);
+	// const shotgun = inventoryComponent.inventory.createInstance(itemRegistry.get("shotgun"));
+	// const shotgunEntry = inventoryComponent.inventory.addInstance(shotgun);
+	// const rocketLauncher = inventoryComponent.inventory.createInstance(itemRegistry.get("rocket_launcher"));
+	// const rocketLauncherEntry = inventoryComponent.inventory.addInstance(rocketLauncher);
+	// inventoryComponent.inventory.add("heavy_ammo", 42);
+	// inventoryComponent.inventory.add("medium_ammo", 90);
+	// inventoryComponent.inventory.add("shells_ammo", 24);
+	// inventoryComponent.inventory.add("explosive_ammo", 3);
+	// const firstAidEntry = inventoryComponent.inventory.add("first_aid", 3);
 	const quickSlots = new QuickSlotsComponent();
 	quickSlots.set(0, null);
-	quickSlots.set(1, inventoryEntry.entryId);
-	quickSlots.set(2, m4Entry.entryId);
-	quickSlots.set(3, shotgunEntry.entryId);
-	quickSlots.set(4, rocketLauncherEntry.entryId);
-	quickSlots.set(5, firstAidEntry.entryId);
+	// quickSlots.set(1, inventoryEntry.entryId);
+	// quickSlots.set(2, m4Entry.entryId);
+	// quickSlots.set(3, shotgunEntry.entryId);
+	// quickSlots.set(4, rocketLauncherEntry.entryId);
+	// quickSlots.set(5, firstAidEntry.entryId);
 	entity.addComponent(inventoryComponent);
 	entity.addComponent(quickSlots);
 	const equipment = new EquipmentComponent();
@@ -94,8 +102,6 @@ export const createPlayer = (params: Params): GameObject => {
 	});
 	entity.addComponent(damageFlashEffect);
 	entity.addComponent(new PlayerAidKitController());
-
-	entity.addComponent(new WeaponHolder());
 	const collider = entity.getComponent(Collider);
 	const playerBody = entity.getComponent(DynamicBody);
 	const playerMovement = entity.getComponent(PlayerMovement);
