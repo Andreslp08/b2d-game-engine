@@ -1,9 +1,8 @@
-import { AssetEventListener, SoundAssetOptions } from "../interfaces/assets";
+import { SoundAssetOptions } from "../interfaces/assets";
 import { Asset } from "./asset";
 import { Howl } from "howler";
 
 export class GameSound extends Asset<Howl> {
-	onLoad: AssetEventListener;
 	options: SoundAssetOptions;
 
 	constructor(name: string, path: string, options?: SoundAssetOptions) {
@@ -16,25 +15,15 @@ export class GameSound extends Asset<Howl> {
 			preload: true,
 		});
 		this.nativeElement.on("load", () => {
-			if (this.onLoad) {
-				console.log("sound loaded", this.nativeElement);
-				if (this._loaded) return;
-				this.onLoad({ error: "", loaded: true, ok: true });
-			}
-			this._loaded = true;
+            if (this._loaded) return;
+            this._loaded = true;
+			this.emitLoad({ error: "", loaded: true, ok: true });
 		});
 
 		this.nativeElement.on("loaderror", () => {
 			console.warn(`GameSound path: ${this.path} is an invalid path or could not be loaded.`);
-			if (this.onLoad) {
-				this.onLoad({
-					error: `GameSound: ${this.path} is an invalid path or could not be loaded.`,
-					loaded: true,
-					ok: false,
-				});
-			}
-
-			this._loaded = false;
+            this._loaded = false;
+			this.emitLoad({ error: `GameSound: ${this.path} is an invalid path or could not be loaded.`, loaded: true, ok: false });
 		});
 	}
 

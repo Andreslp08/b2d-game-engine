@@ -23,7 +23,11 @@ export enum GameAssetsTypes {
 export interface AssetsPreloaderEvent {
 	progress: number;
 	finished: boolean;
-	currentAssetLoading?: string;
+	currentAssetLoading?: {
+		type: GameAssetsTypes;
+		name: string;
+		path: string;
+	};
 }
 
 export interface AssetsPreloaderListener {

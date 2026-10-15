@@ -21,13 +21,12 @@ export class AssetsPreloader {
 		return AssetsPreloader._assets;
 	}
 
-	static set(
+	static preload(
 		assets: AssetToPreload<SoundAssetOptions>[],
 		callback: AssetsPreloaderListener
 	): void {
 		let progress = 0;
 		let loadedNum = 0;
-		callback({ finished: false, progress: progress });
 
 		const promises: Promise<PreloadedAsset>[] = assets.map((asset) => {
 			return new Promise((resolve, reject) => {
@@ -47,7 +46,7 @@ export class AssetsPreloader {
 						sprite: params?.sprite,
 					});
 				} else {
-					callback({ finished: false, progress: progress, currentAssetLoading: path });
+					callback({ finished: false, progress: progress, currentAssetLoading: { type: type, name: name, path: path } });
 					reject(
 						`Assets with type '${type}' cannot be loaded, no class can handle this type.`
 					);
@@ -60,7 +59,7 @@ export class AssetsPreloader {
 						callback({
 							finished: false,
 							progress: progress,
-							currentAssetLoading: path,
+							currentAssetLoading: { type: type, name: name, path: path },
 						});
 						const preloadedAsset: PreloadedAsset = {
 							type: type,
@@ -78,7 +77,7 @@ export class AssetsPreloader {
 		Promise.all(promises)
 			.then((result) => {
 				AssetsPreloader._assets = result;
-				callback({ progress: progress, finished: true });
+				callback({ progress: progress, finished: true, currentAssetLoading: result.at(-1) });
 			})
 			.catch((error) => {
 				console.log("Assets Manager:", error);
