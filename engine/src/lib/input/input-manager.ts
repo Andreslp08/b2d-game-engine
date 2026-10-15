@@ -1,7 +1,13 @@
 import { KeyBoardManager, type PhysicalKeyCode } from "./keyboard-manager";
 import { MouseManager, type MouseButton } from "./mouse-manager";
-import { InputContextManager, type InputContext } from "./input-context-manager";
+import {
+	InputContextManager,
+	InputActionPhase,
+	type InputContext,
+} from "./input-context-manager";
 import Vector2 from "../math/vector2";
+
+export { InputActionPhase } from "./input-context-manager";
 
 /** Supported input device categories. */
 export type InputDevice = "keyboard" | "mouse" | "gamepad";
@@ -46,11 +52,22 @@ export type InputAction = {
 	bindings: readonly KeyboardVector2Composite[];
 };
 
+/** Describes a button action transition during the engine input phase. */
+export interface InputActionEvent {
+	action: string;
+	phase: InputActionPhase;
+	isDown: boolean;
+}
+
+/** Receives a button action transition during the engine input phase. */
+export type InputActionListener = (event: InputActionEvent) => void;
+
 /** Stores action bindings, evaluates devices, and dispatches context actions per frame. */
 export class InputManager {
 	private static readonly instances = new Set<InputManager>();
 	private readonly actionMap = new Map<string, InputAction>();
 	private readonly contextManager = new InputContextManager();
+	private readonly actionListeners = new Map<string, Set<InputActionListener>>();
 
 	/** Creates and globally registers an input manager for engine frame updates. */
 	constructor() {
@@ -66,11 +83,30 @@ export class InputManager {
 	dispose(): void {
 		InputManager.instances.delete(this);
 		this.contextManager.clear();
+		this.actionListeners.clear();
 	}
 
 	/** Adds an action-routing context to this manager. */
 	pushContext(context: InputContext): () => void {
 		return this.contextManager.push(context);
+	}
+
+	/** Subscribes to every transition of an action and returns an idempotent unsubscribe function. */
+	on(action: string, listener: InputActionListener): () => void {
+		let listeners = this.actionListeners.get(action);
+		if (!listeners) {
+			listeners = new Set();
+			this.actionListeners.set(action, listeners);
+		}
+		listeners.add(listener);
+
+		let unsubscribed = false;
+		return () => {
+			if (unsubscribed) return;
+			unsubscribed = true;
+			listeners.delete(listener);
+			if (listeners.size === 0) this.actionListeners.delete(action);
+		};
 	}
 
 	/** Adds or replaces a named action. */
@@ -156,8 +192,18 @@ export class InputManager {
 
 	private update(): void {
 		for (const action of this.actionMap.values()) {
-			if (action.type === "button" && this.justPressed(action.name)) this.contextManager.dispatch(action.name);
+			if (action.type !== "button") continue;
+			if (this.justPressed(action.name)) this.dispatchAction(action.name, InputActionPhase.Pressed);
+			if (this.justReleased(action.name)) this.dispatchAction(action.name, InputActionPhase.Released);
 		}
+	}
+
+	private dispatchAction(action: string, phase: InputActionPhase): void {
+		this.contextManager.dispatch(action, phase);
+		const listeners = this.actionListeners.get(action);
+		if (!listeners) return;
+		const event: InputActionEvent = { action, phase, isDown: phase === InputActionPhase.Pressed };
+		for (const listener of [...listeners]) listener(event);
 	}
 
 	/** Resolves a display label for an action's first button binding. */

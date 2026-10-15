@@ -1,9 +1,15 @@
+/** A button action transition emitted during the input phase. */
+export enum InputActionPhase {
+	Pressed = "pressed",
+	Released = "released",
+}
+
 /** Receives named input actions according to a priority-based routing policy. */
 export interface InputContext {
 	id: string;
 	priority: number;
 	enabled?: boolean;
-	onAction(action: string): boolean;
+	onAction(action: string, phase: InputActionPhase): boolean;
 }
 
 type RegisteredContext = {
@@ -34,15 +40,15 @@ export class InputContextManager {
 		};
 	}
 
-	/** Dispatches an action from highest to lowest priority. */
-	dispatch(action: string): boolean {
+	/** Dispatches an action transition from highest to lowest priority. */
+	dispatch(action: string, phase: InputActionPhase): boolean {
 		const orderedContexts = [...this.contexts].sort(
 			(left, right) => right.context.priority - left.context.priority || right.order - left.order,
 		);
 
 		for (const { context } of orderedContexts) {
 			if (context.enabled === false) continue;
-			if (context.onAction(action)) return true;
+			if (context.onAction(action, phase)) return true;
 		}
 
 		return false;
