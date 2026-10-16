@@ -21,12 +21,12 @@ export class MarkerSpriteController extends ScriptComponent {
 		framePosition: Vector2;
 		frameSize: { w: number; h: number };
 	} {
-		const cylinder = { framePosition: new Vector2(0, 0), frameSize: { w: 500, h: 500 } };
+		const cylinder = { framePosition: new Vector2(500, 0), frameSize: { w: 500, h: 1000 } };
 		switch (markerType) {
 			case MarkerType.cylinder:
 				return cylinder;
 			case MarkerType.corona:
-				return { framePosition: new Vector2(1500, 0), frameSize: { w: 1000, h: 1000 } };
+				return { framePosition: new Vector2(1000, 0), frameSize: { w: 1000, h: 1000 } };
 			default:
 				return cylinder;
 		}
@@ -43,7 +43,7 @@ export class MarkerSpriteController extends ScriptComponent {
 		});
 		this.arrowSprite = new Sprite({
 			image: AssetsManager.getImageByName("spritesheet:markers"),
-			framePosition: new Vector2(1000, 0),
+			framePosition: new Vector2(0, 0),
 			frameSize: { w: 500, h: 500 },
 			useEntityTransform: false,
 			worldTransform: new Transform({
@@ -52,8 +52,8 @@ export class MarkerSpriteController extends ScriptComponent {
 				rotation: 0,
 			}),
 		});
-		this.entity.addComponent(this.arrowSprite);
 		this.entity.addComponent(this.sprite);
+		this.entity.addComponent(this.arrowSprite);
 	}
 
 	private getArrowRotation(arrowDirection: MarkerArrowDirection): number {
