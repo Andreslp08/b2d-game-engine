@@ -3,11 +3,12 @@ import { MouseManager, type MouseButton } from "./mouse-manager";
 import {
 	InputContextManager,
 	InputActionPhase,
+	type InputDispatchMode,
 	type InputContext,
 } from "./input-context-manager";
 import Vector2 from "../math/vector2";
 
-export { InputActionPhase } from "./input-context-manager";
+export { InputActionPhase, type InputDispatchMode } from "./input-context-manager";
 
 /** Supported input device categories. */
 export type InputDevice = "keyboard" | "mouse" | "gamepad";
@@ -22,6 +23,18 @@ export type GamepadButton =
 	| "right-bumper"
 	| "start"
 	| "select";
+
+/** Normalized gamepad button data for action events. */
+export interface GamepadInputEvent {
+	device: "gamepad";
+	gamepadIndex: number;
+	button: GamepadButton;
+	value: number;
+	timestamp: number;
+}
+
+/** Native input data that produced an action transition. */
+export type InputNativeEvent = KeyboardEvent | MouseEvent | GamepadInputEvent;
 
 /** A keyboard button and optional required key groups. */
 export type KeyboardButtonBinding = { device: "keyboard"; input: PhysicalKeyCode; modifiers?: PhysicalKeyCode[][] };
@@ -52,51 +65,102 @@ export type InputAction = {
 	bindings: readonly KeyboardVector2Composite[];
 };
 
-/** Describes a button action transition during the engine input phase. */
+/** Describes a button action transition and its source input event. */
 export interface InputActionEvent {
 	action: string;
 	phase: InputActionPhase;
 	isDown: boolean;
+	device: InputDevice;
+	nativeEvent: InputNativeEvent;
+	consumed: boolean;
 }
 
-/** Receives a button action transition during the engine input phase. */
+/** Receives a button action transition. */
 export type InputActionListener = (event: InputActionEvent) => void;
 
-/** Stores action bindings, evaluates devices, and dispatches context actions per frame. */
+/** Selects when an action listener receives transitions. */
+export interface InputListenerOptions {
+	dispatchMode?: InputDispatchMode;
+}
+
+/** Stores action bindings and routes action transitions by dispatch mode. */
 export class InputManager {
 	private static readonly instances = new Set<InputManager>();
 	private readonly actionMap = new Map<string, InputAction>();
 	private readonly contextManager = new InputContextManager();
 	private readonly actionListeners = new Map<string, Set<InputActionListener>>();
+	private readonly immediateActionListeners = new Map<string, Set<InputActionListener>>();
+	private readonly queuedActions: { event: InputActionEvent; context?: InputContext }[] = [];
+	private readonly unsubscribeKeyboardDown: () => void;
+	private readonly unsubscribeKeyboardUp: () => void;
+	private readonly unsubscribeMouseDown: () => void;
+	private readonly unsubscribeMouseUp: () => void;
 
-	/** Creates and globally registers an input manager for engine frame updates. */
+	/** Creates an input manager with immediate and frame-based action routing. */
 	constructor() {
+		KeyBoardManager.listen();
+		MouseManager.listen();
 		InputManager.instances.add(this);
+		this.unsubscribeKeyboardDown = KeyBoardManager.onKeyDown((event) =>
+			this.dispatchKeyboardAction(event, InputActionPhase.Pressed),
+		);
+		this.unsubscribeKeyboardUp = KeyBoardManager.onKeyUp((event) =>
+			this.dispatchKeyboardAction(event, InputActionPhase.Released),
+		);
+		this.unsubscribeMouseDown = MouseManager.onMouseDown((event) =>
+			this.dispatchMouseAction(event, InputActionPhase.Pressed),
+		);
+		this.unsubscribeMouseUp = MouseManager.onMouseUp((event) =>
+			this.dispatchMouseAction(event, InputActionPhase.Released),
+		);
 	}
 
-	/** Updates every live input manager once during the current engine frame. */
+	/** Processes every manager's queued gameplay actions at the start of an engine frame. */
 	static updateAll(): void {
 		for (const inputManager of InputManager.instances) inputManager.update();
 	}
 
-	/** Unregisters this manager and clears its active contexts. */
-	dispose(): void {
-		InputManager.instances.delete(this);
-		this.contextManager.clear();
-		this.actionListeners.clear();
+	/** Discards queued gameplay actions, such as when starting or stopping a game. */
+	static clearAllQueues(): void {
+		for (const inputManager of InputManager.instances) inputManager.queuedActions.length = 0;
 	}
 
-	/** Adds an action-routing context to this manager. */
+	/** Removes native input subscriptions and clears contexts, listeners, and queued actions. */
+	dispose(): void {
+		InputManager.instances.delete(this);
+		this.unsubscribeKeyboardDown();
+		this.unsubscribeKeyboardUp();
+		this.unsubscribeMouseDown();
+		this.unsubscribeMouseUp();
+		this.contextManager.clear();
+		this.actionListeners.clear();
+		this.immediateActionListeners.clear();
+		this.queuedActions.length = 0;
+	}
+
+	/** Adds an action-routing context to this manager. Contexts default to frame delivery. */
 	pushContext(context: InputContext): () => void {
 		return this.contextManager.push(context);
 	}
 
-	/** Subscribes to every transition of an action and returns an idempotent unsubscribe function. */
-	on(action: string, listener: InputActionListener): () => void {
-		let listeners = this.actionListeners.get(action);
+	/** Subscribes to action transitions. Listeners default to frame delivery. */
+	on(action: string, listener: InputActionListener, options: InputListenerOptions = {}): () => void {
+		return this.addListener(
+			options.dispatchMode === "immediate" ? this.immediateActionListeners : this.actionListeners,
+			action,
+			listener,
+		);
+	}
+
+	private addListener(
+		listenersByAction: Map<string, Set<InputActionListener>>,
+		action: string,
+		listener: InputActionListener,
+	): () => void {
+		let listeners = listenersByAction.get(action);
 		if (!listeners) {
 			listeners = new Set();
-			this.actionListeners.set(action, listeners);
+			listenersByAction.set(action, listeners);
 		}
 		listeners.add(listener);
 
@@ -105,7 +169,7 @@ export class InputManager {
 			if (unsubscribed) return;
 			unsubscribed = true;
 			listeners.delete(listener);
-			if (listeners.size === 0) this.actionListeners.delete(action);
+			if (listeners.size === 0) listenersByAction.delete(action);
 		};
 	}
 
@@ -190,20 +254,81 @@ export class InputManager {
 		return new Vector2(Math.max(-1, Math.min(1, x)), Math.max(-1, Math.min(1, y)));
 	}
 
-	private update(): void {
+	private dispatchKeyboardAction(event: KeyboardEvent, phase: InputActionPhase): void {
 		for (const action of this.actionMap.values()) {
 			if (action.type !== "button") continue;
-			if (this.justPressed(action.name)) this.dispatchAction(action.name, InputActionPhase.Pressed);
-			if (this.justReleased(action.name)) this.dispatchAction(action.name, InputActionPhase.Released);
+			const binding = action.bindings.find(
+				(current) =>
+					current.device === "keyboard" &&
+					current.input === event.code &&
+					(phase === InputActionPhase.Released || this.isBindingDown(current)),
+			);
+			if (binding) this.routeAction(action.name, phase, binding.device, event);
 		}
 	}
 
-	private dispatchAction(action: string, phase: InputActionPhase): void {
-		this.contextManager.dispatch(action, phase);
-		const listeners = this.actionListeners.get(action);
+	private dispatchMouseAction(event: MouseEvent, phase: InputActionPhase): void {
+		const button = this.getMouseButton(event);
+		if (!button) return;
+
+		for (const action of this.actionMap.values()) {
+			if (action.type !== "button") continue;
+			const binding = action.bindings.find(
+				(current) =>
+					current.device === "mouse" &&
+					current.input === button &&
+					(phase === InputActionPhase.Released || this.isBindingDown(current)),
+			);
+			if (binding) this.routeAction(action.name, phase, binding.device, event);
+		}
+	}
+
+	private routeAction(
+		action: string,
+		phase: InputActionPhase,
+		device: InputDevice,
+		nativeEvent: InputNativeEvent,
+	): void {
+		const event: InputActionEvent = {
+			action,
+			phase,
+			isDown: phase === InputActionPhase.Pressed,
+			device,
+			nativeEvent,
+			consumed: false,
+		};
+		const context = this.contextManager.select(action, phase);
+		event.consumed = context !== undefined;
+		this.emit(this.immediateActionListeners, event);
+		if (context?.dispatchMode === "immediate") {
+			context.onAction(event);
+			return;
+		}
+		this.queuedActions.push({ event, context });
+	}
+
+	private update(): void {
+		const queuedActions = this.queuedActions.splice(0);
+		for (const { event, context } of queuedActions) {
+			if (context && this.contextManager.isActive(context)) context.onAction(event);
+			this.emit(this.actionListeners, event);
+		}
+	}
+
+	private emit(
+		listenersByAction: Map<string, Set<InputActionListener>>,
+		event: InputActionEvent,
+	): void {
+		const listeners = listenersByAction.get(event.action);
 		if (!listeners) return;
-		const event: InputActionEvent = { action, phase, isDown: phase === InputActionPhase.Pressed };
 		for (const listener of [...listeners]) listener(event);
+	}
+
+	private getMouseButton(event: MouseEvent): MouseButton | null {
+		if (event.button === 0) return "left";
+		if (event.button === 1) return "middle";
+		if (event.button === 2) return "right";
+		return null;
 	}
 
 	/** Resolves a display label for an action's first button binding. */

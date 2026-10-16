@@ -91,6 +91,7 @@ export class Engine {
 	}
 
 	public start() {
+		InputManager.clearAllQueues();
 		Engine.setRunningState(true);
 		Engine.setPausedState(false);
 		Engine.showCanvasOverlay();
@@ -103,6 +104,7 @@ export class Engine {
 	}
 
 	public stop() {
+		InputManager.clearAllQueues();
 		Engine.setRunningState(false);
 		Engine.setPausedState(false);
 		Engine.showCanvasOverlay();

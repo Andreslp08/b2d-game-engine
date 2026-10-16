@@ -9,6 +9,8 @@ export interface TextCompositionState {
 
 /** Receives IME composition state changes. */
 export type TextCompositionListener = (state: TextCompositionState) => void;
+/** Receives a native keyboard transition after the keyboard state was updated. */
+export type KeyboardInputListener = (event: KeyboardEvent) => void;
 
 /** Maps readable physical-key names to standard KeyboardEvent.code values. */
 export const PhysicalKey = {
@@ -72,8 +74,10 @@ export class KeyBoardManager {
 	private static readonly physicalKeysJustReleased = new Set<string>();
 	private static readonly textInputListeners = new Set<TextInputListener>();
 	private static readonly textCompositionListeners = new Set<TextCompositionListener>();
+	private static readonly keyDownListeners = new Set<KeyboardInputListener>();
+	private static readonly keyUpListeners = new Set<KeyboardInputListener>();
 	private static isListening = false;
-	private static readonly onKeyDown = (event: KeyboardEvent) => {
+	private static readonly handleKeyDown = (event: KeyboardEvent) => {
 		if (KeyBoardManager._physicalKeys[event.code] === "keydown") return;
 
 		KeyBoardManager.logicalKeyByPhysicalKey[event.code] = event.key;
@@ -83,8 +87,9 @@ export class KeyBoardManager {
 		}
 		KeyBoardManager._logicalKeys[event.key] = "keydown";
 		KeyBoardManager._physicalKeys[event.code] = "keydown";
+		for (const listener of [...KeyBoardManager.keyDownListeners]) listener(event);
 	};
-	private static readonly onKeyUp = (event: KeyboardEvent) => {
+	private static readonly handleKeyUp = (event: KeyboardEvent) => {
 		const logicalKey = KeyBoardManager.logicalKeyByPhysicalKey[event.code] ?? event.key;
 		if (KeyBoardManager._physicalKeys[event.code] === "keydown") {
 			KeyBoardManager.physicalKeysJustReleased.add(event.code);
@@ -95,6 +100,7 @@ export class KeyBoardManager {
 		KeyBoardManager._logicalKeys[logicalKey] = "keyup";
 		KeyBoardManager._physicalKeys[event.code] = "keyup";
 		delete KeyBoardManager.logicalKeyByPhysicalKey[event.code];
+		for (const listener of [...KeyBoardManager.keyUpListeners]) listener(event);
 	};
 	private static readonly clearKeys = () => {
 		KeyBoardManager._logicalKeys = {};
@@ -128,8 +134,8 @@ export class KeyBoardManager {
 	/** Starts browser keyboard and text-input listeners. */
 	static listen() {
 		if (!KeyBoardManager.isListening) {
-			window.addEventListener("keydown", KeyBoardManager.onKeyDown);
-			window.addEventListener("keyup", KeyBoardManager.onKeyUp);
+			window.addEventListener("keydown", KeyBoardManager.handleKeyDown);
+			window.addEventListener("keyup", KeyBoardManager.handleKeyUp);
 			window.addEventListener("beforeinput", KeyBoardManager.onBeforeInput);
 			window.addEventListener("compositionstart", KeyBoardManager.onCompositionStart);
 			window.addEventListener("compositionupdate", KeyBoardManager.onCompositionUpdate);
@@ -147,8 +153,8 @@ export class KeyBoardManager {
 	static unlisten() {
 		if (!KeyBoardManager.isListening) return;
 
-		window.removeEventListener("keydown", KeyBoardManager.onKeyDown);
-		window.removeEventListener("keyup", KeyBoardManager.onKeyUp);
+		window.removeEventListener("keydown", KeyBoardManager.handleKeyDown);
+		window.removeEventListener("keyup", KeyBoardManager.handleKeyUp);
 		window.removeEventListener("beforeinput", KeyBoardManager.onBeforeInput);
 		window.removeEventListener("compositionstart", KeyBoardManager.onCompositionStart);
 		window.removeEventListener("compositionupdate", KeyBoardManager.onCompositionUpdate);
@@ -200,12 +206,35 @@ export class KeyBoardManager {
 		return KeyBoardManager.physicalKeysJustReleased.has(key);
 	}
 
+	/** Subscribes to native keydown transitions and returns an idempotent unsubscribe function. */
+	static onKeyDown(listener: KeyboardInputListener): () => void {
+		return KeyBoardManager.subscribe(KeyBoardManager.keyDownListeners, listener);
+	}
+
+	/** Subscribes to native keyup transitions and returns an idempotent unsubscribe function. */
+	static onKeyUp(listener: KeyboardInputListener): () => void {
+		return KeyBoardManager.subscribe(KeyBoardManager.keyUpListeners, listener);
+	}
+
 	/** Clears transient pressed and released states after an engine frame. */
 	static endFrame(): void {
 		KeyBoardManager.logicalKeysJustPressed.clear();
 		KeyBoardManager.logicalKeysJustReleased.clear();
 		KeyBoardManager.physicalKeysJustPressed.clear();
 		KeyBoardManager.physicalKeysJustReleased.clear();
+	}
+
+	private static subscribe(
+		listeners: Set<KeyboardInputListener>,
+		listener: KeyboardInputListener,
+	): () => void {
+		listeners.add(listener);
+		let unsubscribed = false;
+		return () => {
+			if (unsubscribed) return;
+			unsubscribed = true;
+			listeners.delete(listener);
+		};
 	}
 
 	/** Resolves a user-facing label for a physical key using the active keyboard layout. */

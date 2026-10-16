@@ -11,6 +11,8 @@ import Vector2 from "../math/vector2";
 export type MouseCursorRenderMode = "system" | "hidden" | "custom";
 /** Mouse buttons supported by polling and action bindings. */
 export type MouseButton = "left" | "middle" | "right";
+/** Receives a native mouse-button transition after mouse state was updated. */
+export type MouseInputListener = (event: MouseEvent) => void;
 
 /** Tracks mouse position, button state, transient button edges, and cursor presentation. */
 export class MouseManager {
@@ -21,6 +23,8 @@ export class MouseManager {
 	private static clicksDown: Partial<Record<MouseButton, boolean>> = {};
 	private static readonly clicksJustPressed = new Set<MouseButton>();
 	private static readonly clicksJustReleased = new Set<MouseButton>();
+	private static readonly mouseDownListeners = new Set<MouseInputListener>();
+	private static readonly mouseUpListeners = new Set<MouseInputListener>();
 	private static isListening = false;
 	private static readonly clearClicks = () => {
 		MouseManager.clicksDown = {};
@@ -38,19 +42,21 @@ export class MouseManager {
 			event.clientY - canvasRect.top,
 		);
 	};
-	private static readonly onMouseDown = (event: MouseEvent) => {
+	private static readonly handleMouseDown = (event: MouseEvent) => {
 		const button = MouseManager.getButton(event.button);
 		if (!button || MouseManager.clicksDown[button]) return;
 
 		MouseManager.clicksDown[button] = true;
 		MouseManager.clicksJustPressed.add(button);
+		for (const listener of [...MouseManager.mouseDownListeners]) listener(event);
 	};
-	private static readonly onMouseUp = (event: MouseEvent) => {
+	private static readonly handleMouseUp = (event: MouseEvent) => {
 		const button = MouseManager.getButton(event.button);
 		if (!button) return;
 
 		if (MouseManager.clicksDown[button]) MouseManager.clicksJustReleased.add(button);
 		MouseManager.clicksDown[button] = false;
+		for (const listener of [...MouseManager.mouseUpListeners]) listener(event);
 	};
 	private static readonly onVisibilityChange = () => {
 		if (document.hidden) MouseManager.clearClicks();
@@ -66,8 +72,8 @@ export class MouseManager {
 			MouseManager._clientPosition = new Vector2(0, 0);
 			window.addEventListener("contextmenu", MouseManager.onContextMenu);
 			window.addEventListener("mousemove", MouseManager.onMouseMove);
-			window.addEventListener("mousedown", MouseManager.onMouseDown);
-			window.addEventListener("mouseup", MouseManager.onMouseUp);
+			window.addEventListener("mousedown", MouseManager.handleMouseDown);
+			window.addEventListener("mouseup", MouseManager.handleMouseUp);
 			window.addEventListener("blur", MouseManager.clearClicks);
 			window.addEventListener("mouseout", MouseManager.onMouseOut);
 			document.addEventListener("visibilitychange", MouseManager.onVisibilityChange);
@@ -83,8 +89,8 @@ export class MouseManager {
 
 		window.removeEventListener("contextmenu", MouseManager.onContextMenu);
 		window.removeEventListener("mousemove", MouseManager.onMouseMove);
-		window.removeEventListener("mousedown", MouseManager.onMouseDown);
-		window.removeEventListener("mouseup", MouseManager.onMouseUp);
+		window.removeEventListener("mousedown", MouseManager.handleMouseDown);
+		window.removeEventListener("mouseup", MouseManager.handleMouseUp);
 		window.removeEventListener("blur", MouseManager.clearClicks);
 		window.removeEventListener("mouseout", MouseManager.onMouseOut);
 		document.removeEventListener("visibilitychange", MouseManager.onVisibilityChange);
@@ -160,10 +166,33 @@ export class MouseManager {
 		return MouseManager.clicksJustReleased.has(button);
 	}
 
+	/** Subscribes to native mousedown transitions and returns an idempotent unsubscribe function. */
+	public static onMouseDown(listener: MouseInputListener): () => void {
+		return MouseManager.subscribe(MouseManager.mouseDownListeners, listener);
+	}
+
+	/** Subscribes to native mouseup transitions and returns an idempotent unsubscribe function. */
+	public static onMouseUp(listener: MouseInputListener): () => void {
+		return MouseManager.subscribe(MouseManager.mouseUpListeners, listener);
+	}
+
 	/** Clears transient button edges after all input consumers ran for the frame. */
 	public static endFrame(): void {
 		MouseManager.clicksJustPressed.clear();
 		MouseManager.clicksJustReleased.clear();
+	}
+
+	private static subscribe(
+		listeners: Set<MouseInputListener>,
+		listener: MouseInputListener,
+	): () => void {
+		listeners.add(listener);
+		let unsubscribed = false;
+		return () => {
+			if (unsubscribed) return;
+			unsubscribed = true;
+			listeners.delete(listener);
+		};
 	}
 
 	/** Enables or disables systems that should react to cursor input. */

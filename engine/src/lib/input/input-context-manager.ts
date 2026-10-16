@@ -4,12 +4,25 @@ export enum InputActionPhase {
 	Released = "released",
 }
 
+/** Controls whether an action is delivered synchronously or during the next engine input phase. */
+export type InputDispatchMode = "immediate" | "frame";
+
+import type { InputActionEvent } from "./input-manager";
+
+/** Declares an action and optional transitions handled by a context. */
+export interface InputContextAction {
+	action: string;
+	phases?: readonly InputActionPhase[];
+}
+
 /** Receives named input actions according to a priority-based routing policy. */
 export interface InputContext {
 	id: string;
 	priority: number;
+	actions: readonly InputContextAction[];
+	dispatchMode?: InputDispatchMode;
 	enabled?: boolean;
-	onAction(action: string, phase: InputActionPhase): boolean;
+	onAction(event: InputActionEvent): void;
 }
 
 type RegisteredContext = {
@@ -17,7 +30,7 @@ type RegisteredContext = {
 	order: number;
 };
 
-/** Routes actions to active contexts until one consumes the action. */
+/** Selects the highest-priority active context for each action transition. */
 export class InputContextManager {
 	private readonly contexts: RegisteredContext[] = [];
 	private nextOrder = 0;
@@ -40,18 +53,31 @@ export class InputContextManager {
 		};
 	}
 
-	/** Dispatches an action transition from highest to lowest priority. */
-	dispatch(action: string, phase: InputActionPhase): boolean {
+	/** Returns the highest-priority enabled context that declared the action transition. */
+	select(action: string, phase: InputActionPhase): InputContext | undefined {
 		const orderedContexts = [...this.contexts].sort(
 			(left, right) => right.context.priority - left.context.priority || right.order - left.order,
 		);
 
 		for (const { context } of orderedContexts) {
 			if (context.enabled === false) continue;
-			if (context.onAction(action, phase)) return true;
+			if (
+				context.actions.some(
+					(binding) =>
+						binding.action === action &&
+						(binding.phases === undefined || binding.phases.includes(phase)),
+				)
+			) {
+				return context;
+			}
 		}
 
-		return false;
+		return undefined;
+	}
+
+	/** Returns whether a context remains registered and enabled. */
+	isActive(context: InputContext): boolean {
+		return context.enabled !== false && this.contexts.some((registered) => registered.context === context);
 	}
 
 	/** Removes every registered context. */
