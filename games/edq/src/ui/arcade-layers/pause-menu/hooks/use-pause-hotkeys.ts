@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { InputActionPhase } from "engine/input/input-manager";
+import { GameplayAction, InputManagerInstance } from "../../../../game/input/input-manager";
+import { InputContextPriority } from "../../../../game/input/context-priority";
 
 type UsePauseHotkeysOptions = {
 	isPauseMenuVisible: boolean;
@@ -16,14 +19,19 @@ export const usePauseHotkeys = ({
 	onResumeAfterVisibilityRestore,
 }: UsePauseHotkeysOptions) => {
 	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key !== "Escape" || isTransitionLocked) return;
-			onTogglePauseMenu();
-		};
+		const releaseContext = InputManagerInstance.pushContext({
+			id: "arcade-pause-hotkey",
+			priority: InputContextPriority.Menu,
+			dispatchMode: "immediate",
+			actions: [{ action: GameplayAction.Back, phases: [InputActionPhase.Pressed] }],
+			onAction: () => {
+				if (isTransitionLocked) return;
+				onTogglePauseMenu();
+			},
+		});
 
-		window.addEventListener("keydown", handleKeyDown);
 		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
+			releaseContext();
 		};
 	}, [isTransitionLocked, onTogglePauseMenu]);
 

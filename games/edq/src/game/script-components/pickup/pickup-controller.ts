@@ -4,7 +4,9 @@ import { UIObject } from "engine/ui/entities/ui-object";
 import type { AnyItemDefinition } from "../../items/definitions/item-definition";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
-import { InputManagerInstance } from "../../input/input-manager";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
+import { InputContextPriority } from "../../input/context-priority";
+import { InputActionPhase } from "engine/input/input-manager";
 import { PickupPrompt } from "./pickup-prompt";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 
@@ -44,11 +46,10 @@ export class PickupController extends ScriptComponent {
 		this.prompt.setVisible(true);
 		this.releaseContext ??= InputManagerInstance.pushContext({
 			id: `pickup-${this.entity.id}`,
-			priority: 10,
-			onAction: (action) => {
-				if (action !== "interact") return false;
+			priority: InputContextPriority.Interaction,
+			actions: [{ action: GameplayAction.Interact, phases: [InputActionPhase.Pressed] }],
+			onAction: () => {
 				this.collect();
-				return true;
 			},
 		});
 	};

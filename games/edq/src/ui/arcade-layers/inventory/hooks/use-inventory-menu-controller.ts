@@ -3,6 +3,9 @@ import { currentGameInstance } from "../../../../game/game";
 import { useGameStore } from "../../../../store/store";
 import { useEscapeBack } from "../../../shared/hooks/use-escape-back";
 import { MouseManager } from "engine/input/mouse-manager";
+import { InputActionPhase } from "engine/input/input-manager";
+import { GameplayAction, InputManagerInstance } from "../../../../game/input/input-manager";
+import { InputContextPriority } from "../../../../game/input/context-priority";
 
 export const useInventoryMenuController = () => {
 	const currentUI = useGameStore((state) => state.currentUI);
@@ -10,7 +13,6 @@ export const useInventoryMenuController = () => {
 	const clearCurrentUI = useGameStore((state) => state.clearCurrentUI);
 	const isInventoryMenuVisible =
 		currentUI?.scope === "arcade" && currentUI.layer === "inventoryMenu";
-	const keybind = "Tab";
 
 	const hideUI = () => {
 		clearCurrentUI();
@@ -33,23 +35,27 @@ export const useInventoryMenuController = () => {
 	};
 
 	useEffect(() => {
-		const showInventoryMenu = (event: KeyboardEvent) => {
-			if (event.key !== keybind) return;
+		const releaseContext = InputManagerInstance.pushContext({
+			id: "arcade-inventory-hotkey",
+			priority: InputContextPriority.Menu,
+			dispatchMode: "immediate",
+			actions: [{ action: GameplayAction.InventoryToggle, phases: [InputActionPhase.Pressed] }],
+			onAction: (inputEvent) => {
+				if (
+					!(inputEvent?.nativeEvent instanceof KeyboardEvent) ||
+					(currentUI?.scope === "arcade" && currentUI.layer === "pauseMenu")
+				) {
+					return;
+				}
 
-			// Tab is an in-game keybind, so do not let the browser move focus
-			// through the page's controls.
-			event.preventDefault();
+				inputEvent.nativeEvent.preventDefault();
+				if (isInventoryMenuVisible) hideUI();
+				else showUI();
+			},
+		});
 
-			if (currentUI?.scope === "arcade" && currentUI?.layer === "pauseMenu")
-				return;
-
-			if (isInventoryMenuVisible) hideUI();
-			else showUI();
-		};
-
-		window.addEventListener("keydown", showInventoryMenu);
 		return () => {
-			window.removeEventListener("keydown", showInventoryMenu);
+			releaseContext();
 		};
 	}, [currentUI?.layer, currentUI?.scope, isInventoryMenuVisible]);
 

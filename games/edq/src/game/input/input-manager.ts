@@ -17,6 +17,8 @@ export const GameplayAction = {
 	QuickSlot3: "quick-slot-3",
 	QuickSlot4: "quick-slot-4",
 	QuickSlot5: "quick-slot-5",
+	Back: "back",
+	InventoryToggle: "inventory-toggle",
 } as const;
 
 const actions: InputAction[] = [
@@ -92,6 +94,16 @@ const actions: InputAction[] = [
 		name: GameplayAction.QuickSlot5,
 		type: "button",
 		bindings: [{ device: "keyboard", input: Key.Digit5 }],
+	},
+	{
+		name: GameplayAction.Back,
+		type: "button",
+		bindings: [{ device: "keyboard", input: Key.Escape }],
+	},
+	{
+		name: GameplayAction.InventoryToggle,
+		type: "button",
+		bindings: [{ device: "keyboard", input: Key.Tab }],
 	},
 ];
 

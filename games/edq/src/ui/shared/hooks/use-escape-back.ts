@@ -1,4 +1,7 @@
 import { useEffect, useRef } from "react";
+import { GameplayAction, InputManagerInstance } from "../../../game/input/input-manager";
+import { InputContextPriority } from "../../../game/input/context-priority";
+import { InputActionPhase } from "engine/input/input-manager";
 
 type UseEscapeBackOptions = {
 	onBack: () => void;
@@ -34,21 +37,28 @@ export const useEscapeBack = ({
 	useEffect(() => {
 		if (!enabled) return;
 
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key !== "Escape" || event.defaultPrevented || isEditableTarget(event.target)) {
-				return;
-			}
+		const releaseContext = InputManagerInstance.pushContext({
+			id: "ui-escape-back",
+			priority: InputContextPriority.Menu,
+			dispatchMode: "immediate",
+			actions: [{ action: GameplayAction.Back, phases: [InputActionPhase.Pressed] }],
+			onAction: (inputEvent) => {
+				if (
+					!(inputEvent.nativeEvent instanceof KeyboardEvent) ||
+					inputEvent.nativeEvent.defaultPrevented ||
+					isEditableTarget(inputEvent.nativeEvent.target)
+				) {
+					return;
+				}
 
-			if (preventDefault) event.preventDefault();
-			if (stopPropagation) event.stopPropagation();
-
-			onBackRef.current();
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
+				if (preventDefault) inputEvent.nativeEvent.preventDefault();
+				if (stopPropagation) inputEvent.nativeEvent.stopPropagation();
+				onBackRef.current();
+			},
+		});
 
 		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
+			releaseContext();
 		};
 	}, [enabled, preventDefault, stopPropagation]);
 };
