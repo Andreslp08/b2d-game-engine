@@ -8,6 +8,8 @@ export type MarkerParams = {
 	position: Vector2;
 	size: Vector2;
 	markerType: MarkerType;
+	color?: string;
+	zIndex?: number;
 	onEnter?: (_entity: GameObject) => void;
 	onExit?: (_entity: GameObject) => void;
 	onStay?: (_entity: GameObject) => void;

@@ -9,6 +9,7 @@ import { createMarker } from "./marker";
 import { MarkerType } from "../config/constants";
 import type { Scene } from "engine/scenes/scene";
 import { PickupController } from "../script-components/pickup/pickup-controller";
+import { PLAYER_Z_INDEX } from "../script-components/player/constants";
 
 type Params = {
 	scene: Scene;
@@ -47,11 +48,14 @@ export const createPickup = ({
 		? new Vector2(size.y, size.y / aspectRatio)
 		: new Vector2(size.y * aspectRatio, size.y);
 	const controller = new PickupController(definition, amount);
+	const zIndex = PLAYER_Z_INDEX.BODY - 1;
 	const marker = createMarker({
 		position,
 		size: size.clone().scale(2),
 		markerType: MarkerType.corona,
 		arrowDirection: "None",
+		zIndex,
+		color: "rgba(255, 255, 255, 0.5)",
 		triggerForEntitiesWithTags: ["player"],
 		onEnter: controller.onMarkerEnter,
 		onExit: controller.onMarkerExit,
@@ -60,6 +64,7 @@ export const createPickup = ({
 	marker.addComponent(controller);
 	scene.addEntity(marker);
 	const obj = new GameObject({ position, rotation: 0, size: spriteSize });
+	obj.setZindex(zIndex);
 	controller.setPickupObject(obj);
 	const itemSprite = new Sprite({
 		image: spriteImage,

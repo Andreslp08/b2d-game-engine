@@ -6,21 +6,25 @@ import Vector2 from "engine/math/vector2";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { MarkerType } from "../../config/constants";
 import type { MarkerArrowDirection, MarkerParams } from "../../interfaces/marker";
+import { MarkerUI, type MarkerFrame } from "./marker-ui";
 
 export class MarkerSpriteController extends ScriptComponent {
-	private sprite: Sprite;
-	private arrowSprite: Sprite;
+	private readonly markerUI = new MarkerUI();
+	private readonly arrowFrame: MarkerFrame = {
+		framePosition: new Vector2(0, 0),
+		frameSize: { w: 500, h: 500 },
+	};
+	private markerFrame: MarkerFrame;
 	private readonly animationDuration = 2;
 	private readonly scaleAmplitude = 0.1;
 
-	constructor(private params: Pick<MarkerParams, "arrowDirection" | "markerType">) {
+	constructor(
+		private params: Pick<MarkerParams, "arrowDirection" | "color" | "markerType" | "zIndex">,
+	) {
 		super();
 	}
 
-	private getSpriteFrame(markerType: MarkerType): {
-		framePosition: Vector2;
-		frameSize: { w: number; h: number };
-	} {
+	private getSpriteFrame(markerType: MarkerType): MarkerFrame {
 		const cylinder = { framePosition: new Vector2(500, 0), frameSize: { w: 500, h: 1000 } };
 		switch (markerType) {
 			case MarkerType.cylinder:
@@ -35,25 +39,11 @@ export class MarkerSpriteController extends ScriptComponent {
 	onStart(): void {
 		const currentSprite = this.entity.getComponent(Sprite);
 		if (currentSprite) this.entity.deleteallComponentsByClass(Sprite);
-		const { framePosition, frameSize } = this.getSpriteFrame(this.params.markerType);
-		this.sprite = new Sprite({
-			image: AssetsManager.getImageByName("spritesheet:markers"),
-			framePosition,
-			frameSize,
-		});
-		this.arrowSprite = new Sprite({
-			image: AssetsManager.getImageByName("spritesheet:markers"),
-			framePosition: new Vector2(0, 0),
-			frameSize: { w: 500, h: 500 },
-			useEntityTransform: false,
-			worldTransform: new Transform({
-				position: new Vector2(0, 0),
-				size: new Vector2(1, 1),
-				rotation: 0,
-			}),
-		});
-		this.entity.addComponent(this.sprite);
-		this.entity.addComponent(this.arrowSprite);
+		this.markerFrame = this.getSpriteFrame(this.params.markerType);
+		const scene = this.entity.getScene();
+		if (scene) scene.addEntity(this.markerUI);
+		this.markerUI.setZindex((this.params.zIndex ?? -1) - 1);
+		this.setZindex(this.params.zIndex ?? 0);
 	}
 
 	private getArrowRotation(arrowDirection: MarkerArrowDirection): number {
@@ -72,24 +62,35 @@ export class MarkerSpriteController extends ScriptComponent {
 	}
 
 	onUpdate(): void {
-		if (!this.sprite) return;
+		const transform = this.entity.getComponent(Transform);
+		if (!transform || !this.markerFrame) return;
+
 		const phase = (Time.time / this.animationDuration) * Math.PI * 2;
 		const scale = 1 + ((Math.cos(phase) + 1) / 2) * this.scaleAmplitude;
-		this.sprite.setScale(new Vector2(scale, scale));
+		const image = AssetsManager.getImageByName("spritesheet:markers");
+		this.markerUI.setMarker(
+			image,
+			this.markerFrame,
+			transform.position,
+			transform.size.clone().multiply(new Vector2(scale, scale)),
+			this.params.color ?? "#ffffff",
+		);
 		const isArrowVisible = this.params.arrowDirection !== "None";
 		if (!isArrowVisible) {
-			this.arrowSprite.setVisible(false);
+			this.markerUI.hideArrow();
 			return;
 		}
-		this.arrowSprite.setWorldTransform(
-			new Transform({
-				position: this.entity
-					.getComponent(Transform)
-					.position.clone()
-					.multiply(new Vector2(1, scale)),
-				size: new Vector2(0.5, 0.5),
-				rotation: this.getArrowRotation(this.params.arrowDirection),
-			}),
+		const arrowPosition = transform.position.clone().multiply(new Vector2(1, scale));
+		this.markerUI.setArrow(
+			this.arrowFrame,
+			arrowPosition,
+			new Vector2(0.5, 0.5),
+			this.getArrowRotation(this.params.arrowDirection),
 		);
+	}
+
+	onDestroy(): void {
+		const scene = this.entity.getScene();
+		if (scene) scene.destroyEntity(this.markerUI);
 	}
 }

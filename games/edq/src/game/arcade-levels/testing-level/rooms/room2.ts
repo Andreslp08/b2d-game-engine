@@ -58,9 +58,8 @@ export class Room2 extends Room {
 		itemRegistry.getAll().forEach((itemDefinition, i) => {
 			const pickup = createPickup({
 				scene: this,
-				position: this.player
-					.getComponent(Transform)
-					.position.clone()
+				position: new Vector2(10, -1)
+					.clone()
 					.add(new Vector2(2, 0))
 					.add(new Vector2(i *2, 0)),
 				amount: itemDefinition.stackable ? 3 : 1,

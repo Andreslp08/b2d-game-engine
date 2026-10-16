@@ -20,6 +20,8 @@ export const createMarker = (params: MarkerParams) => {
 		new MarkerSpriteController({
 			arrowDirection: params.arrowDirection,
 			markerType: params.markerType,
+			color: params.color,
+			zIndex: params.zIndex,
 		}),
 	);
 
