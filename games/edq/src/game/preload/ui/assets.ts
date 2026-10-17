@@ -13,4 +13,5 @@ export const UI_ASSETS: AssetToPreload<any>[] = [
 	{ type: GameAssetsTypes.Image, name: "ui:crosshair-secondary-circle", path: "/assets/ui/crosshair/secondary-circle.png" },
 	{ type: GameAssetsTypes.Image, name: "ui:current-weapon-container", path: "/assets/ui/current-weapon/current-weapon-texture.png" },
 	{ type: GameAssetsTypes.Image, name: "ui:fist", path: "/assets/ui/current-weapon/fist.png" },
+	{ type: GameAssetsTypes.Image, name: "ui:dialogue-window", path: "/assets/ui/dialogue-window-texture.png" },
 ];
