@@ -24,6 +24,10 @@ export class MarkerSpriteController extends ScriptComponent {
 		super();
 	}
 
+	setColor(color: string): void {
+		this.params.color = color;
+	}
+
 	private getSpriteFrame(markerType: MarkerType): MarkerFrame {
 		const cylinder = { framePosition: new Vector2(500, 0), frameSize: { w: 500, h: 1000 } };
 		switch (markerType) {

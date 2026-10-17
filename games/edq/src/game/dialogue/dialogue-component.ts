@@ -89,13 +89,14 @@ export class DialogueComponent extends UIComponent {
 		context.translate(0, 50);
 		this.renderMessage(
 			context,
-			currentDialogLine.text.slice(0, this.visibleCharacterCount),
+			currentDialogLine.text,
+			this.visibleCharacterCount,
 			contentWidth,
 		);
 		context.restore();
 		this.renderInteractButton(
 			context,
-			`Continue "${this.bindKey}"`,
+			this.bindKey,
 			position.x + size.x / 2,
 			position.y + size.y - 60,
 		);
@@ -123,7 +124,12 @@ export class DialogueComponent extends UIComponent {
 		this.visibleCharacterCount = 0;
 	}
 
-	private renderMessage(context: CanvasRenderingContext2D, message: string, maxWidth: number): void {
+	private renderMessage(
+		context: CanvasRenderingContext2D,
+		message: string,
+		visibleCharacterCount: number,
+		maxWidth: number,
+	): void {
 		context.save();
 		context.fillStyle = "#ffffff";
 		context.textAlign = "left";
@@ -133,23 +139,33 @@ export class DialogueComponent extends UIComponent {
 		context.font = `500 40px ${bodyFont}`;
 
 		const lineHeight = 48;
-		let y = 0;
+		let remainingCharacters = visibleCharacterCount;
+		this.wrapMessage(context, message, maxWidth).forEach((line, index) => {
+			if (remainingCharacters > 0) {
+				context.fillText(line.slice(0, remainingCharacters), 0, index * lineHeight);
+			}
+			// One source character separates wrapped lines: a space or explicit newline.
+			remainingCharacters -= line.length + 1;
+		});
+		context.restore();
+	}
+
+	private wrapMessage(context: CanvasRenderingContext2D, message: string, maxWidth: number): string[] {
+		const lines: string[] = [];
 		for (const paragraph of message.split("\n")) {
 			let line = "";
 			for (const word of paragraph.split(/\s+/)) {
 				const nextLine = line ? `${line} ${word}` : word;
 				if (line && context.measureText(nextLine).width > maxWidth) {
-					context.fillText(line, 0, y);
+					lines.push(line);
 					line = word;
-					y += lineHeight;
 				} else {
 					line = nextLine;
 				}
 			}
-			if (line) context.fillText(line, 0, y);
-			y += lineHeight;
+			lines.push(line);
 		}
-		context.restore();
+		return lines;
 	}
 
 	private renderSpeakerName(context: CanvasRenderingContext2D, speakerName: string): void {
@@ -166,18 +182,20 @@ export class DialogueComponent extends UIComponent {
 
 	private renderInteractButton(
 		context: CanvasRenderingContext2D,
-		text: string,
+		keyLabel: string,
 		x: number,
 		y: number,
 	): void {
+		const keySize = 34;
+		const label = keyLabel.startsWith("Key") ? keyLabel.slice(3) : keyLabel;
 		context.save();
-		const styles = getComputedStyle(document.documentElement);
-		const bodyFont = styles.getPropertyValue("--font-heading-variant").trim() || "sans-serif";
-		context.fillStyle = "#FF8383";
-		context.font = `500 30px ${bodyFont}`;
+		context.fillStyle = "#ffffff";
+		context.fillRect(x - keySize / 2, y, keySize, keySize);
+		context.fillStyle = "#111111";
+		context.font = "bold 20px sans-serif";
 		context.textAlign = "center";
-		context.textBaseline = "top";
-		context.fillText(text.toUpperCase(), x, y);
+		context.textBaseline = "middle";
+		context.fillText(label, x, y + keySize / 2);
 		context.restore();
 	}
 }

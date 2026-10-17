@@ -7,13 +7,13 @@ import { QuickSlotsComponent } from "../../items/components/quick-slots-componen
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 import { InputContextPriority } from "../../input/context-priority";
 import { InputActionPhase } from "engine/input/input-manager";
-import { PickupPrompt } from "./pickup-prompt";
 import { EquipmentComponent } from "../../items/components/equipment-component";
+import { InteractPrompt } from "../../ui-components/interact-prompt";
 
 export class PickupController extends ScriptComponent {
 	private playerInRange: GameObject | null = null;
 	private pickupObject: GameObject | null = null;
-	private readonly prompt: PickupPrompt;
+	private readonly prompt: InteractPrompt;
 	private readonly promptObject: UIObject;
 	private releaseContext: (() => void) | null = null;
 	private collected = false;
@@ -23,7 +23,7 @@ export class PickupController extends ScriptComponent {
 		private readonly amount: number,
 	) {
 		super();
-		this.prompt = new PickupPrompt(definition.name, "");
+		this.prompt = new InteractPrompt(definition.name);
 		this.promptObject = new UIObject();
 		this.promptObject.addComponent(this.prompt);
 	}

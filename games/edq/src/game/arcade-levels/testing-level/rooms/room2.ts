@@ -6,7 +6,7 @@ import { DebugMode, DebugTypes } from "engine/debug/debug";
 import { createPlayer } from "../../../prefabs/player";
 import { createMapGameZone } from "../../../prefabs/game-zone";
 import { useGameStore } from "../../../../store/store";
-import { PlayerController } from "../../../script-components/player/player-controller";
+import { PlayerInputController } from "../../../script-components/player/player-input-controller";
 import type { GameObject } from "engine/common/entities/game-object";
 import { MarkerType } from "../../../config/constants";
 import { createTeleport } from "../../../prefabs/teleport";
@@ -20,11 +20,14 @@ import Vector2 from "engine/math/vector2";
 import { Transform } from "engine/common/components/transform";
 import type { WeaponDefinition } from "../../../items/definitions/item-definition";
 import { itemRegistry } from "../../../items/item-catalog";
+import { DialogueManager } from "../../../dialogue/dialogue-manager";
+import { createDialogueArea } from "../../../prefabs/dialogue-area";
 
 export class Room2 extends Room {
 	static readonly id = "room2";
 	tiledMap?: TiledMapLoadResult;
 	player?: GameObject;
+	dialogueManager?: DialogueManager;
 
 	async load(): Promise<void> {
 		// Engine.canvas.style.background = "linear-gradient(3deg, rgb(56 79 123), rgb(0, 0, 0))"; // dark blue sky
@@ -41,7 +44,38 @@ export class Room2 extends Room {
 			console.error("Unable to render Tiled map", error);
 		}
 
-		// this.addEntity(createCameraNavigator());
+		this.dialogueManager = new DialogueManager({
+			scene: this,
+			dialogues: [
+				{
+					id: "test",
+					lines: [
+						{
+							text: "Lorem ipsum dolor sit amet consectetur. Est vitae sed nec laoreet vitae vel aenean at tellus. Donec phasellus ultricies orci at diam netus dignissim eu nisi. Sem nulla eu felis aliquam fusce curabitur vel arcu ac. Egestas leo condimentum at nunc nisi sed mauris.",
+							speakerName: "Smoke",
+						},
+						{
+							text: "You got something for me?",
+							speakerName: "Smoke",
+						},
+					],
+				},
+				{
+					id: "test2",
+					lines: [
+						{
+							text: "hi Smoke!",
+							speakerName: "Boss",
+						},
+						{
+							text: "Yes, I got something for you.",
+							speakerName: "Boss",
+						},
+					],
+				},
+			],
+		});
+
 	}
 
 	spawn(): void {
@@ -52,6 +86,7 @@ export class Room2 extends Room {
 			this.enablePlayerInput(this.player, true);
 		});
 		this.createPickups();
+		this.createDialogueArea();
 	}
 
 	private createPickups() {
@@ -61,11 +96,23 @@ export class Room2 extends Room {
 				position: new Vector2(10, -1)
 					.clone()
 					.add(new Vector2(2, 0))
-					.add(new Vector2(i *2, 0)),
+					.add(new Vector2(i * 2, 0)),
 				amount: itemDefinition.stackable ? 3 : 1,
 				definition: itemDefinition,
 			});
 			this.addEntity(pickup);
+		});
+	}
+
+	private createDialogueArea(): void {
+		if (!this.player || !this.dialogueManager) return;
+		createDialogueArea({
+			scene: this,
+			position: this.player.transform.position.clone().add(new Vector2(2, 0)),
+			size: new Vector2(2, 2),
+			promptText: "Speak with Boss",
+			dialogueManager: this.dialogueManager,
+			playerFacingDirection: "right",
 		});
 	}
 
@@ -91,9 +138,10 @@ export class Room2 extends Room {
 	}
 
 	private enablePlayerInput(player: GameObject, enable: boolean) {
-		const playerController = player.getComponent(PlayerController);
-		if (playerController) {
-			playerController.enableInputController = enable;
+		const playerInput = player.getComponent(PlayerInputController);
+		if (playerInput) {
+			if (enable) playerInput.enableAll();
+			else playerInput.disableAll();
 		}
 	}
 

@@ -2,29 +2,30 @@ import { Screen } from "engine/graphics/screen/screen";
 import Vector2 from "engine/math/vector2";
 import { UIComponent } from "engine/ui/components/ui-component";
 
-export class PickupPrompt extends UIComponent {
+/** Centered interaction prompt shared by world interaction points. */
+export class InteractPrompt extends UIComponent {
 	private visible = false;
-	private keyLabel: string;
+	private keyLabel = "";
 
-	constructor(private readonly itemName: string, keyLabel: string) {
+	constructor(private text: string, keyLabel = "") {
 		super({
 			position: new Vector2(0, 0),
 			rotation: 0,
 			size: new Vector2(260, 78),
 		});
-		this.keyLabel = keyLabel.startsWith("Key") ? keyLabel.slice(3) : keyLabel;
+		this.setKeyLabel(keyLabel);
+	}
+
+	setText(text: string): void {
+		this.text = text;
 	}
 
 	setVisible(visible: boolean): void {
 		this.visible = visible;
 	}
 
-	getItemName(): string {
-		return this.itemName;
-	}
-
 	setKeyLabel(keyLabel: string): void {
-		this.keyLabel = keyLabel;
+		this.keyLabel = keyLabel.startsWith("Key") ? keyLabel.slice(3) : keyLabel;
 	}
 
 	render(context: CanvasRenderingContext2D): void {
@@ -32,9 +33,9 @@ export class PickupPrompt extends UIComponent {
 
 		const uiSize = Screen.getInstance().getUISize();
 		const centerX = uiSize.x / 2;
-		const nameY = uiSize.y - 112;
+		const textY = uiSize.y - 112;
 		const keySize = 34;
-		const keyY = nameY + 16;
+		const keyY = textY + 16;
 
 		context.save();
 		context.fillStyle = "#ffffff";
@@ -43,7 +44,7 @@ export class PickupPrompt extends UIComponent {
 		context.textBaseline = "middle";
 		context.shadowColor = "rgba(0, 0, 0, 0.85)";
 		context.shadowBlur = 3;
-		context.fillText(this.itemName, centerX, nameY);
+		context.fillText(this.text, centerX, textY);
 
 		context.shadowBlur = 0;
 		context.fillStyle = "#ffffff";

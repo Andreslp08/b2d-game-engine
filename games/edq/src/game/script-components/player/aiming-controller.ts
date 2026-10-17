@@ -109,6 +109,10 @@ export class AimingController extends ScriptComponent {
 		return this._isAiming;
 	}
 
+	setAimingDirectionX(direction: 1 | -1): void {
+		this._aimingDirection.x = direction;
+	}
+
 	getAngleInRads() {
 		return this._radAngle;
 	}
