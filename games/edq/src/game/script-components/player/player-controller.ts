@@ -1,6 +1,7 @@
-import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 import { ScriptComponent } from "engine/scripts/script-component";
 import { PlayerMovement } from "./player-movement";
+import { PlayerInputController, PlayerInputPermission } from "./player-input-controller";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 import Vector2 from "engine/math/vector2";
 import { Collider } from "engine/physics/components/collider";
 import { CollisionDirection } from "engine/physics/enum/collision-direction";
@@ -10,7 +11,6 @@ import { Time } from "engine/common/interfaces/time";
 
 export class PlayerController extends ScriptComponent {
 	enabled = true;
-	enableInputController = true;
 	jumpDebounce = 0.2;
 	jumpDebounceStartTime = 0;
 	debouncingJump = false;
@@ -38,7 +38,6 @@ export class PlayerController extends ScriptComponent {
 		const entity = this.entity;
 		const movement = entity.getComponent(PlayerMovement);
 		if (!movement) return;
-		if (!this.enableInputController) return;
 		this.dashController();
 		if (movement.isDashing) return;
 		this.horizontalController();
@@ -50,7 +49,10 @@ export class PlayerController extends ScriptComponent {
 		const dynamicBody = entity.getComponent(DynamicBody);
 		const movement = entity.getComponent(PlayerMovement);
 		if (!dynamicBody || !movement) return;
-		const dashKey = InputManagerInstance.isDown(GameplayAction.Dash);
+		const input = entity.getComponent(PlayerInputController);
+		const dashKey =
+			(input?.isEnabled(PlayerInputPermission.Dash) ?? false) &&
+			InputManagerInstance.isDown(GameplayAction.Dash);
 		const moveInput = InputManagerInstance.getVector2(GameplayAction.Move);
 		const moveLeft = moveInput.x < 0;
 		const moveRight = moveInput.x > 0;
@@ -139,7 +141,11 @@ export class PlayerController extends ScriptComponent {
 			}
 		}
 
-		if (InputManagerInstance.isDown(GameplayAction.Jump) && !this.debouncingJump) {
+		const input = entity.getComponent(PlayerInputController);
+		const jumpDown =
+			(input?.isEnabled(PlayerInputPermission.Movement) ?? false) &&
+			InputManagerInstance.isDown(GameplayAction.Jump);
+		if (jumpDown && !this.debouncingJump) {
 			if (dynamicBody.isOnGround && !movement.isJumping) {
 				movement.isJumping = true;
 				movement.jumpStartY = y;
@@ -156,7 +162,7 @@ export class PlayerController extends ScriptComponent {
 		}
 		if (
 			movement.isJumping &&
-			(!InputManagerInstance.isDown(GameplayAction.Jump) || dynamicBody.velocity.y > 0)
+			(!jumpDown || dynamicBody.velocity.y > 0)
 		) {
 			movement.isJumping = false;
 		}
@@ -168,6 +174,8 @@ export class PlayerController extends ScriptComponent {
 		const gameObject = dynamicBody.getEntity();
 		const movement = gameObject.getComponent(PlayerMovement);
 
+		const input = entity.getComponent(PlayerInputController);
+		if (!input?.isEnabled(PlayerInputPermission.Movement)) return;
 		const moveInput = InputManagerInstance.getVector2(GameplayAction.Move);
 		const moveLeft = moveInput.x < 0;
 		const moveRight = moveInput.x > 0;

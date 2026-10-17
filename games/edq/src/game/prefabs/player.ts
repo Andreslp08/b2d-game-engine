@@ -31,6 +31,7 @@ import { CullingType } from "engine/performance/enum/culling-type";
 import { createWeapon } from "./weapon";
 import type { Scene } from "engine/scenes/scene";
 import { PlayerZIndexManager } from "../script-components/player/player-zindex";
+import { PlayerInputController } from "../script-components/player/player-input-controller";
 
 type Params = {
 	scene: Scene;
@@ -54,6 +55,7 @@ export const createPlayer = (params: Params): GameObject => {
 	const triggerArea = new TriggerArea(new Vector2(0, 0), new Vector2(0.5, 1.7));
 	entity.addComponent(triggerArea);
 	entity.addComponent(new PlayerMovement());
+	entity.addComponent(new PlayerInputController());
 	entity.addComponent(new PlayerController());
 	entity.addComponent(new PlayerCameraController());
 	entity.addComponent(new HealthComponent(100, 100, false));

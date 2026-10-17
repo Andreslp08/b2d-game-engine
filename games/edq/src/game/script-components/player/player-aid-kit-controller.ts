@@ -9,6 +9,7 @@ import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
 import { HealthComponent } from "../shared/health-component";
 import { HealingFlashEffect } from "../shared/healing-flash-effect";
+import { PlayerInputController, PlayerInputPermission } from "./player-input-controller";
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 /** Consumes an equipped first-aid kit when the player clicks. */
@@ -43,6 +44,8 @@ export class PlayerAidKitController extends ScriptComponent {
 
 	onUpdate(): void {
 		this.updateAidKitVisual();
+		const input = this.entity.getComponent(PlayerInputController);
+		if (!input?.isEnabled(PlayerInputPermission.WeaponUse)) return;
 		if (!InputManagerInstance.justPressed(GameplayAction.Fire)) return;
 
 		const equipment = this.entity.getComponent(EquipmentComponent);

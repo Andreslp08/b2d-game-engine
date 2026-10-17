@@ -25,6 +25,7 @@ import { ParticleEmitter } from "engine/particle-system/component/particle-emitt
 import { ParticleRenderType } from "engine/particle-system/enum/enum";
 import { CullingConfigComponent } from "engine/performance/culling";
 import { CullingTarget, CullingType } from "engine/performance/enum/culling-type";
+import { PlayerInputController, PlayerInputPermission } from "../player/player-input-controller";
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 /** Synchronizes the equipped inventory weapon with its visual GameObject. */
@@ -487,7 +488,9 @@ export class WeaponController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.enableController) return;
-		const reloadKey = InputManagerInstance.isDown(GameplayAction.Reload);
+		const input = this.weaponHolder?.getComponent(PlayerInputController);
+		const canUseWeapon = input?.isEnabled(PlayerInputPermission.WeaponUse) ?? false;
+		const reloadKey = canUseWeapon && InputManagerInstance.isDown(GameplayAction.Reload);
 		const reloadPressed = reloadKey && !this.previousReloadKey;
 		this.previousReloadKey = reloadKey;
 		const definition = this.getDefinition();
@@ -497,6 +500,7 @@ export class WeaponController extends ScriptComponent {
 			if (this.reloadRemainingTime <= 0) this.finishReload();
 			return;
 		}
+		if (!canUseWeapon) return;
 		const aimingController = this.weaponHolder?.getComponent(AimingController);
 		if (!aimingController?.isAiming()) return;
 		const fireRate = definition.fireRate;

@@ -7,7 +7,7 @@ import Vector2 from "engine/math/vector2";
 import type { Entity } from "engine/ecs/entity";
 import { ArcadeLevelManagerInstance } from "../../arcade-levels/level-manager";
 import type { TeleportParams } from "../../interfaces/teleport";
-import { PlayerController } from "../player/player-controller";
+import { PlayerInputController } from "../player/player-input-controller";
 
 export class TeleportController extends ScriptComponent {
 	private isIntersecting = false;
@@ -26,7 +26,7 @@ export class TeleportController extends ScriptComponent {
 	onTriggerEnter(entity: Entity): void {
 		if (!this.isPlayer(entity)) return;
 		const player = entity as GameObject;
-		if (!player.getComponent(PlayerController)) return;
+		if (!player.getComponent(PlayerInputController)) return;
 		this.player = player;
 		this.isIntersecting = true;
 	}
@@ -42,10 +42,10 @@ export class TeleportController extends ScriptComponent {
 		if (!teleportArea.contains(playerArea)) return;
 
 		if (this.teleportStartedAt === null) {
-			const playerController = player.getComponent(PlayerController);
-			if (!playerController) return;
+			const playerInput = player.getComponent(PlayerInputController);
+			if (!playerInput) return;
 
-			playerController.enableInputController = false;
+			playerInput.disableAll();
 			const body = player.getComponent(DynamicBody);
 			body.velocity = new Vector2(0, 0);
 			this.entity.getScene().fade({

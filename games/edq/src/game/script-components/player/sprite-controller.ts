@@ -5,14 +5,14 @@ import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
 import { DynamicBody } from "engine/physics/components/dynamic-body";
 import { ScriptComponent } from "engine/scripts/script-component";
 import Vector2 from "engine/math/vector2";
-import { MouseManager } from "engine/input/mouse-manager";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 import { AimingController } from "./aiming-controller";
 import { PlayerSkinComponent } from "./player-skin-component";
 import { PlayerSkin } from "../../config/constants";
 import { PlayerMovement } from "./player-movement";
 import { Sprite } from "engine/graphics/sprites/components/sprite";
+import { MouseManager } from "engine/input/mouse-manager";
+import { Cameras } from "engine/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
 
 export enum PlayerAnimationKey {
 	IDLE = "idle",

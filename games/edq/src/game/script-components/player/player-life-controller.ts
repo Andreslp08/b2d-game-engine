@@ -3,7 +3,7 @@ import { HealthComponent } from "../shared/health-component";
 import { Cameras } from "engine/graphics/cameras/camera-manager";
 import { MathUtil } from "engine/math/math-util";
 import { Time } from "engine/common/interfaces/time";
-import { PlayerController } from "./player-controller";
+import { PlayerInputController } from "./player-input-controller";
 import { ShieldComponent } from "../shared/shield-component";
 import { DamageFlashEffect } from "../shared/damage-flash-effect";
 import { GameEvent } from "engine/common/events/game-event";
@@ -67,8 +67,8 @@ export class PlayerLifeController extends ScriptComponent {
 
 	handleDamageCoolDown() {
 		const entity = this.entity;
-		const playerController = entity.getComponent(PlayerController);
-		if (!playerController) return;
+		const playerInput = entity.getComponent(PlayerInputController);
+		if (!playerInput) return;
 
 		const healthC = entity.getComponent(HealthComponent);
 		const health = healthC.getHealth();
@@ -76,13 +76,13 @@ export class PlayerLifeController extends ScriptComponent {
 		const shield = shieldC.getShield();
 
 		if (this.prevHealth !== -1 && this.prevHealth > health) {
-			playerController.enableInputController = false;
+			playerInput.disableAll();
 			this.disableInputStartTime = Time.time;
 			this.damageInputLocked = true;
 		}
 
 		if (this.prevShield !== -1 && this.prevShield > shield) {
-			playerController.enableInputController = false;
+			playerInput.disableAll();
 			this.disableInputStartTime = Time.time;
 			this.damageInputLocked = true;
 		}
@@ -90,7 +90,7 @@ export class PlayerLifeController extends ScriptComponent {
 		if (this.damageInputLocked) {
 			const elapsed = Time.time - this.disableInputStartTime;
 			if (elapsed >= this.disableInputDuration) {
-				playerController.enableInputController = true;
+				playerInput.enableAll();
 				this.damageInputLocked = false;
 			}
 		}
@@ -110,9 +110,9 @@ export class PlayerLifeController extends ScriptComponent {
 		if (!scene) return;
 
 		if (health.getHealth() <= 0) {
-			const playerController = entity.getComponent(PlayerController);
-			if (playerController && !this.controllerDisabledOnDeath) {
-				playerController.enabled = false;
+			const playerInput = entity.getComponent(PlayerInputController);
+			if (playerInput && !this.controllerDisabledOnDeath) {
+				playerInput.disableAll();
 				this.controllerDisabledOnDeath = true;
 			}
 

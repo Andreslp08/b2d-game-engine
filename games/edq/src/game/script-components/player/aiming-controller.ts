@@ -10,6 +10,7 @@ import { ScriptComponent } from "engine/scripts/script-component";
 import { PlayerMovement } from "./player-movement";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
+import { PlayerInputController, PlayerInputPermission } from "./player-input-controller";
 
 export class AimingController extends ScriptComponent {
 	private _isAiming = false;
@@ -32,6 +33,12 @@ export class AimingController extends ScriptComponent {
 
 	onFixedUpdate(): void {
 		if (!this.gameObject) return;
+		const input = this.gameObject.getComponent(PlayerInputController);
+		if (!input?.isEnabled(PlayerInputPermission.WeaponUse)) {
+			this._isAiming = false;
+			MouseManager.setCursorInputEnabled(false);
+			return;
+		}
 		const equipment = this.entity.getComponent(EquipmentComponent);
 		const inventory = this.entity.getComponent(InventoryComponent);
 		const equippedEntryId = equipment?.getEquippedReferenceId();

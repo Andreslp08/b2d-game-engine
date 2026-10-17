@@ -13,7 +13,7 @@ import { createMapGameZone } from "../../../prefabs/game-zone";
 import { WeaponHolder } from "../../../script-components/weapon/weapon";
 import { useGameStore } from "../../../../store/store";
 import { createToxicWater } from "../../../prefabs/toxic-water";
-import { PlayerController } from "../../../script-components/player/player-controller";
+import { PlayerInputController } from "../../../script-components/player/player-input-controller";
 import type { GameObject } from "engine/common/entities/game-object";
 import {  MarkerType } from "../../../config/constants";
 import { Collider } from "engine/physics/components/collider";
@@ -105,9 +105,10 @@ export class Room1 extends Room {
 	}
 
 	private enablePlayerInput(player: GameObject, enable: boolean) {
-		const playerController = player.getComponent(PlayerController);
-		if (playerController) {
-			playerController.enableInputController = enable;
+		const playerInput = player.getComponent(PlayerInputController);
+		if (playerInput) {
+			if (enable) playerInput.enableAll();
+			else playerInput.disableAll();
 		}
 	}
 

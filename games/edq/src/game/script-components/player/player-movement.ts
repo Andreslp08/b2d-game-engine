@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component } from "engine/ecs/component";
 import { PhysicalKey } from "engine/input/keyboard-manager";
 

@@ -5,6 +5,8 @@ import {
 	QuickSlotsComponent,
 } from "../../items/components/quick-slots-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
+import { PlayerInputController } from "./player-input-controller";
+import { PlayerInputPermission } from "./player-input-controller";
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 const quickSlotActions = [
@@ -22,7 +24,8 @@ export class QuickSlotInputController extends ScriptComponent {
 		const inventory = this.entity.getComponent(InventoryComponent);
 		const quickSlots = this.entity.getComponent(QuickSlotsComponent);
 		const equipment = this.entity.getComponent(EquipmentComponent);
-		if (!inventory || !quickSlots || !equipment) return;
+		const input = this.entity.getComponent(PlayerInputController);
+		if (!inventory || !quickSlots || !equipment || !input?.isEnabled(PlayerInputPermission.WeaponUse)) return;
 
 		quickSlots.removeInvalidReferences(inventory.inventory);
 		equipment.clearIfMissing(inventory.inventory);
