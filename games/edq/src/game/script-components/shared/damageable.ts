@@ -1,6 +1,6 @@
-import { GameEvent } from "engine/common/events/game-event";
-import type { Entity } from "engine/ecs/entity";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { ShieldComponent } from "./shield-component";
 import { HealthComponent } from "./health-component";
 import { DeathParticleEffect } from "./death-particle-effect";

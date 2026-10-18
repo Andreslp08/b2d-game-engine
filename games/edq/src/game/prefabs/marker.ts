@@ -1,6 +1,6 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { TriggerArea } from "engine/trigger-area";
-import Vector2 from "engine/math/vector2";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { TriggerArea } from "@b2d-engine/core/trigger-area";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { MarkerType } from "../config/constants";
 import type { MarkerParams } from "../interfaces/marker";
 import { MarkerController } from "../script-components/marker/marker-controller";

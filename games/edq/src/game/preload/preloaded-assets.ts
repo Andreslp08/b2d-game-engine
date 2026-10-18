@@ -1,4 +1,4 @@
-import { type AssetToPreload, type SoundAssetOptions } from "engine/common/interfaces/assets";
+import { type AssetToPreload, type SoundAssetOptions } from "@b2d-engine/core/common/interfaces/assets";
 import { ENEMIES_ASSETS } from "./enemies/assets";
 import { ITEMS_ASSETS } from "./items/assets";
 import { PLAYER_ASSETS } from "./player/assets";

@@ -1,7 +1,7 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { GameObject } from "engine/common/entities/game-object";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import Vector2 from "engine/math/vector2";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { itemRegistry } from "../items/item-catalog";
 import { WeaponController } from "../script-components/weapon/weapon";
 

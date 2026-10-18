@@ -1,7 +1,7 @@
-import { Transform } from "engine/common/components/transform";
-import type { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { createTailGunnerBomb } from "../../prefabs/tail-gunner-bomb";
 
 export class TailGunnerShotController extends ScriptComponent {

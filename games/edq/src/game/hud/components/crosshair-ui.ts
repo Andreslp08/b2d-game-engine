@@ -1,11 +1,11 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import type { GameImage } from "engine/common/assets-manager/game-image";
-import { Time } from "engine/common/interfaces/time";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { ScreenCamera } from "engine/graphics/cameras/screen-camera";
-import { MouseManager } from "engine/input/mouse-manager";
-import Vector2 from "engine/math/vector2";
-import { UIComponent } from "engine/ui/components/ui-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import type { GameImage } from "@b2d-engine/core/common/assets-manager/game-image";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { ScreenCamera } from "@b2d-engine/core/graphics/cameras/screen-camera";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
 
 export class CrossHairUI extends UIComponent {
 	private _visible: boolean = false;

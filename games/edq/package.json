@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@b2d-engine/core": "workspace:*",
     "@redux-devtools/extension": "^4.0.0",
     "@tailwindcss/vite": "^4.1.8",
-    "engine": "workspace:*",
     "framer-motion": "^12.15.0",
     "gsap": "^3.13.0",
     "immer": "^10.1.1",

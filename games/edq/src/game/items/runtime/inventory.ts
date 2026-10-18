@@ -1,4 +1,4 @@
-import { GameEvent } from "engine/common/events/game-event";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
 import type { AnyItemDefinition } from "../definitions/item-definition";
 import type { AmmoId } from "../definitions/ammo-ids";
 import type { ItemRegistry } from "../item-catalog/item-registry";

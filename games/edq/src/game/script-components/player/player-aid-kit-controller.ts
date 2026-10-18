@@ -1,9 +1,9 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { GameObject } from "engine/common/entities/game-object";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import { Transform } from "engine/common/components/transform";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";

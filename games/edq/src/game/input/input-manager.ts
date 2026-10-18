@@ -1,5 +1,5 @@
-import { InputManager, type InputAction } from "engine/input/input-manager";
-import { PhysicalKey as Key } from "engine/input/keyboard-manager";
+import { InputManager, type InputAction } from "@b2d-engine/core/input/input-manager";
+import { PhysicalKey as Key } from "@b2d-engine/core/input/keyboard-manager";
 
 const InputManagerInstance = new InputManager();
 export const GameplayAction = {

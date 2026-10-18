@@ -1,5 +1,5 @@
-import type { Scene } from "engine/scenes/scene";
-import Vector2 from "engine/math/vector2";
+import type { Scene } from "@b2d-engine/core/scenes/scene";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { MarkerType } from "../config/constants";
 import { DialogueAreaController } from "../dialogue/dialogue-area-controller";
 import { DialogueManager } from "../dialogue/dialogue-manager";

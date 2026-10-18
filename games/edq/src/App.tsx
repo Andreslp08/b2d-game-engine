@@ -3,7 +3,7 @@ import { useGameStore } from "./store/store";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArcadeLayer } from "./ui/arcade-layers";
 import { GeneralLayer } from "./ui/general-layers";
-import { MouseManager } from "engine/input/mouse-manager";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
 function App() {
 	const currentGame = useGameStore((state) => state.currentGame);
 	const currentUI = useGameStore((state) => state.currentUI);

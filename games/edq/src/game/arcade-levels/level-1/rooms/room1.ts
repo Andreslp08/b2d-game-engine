@@ -1,7 +1,7 @@
-import Vector2 from "engine/math/vector2";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { createBox } from "../../../prefabs/box";
 import { Room } from "../../../levels/room";
-import { Engine } from "engine";
+import { Engine } from "@b2d-engine/core";
 
 export class Room1 extends Room {
 	static readonly id = "room1";

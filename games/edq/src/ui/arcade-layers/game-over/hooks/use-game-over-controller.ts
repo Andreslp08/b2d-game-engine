@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { currentGameInstance } from "../../../../game/game";
 import { ArcadeLevelManagerInstance } from "../../../../game/arcade-levels/level-manager";
 import { useGameStore } from "../../../../store/store";
-import { MouseManager } from "engine/input/mouse-manager";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
 
 export const useGameOverController = () => {
 	const currentUI = useGameStore((state) => state.currentUI);

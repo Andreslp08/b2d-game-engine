@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { currentGameInstance } from "../../../../game/game";
 import { useGameStore } from "../../../../store/store";
 import { useEscapeBack } from "../../../shared/hooks/use-escape-back";
-import { MouseManager } from "engine/input/mouse-manager";
-import { InputActionPhase } from "engine/input/input-manager";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
+import { InputActionPhase } from "@b2d-engine/core/input/input-manager";
 import { GameplayAction, InputManagerInstance } from "../../../../game/input/input-manager";
 import { InputContextPriority } from "../../../../game/input/context-priority";
 

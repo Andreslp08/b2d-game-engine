@@ -1,4 +1,4 @@
-import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
+import { GameAssetsTypes, type AssetToPreload } from "@b2d-engine/core/common/interfaces/assets";
 
 /** Projectile images used by weapon definitions. */
 export const BULLET_IMAGES_ASSETS: AssetToPreload<any>[] = [

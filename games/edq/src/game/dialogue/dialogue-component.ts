@@ -1,9 +1,9 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { Time } from "engine/common/interfaces/time";
-import { Screen } from "engine/graphics/screen/screen";
-import { MathUtil } from "engine/math/math-util";
-import Vector2 from "engine/math/vector2";
-import { UIComponent } from "engine/ui/components/ui-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { Screen } from "@b2d-engine/core/graphics/screen/screen";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
 import { InputManagerInstance } from "../input/input-manager";
 import { DialogueManager } from "./dialogue-manager";
 import type { DialogueLines } from "./dialogue-types";

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { GameplayAction, InputManagerInstance } from "../../../game/input/input-manager";
 import { InputContextPriority } from "../../../game/input/context-priority";
-import { InputActionPhase } from "engine/input/input-manager";
+import { InputActionPhase } from "@b2d-engine/core/input/input-manager";
 
 type UseEscapeBackOptions = {
 	onBack: () => void;

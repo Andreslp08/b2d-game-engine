@@ -1,6 +1,6 @@
-import { ScriptComponent } from "engine/scripts/script-component";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { WeaponHolder } from "../weapon/weapon";
-import type { GameObject } from "engine/common/entities/game-object";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
 import { PlayerSpriteController } from "./sprite-controller";
 import { PlayerAimingArm } from "./player-aiming-arm";
 

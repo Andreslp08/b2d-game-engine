@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { Engine } from "engine";
-import { MouseManager } from "engine/input/mouse-manager";
+import { Engine } from "@b2d-engine/core";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
 import { currentGameInstance } from "../../../../game/game";
 import { ArcadeLevelManagerInstance } from "../../../../game/arcade-levels/level-manager";
 import { useGameStore } from "../../../../store/store";

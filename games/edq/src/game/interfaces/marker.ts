@@ -1,5 +1,5 @@
-import type { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import type { MarkerType } from "../config/constants";
 
 export type MarkerArrowDirection = "Up" | "Down" | "Left" | "Right" | "None";

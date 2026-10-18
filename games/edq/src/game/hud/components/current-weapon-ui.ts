@@ -1,8 +1,8 @@
-import Vector2 from "engine/math/vector2";
-import { Screen } from "engine/graphics/screen/screen";
-import { UIComponent } from "engine/ui/components/ui-component";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import type { GameObject } from "engine/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Screen } from "@b2d-engine/core/graphics/screen/screen";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
@@ -10,7 +10,7 @@ import type {
 	AnyItemDefinition,
 	WeaponDefinition,
 } from "../../items/definitions/item-definition";
-import type { GameImage } from "engine/common/assets-manager/game-image";
+import type { GameImage } from "@b2d-engine/core/common/assets-manager/game-image";
 import { getProjectileDefinition } from "../../items/item-catalog/projectile-catalog";
 
 const containerMargin = {

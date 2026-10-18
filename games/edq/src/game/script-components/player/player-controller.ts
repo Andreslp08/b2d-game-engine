@@ -1,13 +1,13 @@
-import { ScriptComponent } from "engine/scripts/script-component";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { PlayerMovement } from "./player-movement";
 import { PlayerInputController, PlayerInputPermission } from "./player-input-controller";
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import { CollisionDirection } from "engine/physics/enum/collision-direction";
-import { GameObject } from "engine/common/entities/game-object";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { Time } from "engine/common/interfaces/time";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { CollisionDirection } from "@b2d-engine/core/physics/enum/collision-direction";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
 
 export class PlayerController extends ScriptComponent {
 	enabled = true;

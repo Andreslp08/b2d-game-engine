@@ -1,11 +1,11 @@
-import { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { HealthComponent } from "../script-components/shared/health-component";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { SpriteAnimation } from "@b2d-engine/core/graphics/sprites/components/sprite-animation";
+import { SpriteSheet } from "@b2d-engine/core/graphics/sprites/spritesheet";
 import { SpinesBugController } from "../script-components/spines-bug/spines-bug-controller";
 import { Damageable } from "../script-components/shared/damageable";
 import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";

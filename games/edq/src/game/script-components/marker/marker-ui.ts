@@ -1,8 +1,8 @@
-import type { GameImage } from "engine/common/assets-manager/game-image";
-import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
-import Vector2 from "engine/math/vector2";
-import { UIComponent } from "engine/ui/components/ui-component";
-import { UIObject } from "engine/ui/entities/ui-object";
+import type { GameImage } from "@b2d-engine/core/common/assets-manager/game-image";
+import { RenderLayerTypes } from "@b2d-engine/core/graphics/enum/render-layer-types.enum";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 
 export type MarkerFrame = {
 	framePosition: Vector2;

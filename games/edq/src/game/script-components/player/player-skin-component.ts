@@ -1,5 +1,5 @@
-import { ScriptComponent } from "engine/scripts/script-component";
-import { GameEvent } from "engine/common/events/game-event";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
 import { PlayerSkin } from "../../config/constants";
 
 export class PlayerSkinComponent extends ScriptComponent {

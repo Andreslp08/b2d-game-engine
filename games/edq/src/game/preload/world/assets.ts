@@ -1,4 +1,4 @@
-import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
+import { GameAssetsTypes, type AssetToPreload } from "@b2d-engine/core/common/interfaces/assets";
 
 export const WORLD_ASSETS: AssetToPreload<any>[] = [
 	{ type: GameAssetsTypes.Image, name: "spritesheet:city", path: "/assets/textures/world/city.png" },

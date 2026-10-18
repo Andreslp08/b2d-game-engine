@@ -1,4 +1,4 @@
-import type { AssetToPreload } from "engine/common/interfaces/assets";
+import type { AssetToPreload } from "@b2d-engine/core/common/interfaces/assets";
 import { WEAPONS_ASSETS } from "./weapon/assets";
 import { CONSUMABLE_IMAGES_ASSETS } from "./consumable/images";
 import { BULLET_IMAGES_ASSETS } from "./bullets/images";

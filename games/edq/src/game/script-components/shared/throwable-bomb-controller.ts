@@ -1,9 +1,9 @@
-import { Transform } from "engine/common/components/transform";
-import { Time } from "engine/common/interfaces/time";
-import type { Entity } from "engine/ecs/entity";
-import { Collider } from "engine/physics/components/collider";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { PlayerLifeController } from "../player/player-life-controller";
 import { DeathParticleEffect } from "./death-particle-effect";
 

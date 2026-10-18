@@ -1,12 +1,12 @@
-import { Transform } from "engine/common/components/transform";
-import { GameObject } from "engine/common/entities/game-object";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { StaticBody } from "engine/physics/components/static-body";
-import { Time } from "engine/common/interfaces/time";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { StaticBody } from "@b2d-engine/core/physics/components/static-body";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
 
 const BOX_SIZE = 0.7;
 

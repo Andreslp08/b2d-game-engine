@@ -1,15 +1,15 @@
-import { ScriptComponent } from "engine/scripts/script-component";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { MathUtil } from "engine/math/math-util";
-import { GameObject } from "engine/common/entities/game-object";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { Time } from "engine/common/interfaces/time";
-import Vector2 from "engine/math/vector2";
-import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
 import {
 	VIEWPORT_HEIGHT_IN_WORLD_UNITS,
 	VIEWPORT_WIDTH_IN_WORLD_UNITS,
-} from "engine/common/constants";
+} from "@b2d-engine/core/common/constants";
 import { GAME_FOV } from "../../config/constants";
 
 type CameraBounds = {

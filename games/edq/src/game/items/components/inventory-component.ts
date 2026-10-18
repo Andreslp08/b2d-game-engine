@@ -1,4 +1,4 @@
-import { Component } from "engine/ecs/component";
+import { Component } from "@b2d-engine/core/ecs/component";
 import type { ItemRegistry } from "../item-catalog/item-registry";
 import { Inventory } from "../runtime/inventory";
 

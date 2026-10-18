@@ -1,21 +1,21 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { GameObject } from "engine/common/entities/game-object";
-import type { Entity } from "engine/ecs/entity";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import { KinematicBody } from "engine/physics/components/kinematic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
-import { ParticleRenderType } from "engine/particle-system/enum/enum";
-import { Time } from "engine/common/interfaces/time";
-import { Transform } from "engine/common/components/transform";
-import { CullingConfigComponent } from "engine/performance/culling";
-import { CullingType } from "engine/performance/enum/culling-type";
-import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { KinematicBody } from "@b2d-engine/core/physics/components/kinematic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { ParticleEmitter } from "@b2d-engine/core/particle-system/component/particle-emitter";
+import { ParticleRenderType } from "@b2d-engine/core/particle-system/enum/enum";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { CullingConfigComponent } from "@b2d-engine/core/performance/culling";
+import { CullingType } from "@b2d-engine/core/performance/enum/culling-type";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "@b2d-engine/core/common/constants";
 import { Damageable } from "../script-components/shared/damageable";
 import type { ProjectileDefinition } from "../items/definitions/projectile-definition";
-import type { GameSound } from "engine/common/assets-manager/game-sound";
+import type { GameSound } from "@b2d-engine/core/common/assets-manager/game-sound";
 
 /** Handles rocket movement, impact effects, and area damage. */
 class RocketController extends ScriptComponent {

@@ -1,10 +1,10 @@
-import { Transform } from "engine/common/components/transform";
-import { GameObject } from "engine/common/entities/game-object";
-import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
-import Vector2 from "engine/math/vector2";
-import { ParticleEmitter } from "engine/particle-system/component/particle-emitter";
-import { ParticleRenderType } from "engine/particle-system/enum/enum";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { RenderLayerTypes } from "@b2d-engine/core/graphics/enum/render-layer-types.enum";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ParticleEmitter } from "@b2d-engine/core/particle-system/component/particle-emitter";
+import { ParticleRenderType } from "@b2d-engine/core/particle-system/enum/enum";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import type { VisualEffect } from "../../interfaces/visual-effect";
 
 type ParticleEmitterFactory = () => ParticleEmitter;

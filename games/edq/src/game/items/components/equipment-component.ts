@@ -1,5 +1,5 @@
-import { Component } from "engine/ecs/component";
-import { GameEvent } from "engine/common/events/game-event";
+import { Component } from "@b2d-engine/core/ecs/component";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
 import type { Inventory } from "../runtime/inventory";
 
 export interface EquipmentChangedEvent {

@@ -1,7 +1,7 @@
-import type { TiledMapLoadResult } from "engine/tiles/adapters/tiled/tiled-map-adapter";
+import type { TiledMapLoadResult } from "@b2d-engine/core/tiles/adapters/tiled/tiled-map-adapter";
 import { isFromLayer } from "./map-layer";
 import type { RoomLoadContext } from "../levels/room";
-import Vector2 from "engine/math/vector2";
+import Vector2 from "@b2d-engine/core/math/vector2";
 
 export const generatePlayerSpawnPointFromMap = ({
 	map,

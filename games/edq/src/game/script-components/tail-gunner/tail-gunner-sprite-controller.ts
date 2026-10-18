@@ -1,9 +1,9 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import type { GameObject } from "engine/common/entities/game-object";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { SpriteAnimation } from "@b2d-engine/core/graphics/sprites/components/sprite-animation";
+import { SpriteSheet } from "@b2d-engine/core/graphics/sprites/spritesheet";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 
 export type TailGunnerSpriteState = "idle" | "attack" | "walk";
 

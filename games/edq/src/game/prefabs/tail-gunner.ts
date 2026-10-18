@@ -1,9 +1,9 @@
 import { TailGunnerShotController } from "../script-components/tail-gunner/tail-gunner-shot-controller";
 import { TailGunnerSpriteController } from "../script-components/tail-gunner/tail-gunner-sprite-controller";
-import { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { HealthComponent } from "../script-components/shared/health-component";
 import { Damageable } from "../script-components/shared/damageable";
 import { DamageFlashEffect } from "../script-components/shared/damage-flash-effect";

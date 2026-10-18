@@ -1,11 +1,11 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { Transform } from "engine/common/components/transform";
-import { GameObject } from "engine/common/entities/game-object";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { AimingController } from "./aiming-controller";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { PlayerSkin } from "../../config/constants";
 import { PlayerSkinComponent } from "./player-skin-component";
 import { PLAYER_Z_INDEX } from "./constants";

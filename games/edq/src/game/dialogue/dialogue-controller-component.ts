@@ -1,5 +1,5 @@
-import { InputActionPhase } from "engine/input/input-context-manager";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { InputActionPhase } from "@b2d-engine/core/input/input-context-manager";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { GameplayAction, InputManagerInstance } from "../input/input-manager";
 import { InputContextPriority } from "../input/context-priority";
 import { DialogueComponent } from "./dialogue-component";

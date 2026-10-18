@@ -1,9 +1,9 @@
 
-import { GameObject } from "engine/common/entities/game-object";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { HealthComponent } from "../shared/health-component";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { Transform } from "engine/common/components/transform";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { Transform } from "@b2d-engine/core/common/components/transform";
 import { PlayerLifeController } from "./player-life-controller";
 
 export class FallDamage extends ScriptComponent {

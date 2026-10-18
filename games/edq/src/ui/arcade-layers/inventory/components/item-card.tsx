@@ -1,4 +1,4 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
 import type { InventoryItemView, InventoryView } from "../hooks/use-inventory";
 import { getProjectileDefinition } from "../../../../game/items/item-catalog";
 import type { AmmoDefinition } from "../../../../game/items/definitions/item-definition";

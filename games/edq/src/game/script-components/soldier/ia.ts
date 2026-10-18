@@ -1,11 +1,11 @@
-import { StateMachine, type StateMachineConfig } from "engine/common/state/state-machine";
-import { Transform } from "engine/common/components/transform";
-import { GameObject } from "engine/common/entities/game-object";
-import { Time } from "engine/common/interfaces/time";
-import { MathUtil } from "engine/math/math-util";
-import Vector2 from "engine/math/vector2";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { StateMachine, type StateMachineConfig } from "@b2d-engine/core/common/state/state-machine";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { createSoldierBomb } from "../../prefabs/soldier-bomb";
 
 type SoldierState = "patrol" | "chase" | "attack";

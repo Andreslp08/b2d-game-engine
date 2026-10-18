@@ -1,5 +1,5 @@
-import { GameEvent } from "engine/common/events/game-event";
-import { UIObject } from "engine/ui/entities/ui-object";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 import { DialogueComponent } from "./dialogue-component";
 import { DialogueControllerComponent } from "./dialogue-controller-component";
 import type {

@@ -1,9 +1,9 @@
-import { Transform } from "engine/common/components/transform";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { Time } from "engine/common/interfaces/time";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { MarkerType } from "../../config/constants";
 import type { MarkerArrowDirection, MarkerParams } from "../../interfaces/marker";
 import { MarkerUI, type MarkerFrame } from "./marker-ui";

@@ -1,12 +1,12 @@
-import { ScriptComponent } from "engine/scripts/script-component";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { HealthComponent } from "../shared/health-component";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { MathUtil } from "engine/math/math-util";
-import { Time } from "engine/common/interfaces/time";
+import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
 import { PlayerInputController } from "./player-input-controller";
 import { ShieldComponent } from "../shared/shield-component";
 import { DamageFlashEffect } from "../shared/damage-flash-effect";
-import { GameEvent } from "engine/common/events/game-event";
+import { GameEvent } from "@b2d-engine/core/common/events/game-event";
 import { useGameStore } from "../../../store/store";
 
 type DamageMode = "shield-first" | "health-only";

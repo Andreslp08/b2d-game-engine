@@ -1,9 +1,9 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { UIObject } from "engine/ui/entities/ui-object";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 import { HealthComponent } from "../script-components/shared/health-component";
 import { SegmentBarUI } from "./components/segment-bar-ui";
-import Vector2 from "engine/math/vector2";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { ShieldComponent } from "../script-components/shared/shield-component";
 import { CrossHairUI } from "./components/crosshair-ui";
 import { AimingController } from "../script-components/player/aiming-controller";

@@ -1,11 +1,11 @@
-import type { Entity } from "engine/ecs/entity";
-import { ScriptComponent } from "engine/scripts/script-component";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { PlayerLifeController } from "../player/player-life-controller";
-import { Collider } from "engine/physics/components/collider";
-import { CollisionDirection } from "engine/physics/enum/collision-direction";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { Transform } from "engine/common/components/transform";
-import Vector2 from "engine/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import { CollisionDirection } from "@b2d-engine/core/physics/enum/collision-direction";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { Transform } from "@b2d-engine/core/common/components/transform";
+import Vector2 from "@b2d-engine/core/math/vector2";
 
 type DamageValue = number | (() => number);
 

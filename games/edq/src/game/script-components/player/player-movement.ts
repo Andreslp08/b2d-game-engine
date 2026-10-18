@@ -1,5 +1,5 @@
-import { Component } from "engine/ecs/component";
-import { PhysicalKey } from "engine/input/keyboard-manager";
+import { Component } from "@b2d-engine/core/ecs/component";
+import { PhysicalKey } from "@b2d-engine/core/input/keyboard-manager";
 
 export class PlayerMovement extends Component {
 	isJumping: boolean = false;

@@ -1,8 +1,8 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { Time } from "engine/common/interfaces/time";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { ScriptComponent } from "engine/scripts/script-component";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import { SpriteAnimation } from "@b2d-engine/core/graphics/sprites/components/sprite-animation";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import type { VisualEffect } from "../../interfaces/visual-effect";
 
 /** Applies a configurable visual filter to an entity's sprites for a duration. */

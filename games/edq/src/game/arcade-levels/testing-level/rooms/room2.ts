@@ -1,23 +1,23 @@
-import { Engine } from "engine";
-import { TileMap } from "engine/tiles/tilemap";
-import type { TiledMapLoadResult } from "engine/tiles/adapters/tiled/tiled-map-adapter";
+import { Engine } from "@b2d-engine/core";
+import { TileMap } from "@b2d-engine/core/tiles/tilemap";
+import type { TiledMapLoadResult } from "@b2d-engine/core/tiles/adapters/tiled/tiled-map-adapter";
 import { Room } from "../../../levels/room";
-import { DebugMode, DebugTypes } from "engine/debug/debug";
+import { DebugMode, DebugTypes } from "@b2d-engine/core/debug/debug";
 import { createPlayer } from "../../../prefabs/player";
 import { createMapGameZone } from "../../../prefabs/game-zone";
 import { useGameStore } from "../../../../store/store";
 import { PlayerInputController } from "../../../script-components/player/player-input-controller";
-import type { GameObject } from "engine/common/entities/game-object";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
 import { MarkerType } from "../../../config/constants";
 import { createTeleport } from "../../../prefabs/teleport";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { PlayerMovement } from "../../../script-components/player/player-movement";
 import { isFromLayer } from "../../../util/map-layer";
 import { generatePlayerSpawnPointFromMap } from "../../../util/spawn-player";
-import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
+import { createCameraNavigator } from "@b2d-engine/core/graphics/cameras/camera-navigator";
 import { createPickup } from "../../../prefabs/pickup";
-import Vector2 from "engine/math/vector2";
-import { Transform } from "engine/common/components/transform";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Transform } from "@b2d-engine/core/common/components/transform";
 import type { WeaponDefinition } from "../../../items/definitions/item-definition";
 import { itemRegistry } from "../../../items/item-catalog";
 import { DialogueManager } from "../../../dialogue/dialogue-manager";
@@ -75,7 +75,6 @@ export class Room2 extends Room {
 				},
 			],
 		});
-
 	}
 
 	spawn(): void {

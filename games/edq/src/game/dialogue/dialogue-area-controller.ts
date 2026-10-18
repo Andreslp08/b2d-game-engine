@@ -1,8 +1,8 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { InputActionPhase } from "engine/input/input-context-manager";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { UIObject } from "engine/ui/entities/ui-object";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { InputActionPhase } from "@b2d-engine/core/input/input-context-manager";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 import { GameplayAction, InputManagerInstance } from "../input/input-manager";
 import { InputContextPriority } from "../input/context-priority";
 import { PlayerInputController } from "../script-components/player/player-input-controller";

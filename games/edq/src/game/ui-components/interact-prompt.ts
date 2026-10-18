@@ -1,6 +1,6 @@
-import { Screen } from "engine/graphics/screen/screen";
-import Vector2 from "engine/math/vector2";
-import { UIComponent } from "engine/ui/components/ui-component";
+import { Screen } from "@b2d-engine/core/graphics/screen/screen";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
 
 /** Centered interaction prompt shared by world interaction points. */
 export class InteractPrompt extends UIComponent {

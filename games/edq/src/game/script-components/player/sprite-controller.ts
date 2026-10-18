@@ -1,18 +1,18 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { GameObject } from "engine/common/entities/game-object";
-import { SpriteAnimation } from "engine/graphics/sprites/components/sprite-animation";
-import { SpriteSheet } from "engine/graphics/sprites/spritesheet";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
-import { ScriptComponent } from "engine/scripts/script-component";
-import Vector2 from "engine/math/vector2";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { SpriteAnimation } from "@b2d-engine/core/graphics/sprites/components/sprite-animation";
+import { SpriteSheet } from "@b2d-engine/core/graphics/sprites/spritesheet";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { AimingController } from "./aiming-controller";
 import { PlayerSkinComponent } from "./player-skin-component";
 import { PlayerSkin } from "../../config/constants";
 import { PlayerMovement } from "./player-movement";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import { MouseManager } from "engine/input/mouse-manager";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
+import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
 
 export enum PlayerAnimationKey {
 	IDLE = "idle",

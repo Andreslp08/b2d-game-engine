@@ -1,16 +1,16 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { Time } from "engine/common/interfaces/time";
-import type { Updatable } from "engine/common/interfaces/updatable";
-import { Cameras } from "engine/graphics/cameras/camera-manager";
-import { OrthographicCamera } from "engine/graphics/cameras/orthographic-camera";
-import { Screen } from "engine/graphics/screen/screen";
-import { RenderLayerTypes } from "engine/graphics/enum/render-layer-types.enum";
-import type { ITranform } from "engine/common/interfaces/transform";
-import { MathUtil } from "engine/math/math-util";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { UIComponent } from "engine/ui/components/ui-component";
-import { UIObject } from "engine/ui/entities/ui-object";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import type { Updatable } from "@b2d-engine/core/common/interfaces/updatable";
+import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
+import { Screen } from "@b2d-engine/core/graphics/screen/screen";
+import { RenderLayerTypes } from "@b2d-engine/core/graphics/enum/render-layer-types.enum";
+import type { ITranform } from "@b2d-engine/core/common/interfaces/transform";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 
 export class HealthBarComponent extends UIComponent implements Updatable {
 	private visible = true;

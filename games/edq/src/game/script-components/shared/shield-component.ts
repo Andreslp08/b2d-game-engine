@@ -1,4 +1,4 @@
-import { ScriptComponent } from "engine/scripts/script-component";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 
 export class ShieldComponent extends ScriptComponent {
 	constructor(

@@ -1,13 +1,13 @@
-import { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import type { AnyItemDefinition } from "../items/definitions/item-definition";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
 import { getProjectileDefinition } from "../items/item-catalog";
-import type { GameImage } from "engine/common/assets-manager/game-image";
+import type { GameImage } from "@b2d-engine/core/common/assets-manager/game-image";
 import { createMarker } from "./marker";
 import { MarkerType } from "../config/constants";
-import type { Scene } from "engine/scenes/scene";
+import type { Scene } from "@b2d-engine/core/scenes/scene";
 import { PickupController } from "../script-components/pickup/pickup-controller";
 import { PLAYER_Z_INDEX } from "../script-components/player/constants";
 

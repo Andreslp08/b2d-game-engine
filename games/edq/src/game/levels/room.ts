@@ -1,6 +1,6 @@
-import { Scene } from "engine/scenes/scene";
+import { Scene } from "@b2d-engine/core/scenes/scene";
 import  { Level } from "./level";
-import  { GameEvent } from "engine/common/events/game-event";
+import  { GameEvent } from "@b2d-engine/core/common/events/game-event";
 
 export type RoomConstructor = (new () => Room) & { readonly id: string };
 

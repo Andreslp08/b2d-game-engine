@@ -1,8 +1,8 @@
-import { AssetsManager } from "engine/common/assets-manager/assets-manager";
-import { Time } from "engine/common/interfaces/time";
-import { MathUtil } from "engine/math/math-util";
-import Vector2 from "engine/math/vector2";
-import { UIComponent } from "engine/ui/components/ui-component";
+import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-manager";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
+import { MathUtil } from "@b2d-engine/core/math/math-util";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { UIComponent } from "@b2d-engine/core/ui/components/ui-component";
 
 export class SegmentBarUI extends UIComponent {
 	private _value: number = 0;

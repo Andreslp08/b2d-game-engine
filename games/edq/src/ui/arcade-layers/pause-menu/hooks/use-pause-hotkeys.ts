@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { InputActionPhase } from "engine/input/input-manager";
+import { InputActionPhase } from "@b2d-engine/core/input/input-manager";
 import { GameplayAction, InputManagerInstance } from "../../../../game/input/input-manager";
 import { InputContextPriority } from "../../../../game/input/context-priority";
 

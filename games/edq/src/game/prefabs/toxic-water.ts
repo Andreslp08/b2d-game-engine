@@ -1,12 +1,12 @@
-import { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { TriggerArea } from "engine/trigger-area";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { TriggerArea } from "@b2d-engine/core/trigger-area";
 import { Damageable } from "../script-components/shared/damageable";
-import type { Entity } from "engine/ecs/entity";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
 import { ContactDamage } from "../script-components/shared/contact-damage";
 import { PlayerLifeController } from "../script-components/player/player-life-controller";
-import { Time } from "engine/common/interfaces/time";
+import { Time } from "@b2d-engine/core/common/interfaces/time";
 
 type Params = {
 	position: Vector2;

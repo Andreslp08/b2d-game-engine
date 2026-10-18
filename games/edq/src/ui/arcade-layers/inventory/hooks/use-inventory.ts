@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { GameObject } from "engine/common/entities/game-object";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
 import { currentGameInstance } from "../../../../game/game";
 import { EquipmentComponent } from "../../../../game/items/components/equipment-component";
 import type { AnyItemDefinition } from "../../../../game/items/definitions/item-definition";

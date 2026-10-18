@@ -1,12 +1,12 @@
-import { Engine } from "engine";
-import Vector2 from "engine/math/vector2";
+import { Engine } from "@b2d-engine/core";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { PRELOAD_ASSETS as ASSETS_TO_PRELOAD } from "./preload/preloaded-assets";
-import { Screen } from "engine/graphics/screen/screen";
+import { Screen } from "@b2d-engine/core/graphics/screen/screen";
 import { useGameStore } from "../store/store";
 import { ArcadeLevelManagerInstance } from "./arcade-levels/level-manager";
 import { TestingLevel } from "./arcade-levels/testing-level/level";
 import { Room2 } from "./arcade-levels/testing-level/rooms/room2";
-import { AssetsPreloader } from "engine/common/assets-manager/assets-preloader";
+import { AssetsPreloader } from "@b2d-engine/core/common/assets-manager/assets-preloader";
 import { DEV_MODE } from "./config/constants";
 
 const aspectRatio = 16 / 9;
@@ -33,7 +33,9 @@ export const preloadGame = () => {
 		}, 1000);
 	};
 	AssetsPreloader.preload(ASSETS_TO_PRELOAD, (e) => {
-		console.log(`${e.progress}% Loading game assets type:[${e.currentAssetLoading?.type}] name:[${e.currentAssetLoading?.name}] path:[${e.currentAssetLoading?.path}]`);
+		console.log(
+			`${e.progress}% Loading game assets type:[${e.currentAssetLoading?.type}] name:[${e.currentAssetLoading?.name}] path:[${e.currentAssetLoading?.path}]`,
+		);
 		if (e.progress >= 100 && e.finished) {
 			if (DEV_MODE) {
 				testLevel();

@@ -1,8 +1,8 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { Sprite } from "engine/graphics/sprites/components/sprite";
-import type { ITranform } from "engine/common/interfaces/transform";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
+import type { ITranform } from "@b2d-engine/core/common/interfaces/transform";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
 
 export const createVerticalBounds = (
 	transform: ITranform,

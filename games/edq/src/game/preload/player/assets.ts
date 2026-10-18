@@ -1,4 +1,4 @@
-import type { AssetToPreload } from "engine/common/interfaces/assets";
+import type { AssetToPreload } from "@b2d-engine/core/common/interfaces/assets";
 import { PLAYER_IMAGES_ASSETS } from "./textures/images";
 import { PLAYER_ATLAS_ASSETS } from "./atlas/atlas";
 

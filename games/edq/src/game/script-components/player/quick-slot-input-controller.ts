@@ -1,4 +1,4 @@
-import { ScriptComponent } from "engine/scripts/script-component";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import {
 	QUICK_SLOT_BINDINGS,

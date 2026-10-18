@@ -1,12 +1,12 @@
-import { GameObject } from "engine/common/entities/game-object";
-import { ScriptComponent } from "engine/scripts/script-component";
-import { UIObject } from "engine/ui/entities/ui-object";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { UIObject } from "@b2d-engine/core/ui/entities/ui-object";
 import type { AnyItemDefinition } from "../../items/definitions/item-definition";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { QuickSlotsComponent } from "../../items/components/quick-slots-component";
 import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 import { InputContextPriority } from "../../input/context-priority";
-import { InputActionPhase } from "engine/input/input-manager";
+import { InputActionPhase } from "@b2d-engine/core/input/input-manager";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { InteractPrompt } from "../../ui-components/interact-prompt";
 

@@ -1,6 +1,6 @@
-import type { Entity } from "engine/ecs/entity";
-import type { GameObject } from "engine/common/entities/game-object";
-import { ScriptComponent } from "engine/scripts/script-component";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import type { MarkerParams } from "../../interfaces/marker";
 
 export class MarkerController extends ScriptComponent {

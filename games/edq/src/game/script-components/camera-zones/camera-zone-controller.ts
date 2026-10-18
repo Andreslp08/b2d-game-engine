@@ -1,5 +1,5 @@
-import type { Entity } from "engine/ecs/entity";
-import { ScriptComponent } from "engine/scripts/script-component";
+import type { Entity } from "@b2d-engine/core/ecs/entity";
+import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { PlayerCameraController } from "../player/player-camera-controller";
 
 type AreaAction = "follow-player" | "static";

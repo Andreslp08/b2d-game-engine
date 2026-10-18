@@ -1,9 +1,9 @@
-import { Engine } from "engine";
-import { TileMap } from "engine/tiles/tilemap";
-import type { TiledMapLoadResult } from "engine/tiles/adapters/tiled/tiled-map-adapter";
+import { Engine } from "@b2d-engine/core";
+import { TileMap } from "@b2d-engine/core/tiles/tilemap";
+import type { TiledMapLoadResult } from "@b2d-engine/core/tiles/adapters/tiled/tiled-map-adapter";
 import { Room } from "../../../levels/room";
-import { DebugMode, DebugTypes } from "engine/debug/debug";
-import Vector2 from "engine/math/vector2";
+import { DebugMode, DebugTypes } from "@b2d-engine/core/debug/debug";
+import Vector2 from "@b2d-engine/core/math/vector2";
 import { createPlayer } from "../../../prefabs/player";
 import { createSoldier } from "../../../prefabs/soldier";
 import { createSpinesBug } from "../../../prefabs/spines-enemy";
@@ -14,15 +14,15 @@ import { WeaponHolder } from "../../../script-components/weapon/weapon";
 import { useGameStore } from "../../../../store/store";
 import { createToxicWater } from "../../../prefabs/toxic-water";
 import { PlayerInputController } from "../../../script-components/player/player-input-controller";
-import type { GameObject } from "engine/common/entities/game-object";
-import {  MarkerType } from "../../../config/constants";
-import { Collider } from "engine/physics/components/collider";
+import type { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import { MarkerType } from "../../../config/constants";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
 import { createTeleport } from "../../../prefabs/teleport";
-import { DynamicBody } from "engine/physics/components/dynamic-body";
+import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { PlayerMovement } from "../../../script-components/player/player-movement";
 import { isFromLayer } from "../../../util/map-layer";
 import { generatePlayerSpawnPointFromMap } from "../../../util/spawn-player";
-import { createCameraNavigator } from "engine/graphics/cameras/camera-navigator";
+import { createCameraNavigator } from "@b2d-engine/core/graphics/cameras/camera-navigator";
 
 const enemyFactories = {
 	Soldier: createSoldier,
@@ -120,7 +120,7 @@ export class Room1 extends Room {
 		});
 
 		const player = createPlayer({
-			scene:this,
+			scene: this,
 			position: spawnPoint.position,
 			skin: useGameStore.getState().currentSkin,
 		}) as GameObject;
@@ -130,7 +130,6 @@ export class Room1 extends Room {
 		const direction = spawnPoint.facingDirection === "left" ? -1 : 1;
 		player.getComponent(PlayerMovement).direction.x = direction;
 		player.getComponent(DynamicBody).direction.x = direction;
-
 
 		if (!mapBounds) {
 			console.warn("Room1 requires a MapBounds object to constrain the player and camera.");

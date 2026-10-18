@@ -1,10 +1,10 @@
-import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "engine/common/constants";
-import { GameObject } from "engine/common/entities/game-object";
-import Vector2 from "engine/math/vector2";
-import { Collider } from "engine/physics/components/collider";
-import type { Scene } from "engine/scenes/scene";
-import { TriggerArea } from "engine/trigger-area";
-import { StaticBody } from "engine/physics/components/static-body";
+import { VIEWPORT_WIDTH_IN_WORLD_UNITS } from "@b2d-engine/core/common/constants";
+import { GameObject } from "@b2d-engine/core/common/entities/game-object";
+import Vector2 from "@b2d-engine/core/math/vector2";
+import { Collider } from "@b2d-engine/core/physics/components/collider";
+import type { Scene } from "@b2d-engine/core/scenes/scene";
+import { TriggerArea } from "@b2d-engine/core/trigger-area";
+import { StaticBody } from "@b2d-engine/core/physics/components/static-body";
 import { CameraZoneController } from "../script-components/camera-zones/camera-zone-controller";
 import { PlayerCameraController } from "../script-components/player/player-camera-controller";
 

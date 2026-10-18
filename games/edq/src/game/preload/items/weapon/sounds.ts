@@ -2,7 +2,7 @@ import {
 	GameAssetsTypes,
 	type AssetToPreload,
 	type SoundAssetOptions,
-} from "engine/common/interfaces/assets";
+} from "@b2d-engine/core/common/interfaces/assets";
 
 
 const EXPLOSION_SOUNDS_ASSETS: AssetToPreload<SoundAssetOptions>[] = [

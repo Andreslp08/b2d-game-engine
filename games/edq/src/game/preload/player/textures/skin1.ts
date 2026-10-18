@@ -1,4 +1,4 @@
-import { GameAssetsTypes, type AssetToPreload } from "engine/common/interfaces/assets";
+import { GameAssetsTypes, type AssetToPreload } from "@b2d-engine/core/common/interfaces/assets";
 
 export const PLAYER_SKIN1_ASSETS:  AssetToPreload<any>[] = [
     {

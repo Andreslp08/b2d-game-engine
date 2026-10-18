@@ -1,4 +1,4 @@
-import type { TiledMapLoadResult } from "engine/tiles/adapters/tiled/tiled-map-adapter";
+import type { TiledMapLoadResult } from "@b2d-engine/core/tiles/adapters/tiled/tiled-map-adapter";
 
 export const isFromLayer = (
 	object: TiledMapLoadResult["objects"][number],

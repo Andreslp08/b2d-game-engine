@@ -1,4 +1,4 @@
-import type { Scene } from "engine/scenes/scene";
+import type { Scene } from "@b2d-engine/core/scenes/scene";
 
 export type DialogueLines = {
 	speakerName: string;

@@ -1,4 +1,4 @@
-import { Component } from "engine/ecs/component";
+import { Component } from "@b2d-engine/core/ecs/component";
 import type { ItemInstance } from "../runtime/item-instance";
 
 /** ECS data for an item currently present in the world and available for pickup. */
