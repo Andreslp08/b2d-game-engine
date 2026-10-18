@@ -1,9 +1,10 @@
 packages:
   - engine
+  - editor
   - games/*
-  - dev-toolkit/*
 
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - '@swc/core'
   - '@tailwindcss/oxide'
   - esbuild
