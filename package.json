@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-"dev": "concurrently -k -n \"edq,engine\" -c \"cyan,magenta\" \"pnpm --filter edq dev\" \"pnpm --filter engine dev\""
+"dev": "concurrently -k -n \"Bound to red skies,@b2d-engine/core,@b2d-engine/dev-toolkit/sprite-editor\" -c \"cyan,magenta\" \"pnpm --filter edq dev\" \"pnpm --filter @b2d-engine/core dev\" \"pnpm --filter @b2d-engine/dev-toolkit/sprite-editor dev\""
 
   },
   "keywords": [],

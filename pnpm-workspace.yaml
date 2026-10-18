@@ -1,3 +1,9 @@
 packages:
-  - "engine"
-  - "games/*"
+  - engine
+  - games/*
+  - dev-toolkit/*
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - esbuild
