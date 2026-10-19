@@ -156,6 +156,16 @@ export class Engine {
 		return Engine._gameRoot;
 	}
 
+	/** Moves the shared canvas and overlay to a new host container. */
+	public mount(gameRoot: HTMLDivElement): void {
+		gameRoot.style.display = "flex";
+		gameRoot.style.justifyContent = "center";
+		gameRoot.style.alignItems = "center";
+		gameRoot.style.backgroundColor = "#000";
+		Engine._gameRoot = gameRoot;
+		gameRoot.replaceChildren(Engine._canvas, Engine._canvasOverlay);
+	}
+
 	public setScene(scene: Scene | null) {
 		if (this.scene && this.scene !== scene) {
 			this.scene.destroy();
