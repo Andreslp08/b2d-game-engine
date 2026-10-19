@@ -16,6 +16,7 @@ export interface CameraNavigatorOptions {
 	zoomStep?: number;
 	minZoom?: number;
 	maxZoom?: number;
+	wheelTarget?: HTMLElement | Window;
 }
 
 class CameraNavigatorUI extends UIComponent {
@@ -67,6 +68,7 @@ export class CameraNavigator extends ScriptComponent {
 	private readonly zoomStep: number;
 	private readonly minZoom: number;
 	private readonly maxZoom: number;
+	private readonly wheelTarget: HTMLElement | Window;
 	private position = Vector2.ZERO.clone();
 	private zoom = 1;
 	private readonly ui = new Entity();
@@ -88,6 +90,7 @@ export class CameraNavigator extends ScriptComponent {
 		this.zoomStep = options.zoomStep ?? 0.1;
 		this.minZoom = options.minZoom ?? 0.25;
 		this.maxZoom = options.maxZoom ?? 3;
+		this.wheelTarget = options.wheelTarget ?? window;
 		this.ui.renderLayer = RenderLayerTypes.UI;
 		this.ui.addComponent(new CameraNavigatorUI(this));
 	}
@@ -96,7 +99,7 @@ export class CameraNavigator extends ScriptComponent {
 		const camera = Cameras.currentCamera;
 		this.position = camera?.getPosition().clone() ?? Vector2.ZERO.clone();
 		this.zoom = camera?.getFieldOfView() ?? 1;
-		window.addEventListener("wheel", this.onWheel, { passive: false });
+		this.wheelTarget.addEventListener("wheel", this.onWheel, { passive: false });
 		const scene = this.entity.getScene();
 		if (scene && !this.ui.getScene()) scene.addEntity(this.ui);
 	}
@@ -142,7 +145,7 @@ export class CameraNavigator extends ScriptComponent {
 	}
 
 	onDestroy(): void {
-		window.removeEventListener("wheel", this.onWheel);
+		this.wheelTarget.removeEventListener("wheel", this.onWheel);
 		this.ui.destroy();
 	}
 

@@ -11,6 +11,7 @@ export class ParticleEmitter extends Component {
 	duration: number;
 	loop: boolean;
 	maxParticles: number;
+	timeScale: number;
 	playing: boolean;
 	prewarm: boolean;
 	localSpace: boolean;
@@ -37,6 +38,7 @@ export class ParticleEmitter extends Component {
 		this.duration = 0;
 		this.loop = false;
 		this.maxParticles = 100;
+		this.timeScale = 1;
 		this.playing = true;
 		this.prewarm = false;
 		this.localSpace = true;

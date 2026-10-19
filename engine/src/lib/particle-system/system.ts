@@ -24,9 +24,10 @@ export class ParticleSystem extends System {
 
 			const emitters = entity.getComponents(ParticleEmitter);
 			for (const emitter of emitters) {
+				const deltaTime = Time.deltaTime * emitter.timeScale;
 				this.ensurePool(emitter);
-				this.emitParticles(transform, emitter);
-				this.updateParticles(emitter);
+				this.emitParticles(transform, emitter, deltaTime);
+				this.updateParticles(emitter, deltaTime);
 				this.destroyIfComplete(entity, emitter);
 			}
 		}
@@ -60,7 +61,7 @@ export class ParticleSystem extends System {
 		});
 	}
 
-	private emitParticles(transform: Transform, emitter: ParticleEmitter): void {
+	private emitParticles(transform: Transform, emitter: ParticleEmitter, deltaTime: number): void {
 		if (!emitter.playing) return;
 
 		if (emitter.burstCount > 0 && !emitter.hasBurst) {
@@ -69,7 +70,7 @@ export class ParticleSystem extends System {
 		}
 
 		if (emitter.emissionRate > 0) {
-			emitter.emissionAccumulator += emitter.emissionRate * Time.deltaTime;
+			emitter.emissionAccumulator += emitter.emissionRate * deltaTime;
 			const particlesToSpawn = Math.floor(emitter.emissionAccumulator);
 			if (particlesToSpawn > 0) {
 				this.spawnParticles(transform, emitter, particlesToSpawn);
@@ -79,7 +80,7 @@ export class ParticleSystem extends System {
 
 		if (emitter.duration <= 0) return;
 
-		emitter.elapsedTime += Time.deltaTime;
+		emitter.elapsedTime += deltaTime;
 		if (emitter.elapsedTime < emitter.duration) return;
 
 		if (emitter.loop) {
@@ -125,20 +126,20 @@ export class ParticleSystem extends System {
 		particle.opacity = particle.startOpacity;
 	}
 
-	private updateParticles(emitter: ParticleEmitter): void {
+	private updateParticles(emitter: ParticleEmitter, deltaTime: number): void {
 		for (const particle of emitter.particles) {
 			if (!particle.active) continue;
 
-			particle.age += Time.deltaTime;
+			particle.age += deltaTime;
 			if (particle.age >= particle.lifetime) {
 				particle.active = false;
 				continue;
 			}
 
 			const t = particle.lifetime > 0 ? particle.age / particle.lifetime : 1;
-			particle.velocity.add(particle.acceleration.clone().multiplyBy(Time.deltaTime));
-			particle.position.add(particle.velocity.clone().multiplyBy(Time.deltaTime));
-			particle.rotation += particle.angularVelocity * Time.deltaTime;
+			particle.velocity.add(particle.acceleration.clone().multiplyBy(deltaTime));
+			particle.position.add(particle.velocity.clone().multiplyBy(deltaTime));
+			particle.rotation += particle.angularVelocity * deltaTime;
 			particle.size = MathUtil.lerpVector(particle.startSize, particle.endSize, t);
 			particle.opacity = MathUtil.lerp(particle.startOpacity, particle.endOpacity, t);
 			particle.color = MathUtil.lerpHexColor(particle.startColor, particle.endColor, t);
