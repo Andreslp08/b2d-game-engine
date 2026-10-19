@@ -14,6 +14,9 @@ importers:
 
   editor:
     dependencies:
+      '@b2d-engine/core':
+        specifier: workspace:*
+        version: link:../engine
       '@base-ui/react':
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -38,6 +41,9 @@ importers:
       react-dom:
         specifier: ^19.2.8
         version: 19.3.1(react@19.3.1)
+      react-resizable-panels:
+        specifier: ^4.14.6
+        version: 4.14.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       shadcn:
         specifier: ^4.22.1
         version: 4.22.1
@@ -47,10 +53,10 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      zustand:
+        specifier: ^5.0.5
+        version: 5.0.5(@types/react@19.3.0)(immer@10.1.1)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     devDependencies:
-      '@b2d-engine/core':
-        specifier: workspace:*
-        version: link:../engine
       '@types/node':
         specifier: ^24.13.3
         version: 24.19.2
@@ -2849,6 +2855,12 @@ packages:
     resolution: {integrity: sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==}
     peerDependencies:
       react: ^19.3.1
+
+  react-resizable-panels@4.14.6:
+    resolution: {integrity: sha512-YqkTuTDV1ncknnR5YN/iI8icpClippc9/10job9zJIppt2r8yUwaVfVxhzFNO+3DIxrnAwhcMMs1FdX5xt9C9A==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   react@19.1.0:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
@@ -5667,6 +5679,11 @@ snapshots:
       react: 19.3.1
       scheduler: 0.28.0
 
+  react-resizable-panels@4.14.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
   react@19.1.0: {}
 
   react@19.3.1: {}
@@ -6160,3 +6177,10 @@ snapshots:
       immer: 10.1.1
       react: 19.1.0
       use-sync-external-store: 1.7.0(react@19.1.0)
+
+  zustand@5.0.5(@types/react@19.3.0)(immer@10.1.1)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)):
+    optionalDependencies:
+      '@types/react': 19.3.0
+      immer: 10.1.1
+      react: 19.3.1
+      use-sync-external-store: 1.7.0(react@19.3.1)

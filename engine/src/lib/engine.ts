@@ -12,6 +12,9 @@ import { GameEvent } from "./common/events/game-event";
 let requestAnimationFrame;
 const CANVAS_OVERLAY_DURATION_MS = 250;
 
+type EngineParams = {
+	gameRoot?: HTMLDivElement;
+}
 export class Engine {
 	private static _canvas: HTMLCanvasElement;
 	private static _context: CanvasRenderingContext2D;
@@ -30,8 +33,9 @@ export class Engine {
 	private targetFps = 60;
 	private frameInterval = 1000 / this.targetFps;
 	private lastFrameTime = 0;
-	constructor() {
-		const gameRoot = document.getElementById("game-root") as HTMLDivElement;
+	constructor(params?: EngineParams) {
+		const { gameRoot: root } = params || {};
+		const gameRoot = root || document.getElementById("game-root") as HTMLDivElement;
 
 		if (!gameRoot) {
 			throw new Error(
