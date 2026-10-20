@@ -1,4 +1,4 @@
-import { startSpriteEditorGame } from "@/features/sprite-editor/game";
+import { startSpriteEditorScene } from "@/features/sprite-editor/game";
 import { useEffect, useRef } from "react";
 
 export const SpritePreview = () => {
@@ -7,7 +7,7 @@ export const SpritePreview = () => {
 
 	useEffect(() => {
 		if (!containerRef.current || !gameRootRef.current) return;
-		return startSpriteEditorGame(gameRootRef.current, containerRef.current);
+		return startSpriteEditorScene(gameRootRef.current, containerRef.current);
 	}, []);
 
 	return (
