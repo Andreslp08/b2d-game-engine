@@ -9,10 +9,9 @@ import { DebugMode, DebugTypes } from "./debug";
 
 export class DebugSystem extends System{
     update(): void {
-        if(DebugMode.enabled === false) return
         const entities = this.getScene().getEntitiesByQuery({all:[], any:[Transform, Collider, TriggerArea, DrawDebugLine]});
         entities.forEach((entity) => {
-            if(DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.TRANSFORMS){
+            if(DebugMode.enabled && (DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.TRANSFORMS)){
                 const transform = entity.getComponent(Transform);
                 if(transform){
                     transform.debugMode = true;
@@ -23,7 +22,7 @@ export class DebugSystem extends System{
                     transform.debugMode = false;
                 }
             }
-            if(DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.COLLIDERS){
+            if(DebugMode.enabled && (DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.COLLIDERS)){
                 const collider = entity.getComponent(Collider);
                 if(collider){
                     collider.debugMode = true;
@@ -35,9 +34,10 @@ export class DebugSystem extends System{
                 }
             }
             if(
-                DebugMode.currentMode === DebugTypes.ALL ||
-                DebugMode.currentMode === DebugTypes.COLLIDERS ||
-                DebugMode.currentMode === DebugTypes.TRIGGER_AREAS
+                DebugMode.enabled && (
+                    DebugMode.currentMode === DebugTypes.ALL ||
+                    DebugMode.currentMode === DebugTypes.TRIGGER_AREAS
+                )
             ){
                 const triggerAreas = entity.getComponents(TriggerArea);
                 if(triggerAreas){
@@ -49,7 +49,7 @@ export class DebugSystem extends System{
                    triggerAreas.forEach((triggerArea) => triggerArea.debugMode = false);
                 }
             }
-            if(DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.SHAPES){
+            if(DebugMode.enabled && (DebugMode.currentMode === DebugTypes.ALL || DebugMode.currentMode === DebugTypes.SHAPES)){
                 const drawLine = entity.getComponents(DrawDebugLine);
                 if(drawLine){
                    drawLine.forEach((line) => line.debugMode = true);
