@@ -45,18 +45,20 @@ export class ParticleRenderer extends Renderer {
 	}
 
 	private renderCircle(renderingContext: CanvasRenderingContext2D, particle: Particle): void {
-		const radius = Math.max(particle.size.x, particle.size.y) / 2;
+		const radius = Math.max(0, particle.size.x, particle.size.y) / 2;
 		renderingContext.beginPath();
 		renderingContext.arc(0, 0, radius, 0, Math.PI * 2);
 		renderingContext.fill();
 	}
 
 	private renderRectangle(renderingContext: CanvasRenderingContext2D, particle: Particle): void {
+		const width = Math.max(0, particle.size.x);
+		const height = Math.max(0, particle.size.y);
 		renderingContext.fillRect(
-			-particle.size.x / 2,
-			-particle.size.y / 2,
-			particle.size.x,
-			particle.size.y
+			-width / 2,
+			-height / 2,
+			width,
+			height
 		);
 	}
 }
