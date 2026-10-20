@@ -9,12 +9,17 @@ import {
 	MenubarSeparator,
 	MenubarRadioGroup,
 	MenubarRadioItem,
+	MenubarCheckboxItem,
 } from "@/components/ui/menubar";
 import { useTheme, type Theme } from "@/shared/providers/theme-provider";
+import { DebugMode, DebugTypes } from "@b2d-engine/core/debug/debug";
 import { FolderOpen, PlusIcon } from "lucide-react";
+import { useState } from "react";
 
 export function EditorMenuBar() {
 	const { theme, setTheme } = useTheme();
+	const [debugEnabled, setDebugEnabled] = useState(DebugMode.enabled);
+	const [debugMode, setDebugMode] = useState(DebugMode.currentMode);
 
 	const themes: Record<Theme, string> = {
 		system: "System",
@@ -49,6 +54,29 @@ export function EditorMenuBar() {
 						</MenubarItem>
 					</MenubarGroup>
 					<MenubarSeparator />
+				</MenubarContent>
+			</MenubarMenu>
+			<MenubarMenu>
+				<MenubarTrigger>Debug</MenubarTrigger>
+				<MenubarContent className="w-52">
+					<MenubarGroup>
+						<MenubarCheckboxItem checked={debugEnabled} onCheckedChange={(enabled) => {
+							DebugMode.enabled = enabled;
+							setDebugEnabled(enabled);
+						}}>
+							Enable debug rendering
+						</MenubarCheckboxItem>
+					</MenubarGroup>
+					<MenubarSeparator />
+					<MenubarGroup>
+						<MenubarRadioGroup value={debugMode} onValueChange={(value) => {
+							const mode = value as DebugTypes;
+							DebugMode.setMode(mode);
+							setDebugMode(mode);
+						}}>
+							{Object.values(DebugTypes).map((mode) => <MenubarRadioItem key={mode} value={mode}>{mode}</MenubarRadioItem>)}
+						</MenubarRadioGroup>
+					</MenubarGroup>
 				</MenubarContent>
 			</MenubarMenu>
 			<MenubarMenu>
