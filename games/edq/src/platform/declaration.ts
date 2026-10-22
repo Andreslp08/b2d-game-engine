@@ -1,11 +1,15 @@
-import type { Platform } from "./types";
+import type { Runtime } from "./types";
 
 declare global {
-  interface Window {
-    __PLATFORM__?: Platform;
-    b2dHost?: {
-      exit(): Promise<void>;
-    };
-  }
+	interface Window {
+		__EDQ_RUNTIME__?: Runtime;
+		b2dHost?: {
+			exit(): Promise<void>;
+		};
+	}
 }
-export const platform: Platform = window.__PLATFORM__ ?? "web";
+
+export const RUNTIME: Runtime = window.__EDQ_RUNTIME__ ?? {
+	environment: import.meta.env.DEV ? "development" : "production",
+	platform: "web",
+};

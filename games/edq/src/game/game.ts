@@ -7,7 +7,7 @@ import { ArcadeLevelManagerInstance } from "./arcade-levels/level-manager";
 import { TestingLevel } from "./arcade-levels/testing-level/level";
 import { Room2 } from "./arcade-levels/testing-level/rooms/room2";
 import { AssetsPreloader } from "@b2d-engine/core/common/assets-manager/assets-preloader";
-import { DEV_MODE } from "./config/constants";
+import { RUNTIME } from "../platform/declaration";
 
 const aspectRatio = 16 / 9;
 export const currentGameInstance = new Engine();
@@ -37,7 +37,7 @@ export const preloadGame = () => {
 			`${e.progress}% Loading game assets type:[${e.currentAssetLoading?.type}] name:[${e.currentAssetLoading?.name}] path:[${e.currentAssetLoading?.path}]`,
 		);
 		if (e.progress >= 100 && e.finished) {
-			if (DEV_MODE) {
+			if (RUNTIME.environment === "development") {
 				testLevel();
 			} else {
 				goToMainMenu();

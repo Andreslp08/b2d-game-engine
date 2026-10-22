@@ -1,4 +1,4 @@
-import { platform } from "../declaration";
+import { RUNTIME } from "../declaration";
 
 export interface ExitHandler {
 	exit(): Promise<void>;
@@ -22,7 +22,7 @@ export class WebExitHandler implements ExitHandler {
 
 export class ExitHandlerFactory {
 	static create(): ExitHandler {
-		switch (platform) {
+		switch (RUNTIME.platform) {
 			case "electron":
 				return new ElectronExitHandler();
 			case "web":
