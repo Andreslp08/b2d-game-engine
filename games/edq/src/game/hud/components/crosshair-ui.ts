@@ -2,6 +2,7 @@ import { AssetsManager } from "@b2d-engine/core/common/assets-manager/assets-man
 import type { GameImage } from "@b2d-engine/core/common/assets-manager/game-image";
 import { Time } from "@b2d-engine/core/common/interfaces/time";
 import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
+import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
 import { ScreenCamera } from "@b2d-engine/core/graphics/cameras/screen-camera";
 import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
 import Vector2 from "@b2d-engine/core/math/vector2";
@@ -16,6 +17,7 @@ export class CrossHairUI extends UIComponent {
 	private _crosshairSecondaryCircleImage: GameImage;
 	private _mainCircleRotation = 0;
 	private _secondaryCircleRotation = 0;
+	private _worldPosition: Vector2 | null = null;
 	private readonly _mainCircleRotationSpeed = 50;
 	private readonly _secondaryCircleRotationSpeed = 100;
 
@@ -69,10 +71,17 @@ export class CrossHairUI extends UIComponent {
 	render(context: CanvasRenderingContext2D): void {
 		if (!this.isVisible()) return;
 		const mousePosition = MouseManager.getRelativePosition();
+		const worldCamera = Cameras.currentCamera as OrthographicCamera | undefined;
+		const worldCanvasPosition = this._worldPosition
+			? worldCamera?.getCanvasPositionFromWorldPosition(this._worldPosition)
+			: null;
+		const canvasPosition = worldCanvasPosition
+			? worldCanvasPosition.divide(new Vector2(window.devicePixelRatio || 1, window.devicePixelRatio || 1))
+			: mousePosition;
 		const uiCamera = Cameras.currentScreenCamera as ScreenCamera;
 		const uiMousePosition = uiCamera
-			? uiCamera.canvasToUISpace(mousePosition)
-			: mousePosition;
+			? uiCamera.canvasToUISpace(canvasPosition)
+			: canvasPosition;
 		this.transform.position = new Vector2(
 			uiMousePosition.x - this.transform.size.x / 2,
 			uiMousePosition.y - this.transform.size.y / 2,
@@ -132,6 +141,11 @@ export class CrossHairUI extends UIComponent {
 
 	setVisible(visible: boolean) {
 		this._visible = visible;
+	}
+
+	/** Uses a world target while gamepad aim is active; null restores cursor tracking. */
+	setWorldPosition(position: Vector2 | null): void {
+		this._worldPosition = position?.clone() ?? null;
 	}
 
 	/** Shows only the large circle while the equipped weapon is reloading. */

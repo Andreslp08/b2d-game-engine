@@ -3,6 +3,7 @@ import { DrawDebugLine } from "@b2d-engine/core/debug/components/draw-line";
 import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
 import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
 import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
+import { GamepadManager } from "@b2d-engine/core/input/gamepad-manager";
 import { MathUtil } from "@b2d-engine/core/math/math-util";
 import Vector2 from "@b2d-engine/core/math/vector2";
 import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
@@ -11,9 +12,12 @@ import { PlayerMovement } from "./player-movement";
 import { InventoryComponent } from "../../items/components/inventory-component";
 import { EquipmentComponent } from "../../items/components/equipment-component";
 import { PlayerInputController, PlayerInputPermission } from "./player-input-controller";
+import { GameplayAction, InputManagerInstance } from "../../input/input-manager";
 
 export class AimingController extends ScriptComponent {
 	private _isAiming = false;
+	private _isUsingGamepadAim = false;
+	private _aimDirection = Vector2.RIGHT.clone();
 	private _radAngle = 0;
 	private _aimingDirection: { x: 1 | -1; y: 1 | -1 } = { x: 1, y: 1 };
 	private debugAngleX: DrawDebugLine;
@@ -36,6 +40,7 @@ export class AimingController extends ScriptComponent {
 		const input = this.gameObject.getComponent(PlayerInputController);
 		if (!input?.isEnabled(PlayerInputPermission.WeaponUse)) {
 			this._isAiming = false;
+			this._isUsingGamepadAim = false;
 			MouseManager.setCursorInputEnabled(false);
 			return;
 		}
@@ -57,27 +62,41 @@ export class AimingController extends ScriptComponent {
 		this._isAiming = !dynamicBody.isOnGround || isDashing
 			? false
 			: !!inventory && !!equipment && hasEquippedWeapon;
-		MouseManager.setCursorInputEnabled(this._isAiming);
+		const gamepadDirection = InputManagerInstance.getVector2(GameplayAction.Aim);
+		const hasGamepad = GamepadManager.getGamepads().length > 0;
+		const isGamepadAiming = hasGamepad && gamepadDirection.getMagnitude() > 0;
+		this._isUsingGamepadAim = hasGamepad;
+		MouseManager.setCursorInputEnabled(this._isAiming && !hasGamepad);
 
-		const mousePos = MouseManager.getRelativePosition();
-		const mouseWorldPos = Cameras.currentCamera
-			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
-				mousePos,
-			)
-			: null;
-		if (!mouseWorldPos) return;
+		let aimDirection: Vector2;
+		if (isGamepadAiming) {
+			aimDirection = gamepadDirection.normalize();
+		} else if (hasGamepad) {
+			const moveDirection = InputManagerInstance.getVector2(GameplayAction.Move);
+			const directionX = moveDirection.x === 0 ? dynamicBody.direction.x : moveDirection.x;
+			aimDirection = new Vector2(directionX < 0 ? -1 : 1, 0);
+		} else {
+			const mousePos = MouseManager.getRelativePosition();
+			const mouseWorldPos = Cameras.currentCamera
+				? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
+						mousePos,
+					)
+				: null;
+			if (!mouseWorldPos) return;
 
-		const mouseDirection = mouseWorldPos
-			.clone()
-			.substract(this.gameObject.transform.position)
-			.normalize();
+			aimDirection = mouseWorldPos
+				.clone()
+				.substract(this.gameObject.transform.position)
+				.normalize();
+		}
 
-		this._radAngle = Math.atan2(mouseDirection.y, mouseDirection.x);
+		this._radAngle = Math.atan2(aimDirection.y, aimDirection.x);
+		this._aimDirection = aimDirection;
 
 		if (this._isAiming) {
-			if (mouseDirection.x < -0.24) {
+			if (aimDirection.x < -0.24) {
 				this._aimingDirection.x = -1;
-			} else if (mouseDirection.x > 0.24) {
+			} else if (aimDirection.x > 0.24) {
 				this._aimingDirection.x = 1;
 			}
 		} else {
@@ -96,17 +115,20 @@ export class AimingController extends ScriptComponent {
 		this.debugAngleX.start = transform.position.clone();
 		this.debugAngleX.end = transform.position.clone().add(new Vector2(1, 0));
 
-		const mousePos = MouseManager.getRelativePosition();
-		const camera = Cameras.currentCamera as OrthographicCamera | undefined;
-		const mouseWorldPos = camera?.getWorldPositionFromScreenPosition(mousePos);
-		if (!mouseWorldPos) return;
-
 		this.debugAimingLine.start = transform.position.clone();
-		this.debugAimingLine.end = mouseWorldPos.clone();
+		this.debugAimingLine.end = transform.position.clone().add(this._aimDirection);
 	}
 
 	isAiming() {
 		return this._isAiming;
+	}
+
+	isUsingGamepadAim() {
+		return this._isUsingGamepadAim;
+	}
+
+	getAimDirection(): Vector2 {
+		return this._aimDirection.clone();
 	}
 
 	setAimingDirectionX(direction: 1 | -1): void {

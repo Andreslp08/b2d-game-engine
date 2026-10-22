@@ -63,6 +63,13 @@ class HudUI extends UIObject {
 			const weaponController = weaponHolder?.weapon?.getComponent(WeaponController);
 			if (aimingController) {
 				this._crosshair.setVisible(aimingController.isAiming());
+				this._crosshair.setWorldPosition(
+					aimingController.isUsingGamepadAim()
+						? entity.transform.position
+								.clone()
+								.add(aimingController.getAimDirection().multiplyBy(4))
+						: null,
+				);
 			}
 			this._crosshair.setReloading(weaponController?.isReloading() ?? false);
 			this._crosshair.setNoAmmo(weaponController?.isOutOfAmmo() ?? false);

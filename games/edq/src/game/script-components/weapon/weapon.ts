@@ -347,25 +347,30 @@ export class WeaponController extends ScriptComponent {
 		const spawnPosition = this.getMuzzlePosition(weaponTransform, weaponSprite, definition).add(
 			compensation,
 		);
-		const mousePosition = MouseManager.getRelativePosition();
-		const targetWorldPosition = Cameras.currentCamera
-			? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
-					mousePosition,
-				)
-			: null;
-		if (!targetWorldPosition) return;
-
-		const distanceToMouse = Vector2.distance(spawnPosition, targetWorldPosition);
-		const minPreciseDistance = 0.75;
 		let aimDir: Vector2;
 		let angleInRads: number;
 
-		if (distanceToMouse <= minPreciseDistance) {
+		if (aimingController.isUsingGamepadAim()) {
 			angleInRads = aimingController.getAngleInRads();
 			aimDir = new Vector2(Math.cos(angleInRads), Math.sin(angleInRads)).normalize();
 		} else {
-			aimDir = targetWorldPosition.clone().substract(spawnPosition).normalize();
-			angleInRads = Math.atan2(aimDir.y, aimDir.x);
+			const mousePosition = MouseManager.getRelativePosition();
+			const targetWorldPosition = Cameras.currentCamera
+				? (Cameras.currentCamera as OrthographicCamera).getWorldPositionFromScreenPosition(
+						mousePosition,
+					)
+				: null;
+			if (!targetWorldPosition) return;
+
+			const distanceToMouse = Vector2.distance(spawnPosition, targetWorldPosition);
+			const minPreciseDistance = 0.75;
+			if (distanceToMouse <= minPreciseDistance) {
+				angleInRads = aimingController.getAngleInRads();
+				aimDir = new Vector2(Math.cos(angleInRads), Math.sin(angleInRads)).normalize();
+			} else {
+				aimDir = targetWorldPosition.clone().substract(spawnPosition).normalize();
+				angleInRads = Math.atan2(aimDir.y, aimDir.x);
+			}
 		}
 		if (!this.consumeRound(definition)) return;
 		this.logShot(definition);

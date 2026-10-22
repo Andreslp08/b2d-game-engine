@@ -42,13 +42,14 @@ export const useInventoryMenuController = () => {
 			actions: [{ action: GameplayAction.InventoryToggle, phases: [InputActionPhase.Pressed] }],
 			onAction: (inputEvent) => {
 				if (
-					!(inputEvent?.nativeEvent instanceof KeyboardEvent) ||
 					(currentUI?.scope === "arcade" && currentUI.layer === "pauseMenu")
 				) {
 					return;
 				}
 
-				inputEvent.nativeEvent.preventDefault();
+				if((inputEvent?.nativeEvent instanceof KeyboardEvent) ){
+					inputEvent.nativeEvent.preventDefault();
+				}
 				if (isInventoryMenuVisible) hideUI();
 				else showUI();
 			},
