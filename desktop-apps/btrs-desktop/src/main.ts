@@ -41,6 +41,9 @@ const createWindow = () => {
     icon: getWindowIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
+      additionalArguments: [
+        `--edq-environment=${app.isPackaged ? 'production' : 'development'}`,
+      ],
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
