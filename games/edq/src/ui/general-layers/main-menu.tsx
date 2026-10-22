@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { EnemyCarousel } from "./enemy-carousel";
 import { useGameStore } from "../../store/store";
 import { DefaultMenuHeader } from "./default-menu-header";
+import { ExitHandlerFactory } from "../../platform/handlers/exit-handler";
 
 export const MainMenu = () => {
 	const sectionRef = useRef(null);
@@ -44,7 +45,10 @@ export const MainMenu = () => {
 			id: "quit",
 			text: "Quit",
 			onClick: () => {
-				window.location.replace("https://www.andreslp.com.co/projects/bound-to-red-skies");
+				const exitHandler = ExitHandlerFactory.create();
+				void exitHandler.exit().catch((error: unknown) => {
+					console.error("Unable to exit the game", error);
+				});
 			},
 		},
 	];
