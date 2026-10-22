@@ -35,7 +35,12 @@ export class ScriptSystem extends System {
 				if (typeof script.onUpdate === "function" && this.startedScripts.has(script)) {
 					script.onUpdate();
 				}
+			}
+		}
 
+		// Late updates must run after every script has completed its regular update.
+		for (const entity of entities) {
+			for (const script of entity.getComponents(ScriptComponent)) {
 				if (typeof script.onLateUpdate === "function" && this.startedScripts.has(script)) {
 					script.onLateUpdate();
 				}
