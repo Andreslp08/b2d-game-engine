@@ -7,41 +7,44 @@ import {
 	type InputContext,
 } from "./input-context-manager";
 import Vector2 from "../math/vector2";
+import {
+	GamepadManager,
+	type GamePadAxis,
+	type GamePadButton,
+	type GamepadButtonInputEvent,
+} from "./gamepad-manager";
 
 export { InputActionPhase, type InputDispatchMode } from "./input-context-manager";
+export { GamePadAxis, GamePadButton } from "./gamepad-manager";
 
 /** Supported input device categories. */
 export type InputDevice = "keyboard" | "mouse" | "gamepad";
 
-/** Named gamepad buttons available to button actions. */
-export type GamepadButton =
-	| "south"
-	| "east"
-	| "west"
-	| "north"
-	| "left-bumper"
-	| "right-bumper"
-	| "start"
-	| "select";
-
 /** Normalized gamepad button data for action events. */
-export interface GamepadInputEvent {
-	device: "gamepad";
-	gamepadIndex: number;
-	button: GamepadButton;
-	value: number;
-	timestamp: number;
-}
+export type GamepadInputEvent = GamepadButtonInputEvent;
 
 /** Native input data that produced an action transition. */
 export type InputNativeEvent = KeyboardEvent | MouseEvent | GamepadInputEvent;
 
 /** A keyboard button and optional required key groups. */
-export type KeyboardButtonBinding = { device: "keyboard"; input: PhysicalKeyCode; modifiers?: PhysicalKeyCode[][] };
+export type KeyboardButtonBinding = {
+	device: "keyboard";
+	input: PhysicalKeyCode;
+	modifiers?: PhysicalKeyCode[][];
+};
 /** A mouse button and optional required mouse-button groups. */
-export type MouseButtonBinding = { device: "mouse"; input: MouseButton; modifiers?: MouseButton[][] };
+export type MouseButtonBinding = {
+	device: "mouse";
+	input: MouseButton;
+	modifiers?: MouseButton[][];
+};
 /** A gamepad button and optional required gamepad-button groups. */
-export type GamepadButtonBinding = { device: "gamepad"; input: GamepadButton; modifiers?: GamepadButton[][] };
+export type GamepadButtonBinding = {
+	device: "gamepad";
+	input: GamePadButton;
+	gamepadIndex?: number;
+	modifiers?: GamePadButton[][];
+};
 /** Any binding that resolves to a pressed or released boolean state. */
 export type ButtonBinding = KeyboardButtonBinding | MouseButtonBinding | GamepadButtonBinding;
 /** Builds a two-dimensional value from four physical keyboard directions. */
@@ -53,17 +56,28 @@ export type KeyboardVector2Composite = {
 	left: PhysicalKeyCode;
 	right: PhysicalKeyCode;
 };
+/** Builds a two-dimensional value from one gamepad stick. */
+export type GamepadVector2Composite = {
+	device: "gamepad";
+	composite: "2d-vector";
+	x: GamePadAxis;
+	y: GamePadAxis;
+	gamepadIndex?: number;
+	deadZone?: number;
+};
 
 /** A named button or vector action and its bindings. */
-export type InputAction = {
-	name: string;
-	type: "button";
-	bindings: readonly ButtonBinding[];
-} | {
-	name: string;
-	type: "vector2";
-	bindings: readonly KeyboardVector2Composite[];
-};
+export type InputAction =
+	| {
+			name: string;
+			type: "button";
+			bindings: readonly ButtonBinding[];
+	  }
+	| {
+			name: string;
+			type: "vector2";
+			bindings: readonly (KeyboardVector2Composite | GamepadVector2Composite)[];
+	  };
 
 /** Describes a button action transition and its source input event. */
 export interface InputActionEvent {
@@ -95,11 +109,14 @@ export class InputManager {
 	private readonly unsubscribeKeyboardUp: () => void;
 	private readonly unsubscribeMouseDown: () => void;
 	private readonly unsubscribeMouseUp: () => void;
+	private readonly unsubscribeGamepadPressed: () => void;
+	private readonly unsubscribeGamepadReleased: () => void;
 
 	/** Creates an input manager with immediate and frame-based action routing. */
 	constructor() {
 		KeyBoardManager.listen();
 		MouseManager.listen();
+		GamepadManager.listen();
 		InputManager.instances.add(this);
 		this.unsubscribeKeyboardDown = KeyBoardManager.onKeyDown((event) =>
 			this.dispatchKeyboardAction(event, InputActionPhase.Pressed),
@@ -113,10 +130,17 @@ export class InputManager {
 		this.unsubscribeMouseUp = MouseManager.onMouseUp((event) =>
 			this.dispatchMouseAction(event, InputActionPhase.Released),
 		);
+		this.unsubscribeGamepadPressed = GamepadManager.onButtonPressed.subscribe((event) =>
+			this.dispatchGamepadAction(event, InputActionPhase.Pressed),
+		);
+		this.unsubscribeGamepadReleased = GamepadManager.onButtonReleased.subscribe((event) =>
+			this.dispatchGamepadAction(event, InputActionPhase.Released),
+		);
 	}
 
 	/** Processes every manager's queued gameplay actions at the start of an engine frame. */
 	static updateAll(): void {
+		GamepadManager.update();
 		for (const inputManager of InputManager.instances) inputManager.update();
 	}
 
@@ -132,6 +156,8 @@ export class InputManager {
 		this.unsubscribeKeyboardUp();
 		this.unsubscribeMouseDown();
 		this.unsubscribeMouseUp();
+		this.unsubscribeGamepadPressed();
+		this.unsubscribeGamepadReleased();
 		this.contextManager.clear();
 		this.actionListeners.clear();
 		this.immediateActionListeners.clear();
@@ -144,9 +170,15 @@ export class InputManager {
 	}
 
 	/** Subscribes to action transitions. Listeners default to frame delivery. */
-	on(action: string, listener: InputActionListener, options: InputListenerOptions = {}): () => void {
+	on(
+		action: string,
+		listener: InputActionListener,
+		options: InputListenerOptions = {},
+	): () => void {
 		return this.addListener(
-			options.dispatchMode === "immediate" ? this.immediateActionListeners : this.actionListeners,
+			options.dispatchMode === "immediate"
+				? this.immediateActionListeners
+				: this.actionListeners,
 			action,
 			listener,
 		);
@@ -191,7 +223,12 @@ export class InputManager {
 
 	/** Returns isolated copies of all actions keyed by name. */
 	getActions(): ReadonlyMap<string, InputAction> {
-		return new Map(Array.from(this.actionMap, ([name, action]): [string, InputAction] => [name, this.copyAction(action)]));
+		return new Map(
+			Array.from(this.actionMap, ([name, action]): [string, InputAction] => [
+				name,
+				this.copyAction(action),
+			]),
+		);
 	}
 
 	/** Returns button bindings for an action, optionally filtered to one device. */
@@ -204,7 +241,8 @@ export class InputManager {
 	/** Adds a unique button binding to an existing button action. @throws When the action is absent or not a button action. */
 	addActionBinding(name: string, binding: ButtonBinding): void {
 		const action = this.actionMap.get(name);
-		if (!action || action.type !== "button") throw new Error(`Button action '${name}' does not exist`);
+		if (!action || action.type !== "button")
+			throw new Error(`Button action '${name}' does not exist`);
 		if (action.bindings.some((current) => this.bindingsMatch(current, binding))) return;
 
 		action.bindings = [...action.bindings, binding];
@@ -243,12 +281,24 @@ export class InputManager {
 		let x = 0;
 		let y = 0;
 		for (const composite of action.bindings) {
-			x +=
-				Number(KeyBoardManager.physicalKeyDown(composite.right)) -
-				Number(KeyBoardManager.physicalKeyDown(composite.left));
-			y +=
-				Number(KeyBoardManager.physicalKeyDown(composite.down)) -
-				Number(KeyBoardManager.physicalKeyDown(composite.up));
+			if (composite.device === "keyboard") {
+				x +=
+					Number(KeyBoardManager.physicalKeyDown(composite.right)) -
+					Number(KeyBoardManager.physicalKeyDown(composite.left));
+				y +=
+					Number(KeyBoardManager.physicalKeyDown(composite.down)) -
+					Number(KeyBoardManager.physicalKeyDown(composite.up));
+				continue;
+			}
+
+			x += this.applyDeadZone(
+				GamepadManager.getAxis(composite.x, composite.gamepadIndex),
+				composite.deadZone,
+			);
+			y += this.applyDeadZone(
+				GamepadManager.getAxis(composite.y, composite.gamepadIndex),
+				composite.deadZone,
+			);
 		}
 
 		return new Vector2(Math.max(-1, Math.min(1, x)), Math.max(-1, Math.min(1, y)));
@@ -278,6 +328,24 @@ export class InputManager {
 					current.device === "mouse" &&
 					current.input === button &&
 					(phase === InputActionPhase.Released || this.isBindingDown(current)),
+			);
+			if (binding) this.routeAction(action.name, phase, binding.device, event);
+		}
+	}
+
+	private dispatchGamepadAction(
+		event: GamepadInputEvent,
+		phase: InputActionPhase,
+	): void {
+		for (const action of this.actionMap.values()) {
+			if (action.type !== "button") continue;
+			const binding = action.bindings.find(
+				(current) =>
+					current.device === "gamepad" &&
+					current.input === event.button &&
+					(current.gamepadIndex === undefined || current.gamepadIndex === event.gamepadIndex) &&
+					(phase === InputActionPhase.Released ||
+						this.isBindingDown(current, event.gamepadIndex)),
 			);
 			if (binding) this.routeAction(action.name, phase, binding.device, event);
 		}
@@ -342,7 +410,7 @@ export class InputManager {
 		if (binding.device === "mouse") {
 			return binding.input === "left" ? "LMB" : binding.input === "middle" ? "MMB" : "RMB";
 		}
-		return binding.input;
+		return `Button ${binding.input}`;
 	}
 
 	private bindingsMatch(left: ButtonBinding, right: ButtonBinding): boolean {
@@ -354,37 +422,77 @@ export class InputManager {
 		return { ...action, bindings: [...action.bindings] };
 	}
 
-	private isBindingDown(binding: ButtonBinding): boolean {
+	private isBindingDown(binding: ButtonBinding, activeGamepadIndex?: number): boolean {
 		if (binding.device === "keyboard") {
-			return KeyBoardManager.physicalKeyDown(binding.input) && this.keysMatch(binding.modifiers);
+			return (
+				KeyBoardManager.physicalKeyDown(binding.input) && this.keysMatch(binding.modifiers)
+			);
 		}
 		if (binding.device === "mouse") {
-			return MouseManager.isButtonDown(binding.input) && this.mouseButtonsMatch(binding.modifiers);
+			return (
+				MouseManager.isButtonDown(binding.input) &&
+				this.mouseButtonsMatch(binding.modifiers)
+			);
 		}
-		return false;
+		return (
+			GamepadManager.isButtonDown(binding.input, activeGamepadIndex ?? binding.gamepadIndex) &&
+			this.gamepadButtonsMatch(binding.modifiers, activeGamepadIndex ?? binding.gamepadIndex)
+		);
 	}
 
 	private isBindingJustPressed(binding: ButtonBinding): boolean {
 		if (binding.device === "keyboard") {
-			return KeyBoardManager.physicalKeyJustPressed(binding.input) && this.keysMatch(binding.modifiers);
+			return (
+				KeyBoardManager.physicalKeyJustPressed(binding.input) &&
+				this.keysMatch(binding.modifiers)
+			);
 		}
 		if (binding.device === "mouse") {
-			return MouseManager.isButtonJustPressed(binding.input) && this.mouseButtonsMatch(binding.modifiers);
+			return (
+				MouseManager.isButtonJustPressed(binding.input) &&
+				this.mouseButtonsMatch(binding.modifiers)
+			);
 		}
-		return false;
+		return (
+			GamepadManager.isButtonJustPressed(binding.input, binding.gamepadIndex) &&
+			this.gamepadButtonsMatch(binding.modifiers, binding.gamepadIndex)
+		);
 	}
 
 	private isBindingJustReleased(binding: ButtonBinding): boolean {
-		if (binding.device === "keyboard") return KeyBoardManager.physicalKeyJustReleased(binding.input);
+		if (binding.device === "keyboard")
+			return KeyBoardManager.physicalKeyJustReleased(binding.input);
 		if (binding.device === "mouse") return MouseManager.isButtonJustReleased(binding.input);
-		return false;
+		return GamepadManager.isButtonJustReleased(binding.input, binding.gamepadIndex);
 	}
 
 	private keysMatch(modifiers?: PhysicalKeyCode[][]): boolean {
-		return modifiers?.every((group) => group.some((key) => KeyBoardManager.physicalKeyDown(key))) ?? true;
+		return (
+			modifiers?.every((group) =>
+				group.some((key) => KeyBoardManager.physicalKeyDown(key)),
+			) ?? true
+		);
 	}
 
 	private mouseButtonsMatch(modifiers?: MouseButton[][]): boolean {
-		return modifiers?.every((group) => group.some((button) => MouseManager.isButtonDown(button))) ?? true;
+		return (
+			modifiers?.every((group) =>
+				group.some((button) => MouseManager.isButtonDown(button)),
+			) ?? true
+		);
+	}
+
+	private gamepadButtonsMatch(modifiers?: GamePadButton[][], gamepadIndex?: number): boolean {
+		return (
+			modifiers?.every((group) =>
+				group.some((button) => GamepadManager.isButtonDown(button, gamepadIndex)),
+			) ?? true
+		);
+	}
+
+	private applyDeadZone(value: number, deadZone = 0.15): number {
+		const magnitude = Math.abs(value);
+		if (magnitude <= deadZone) return 0;
+		return Math.sign(value) * ((magnitude - deadZone) / (1 - deadZone));
 	}
 }
