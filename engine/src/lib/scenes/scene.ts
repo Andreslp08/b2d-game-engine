@@ -17,6 +17,7 @@ import { ScriptComponent } from "../scripts/script-component";
 import { CullingSystem } from "../performance/culling-system";
 import { ParticleSystem } from "../particle-system/system";
 import { TriggerAreaSystem } from "../trigger-area/system/trigger-area-system";
+import { TileChunkBatch } from "../tiles/components/tile-chunk-batch";
 
 /**
  * Represents a game scene that manages entities, systems, and cameras.
@@ -86,6 +87,7 @@ export class Scene implements Updatable {
 		this.renderFilters = "";
 		RenderLayers.reset();
 		Cameras.removeAllCameras();
+		TileChunkBatch.clearCache();
 	}
 
 	/**

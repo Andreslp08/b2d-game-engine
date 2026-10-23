@@ -17,6 +17,10 @@ export class TileChunkBatch extends Component {
 	private readonly gridSize: Vector2;
 	private readonly tileTransform?: TileTransform;
 	private pixelsPerWorldUnit = 0;
+	private hasResolvedForCanvas = false;
+	private pendingResolution = 0;
+	private pendingResolutionElapsed = 0;
+	private static readonly RESOLUTION_SETTLE_SECONDS = 0.25;
 
 	constructor(
 		definition: TileTextureData,
@@ -35,13 +39,39 @@ export class TileChunkBatch extends Component {
 		this.setResolution(1);
 	}
 
+	/** Releases cached tile canvases when their owning scene is discarded. */
+	static clearCache(): void {
+		for (const { canvas } of TileChunkBatch.cache.values()) {
+			canvas.width = 0;
+			canvas.height = 0;
+		}
+		TileChunkBatch.cache.clear();
+	}
+
 	ensureResolution(renderingContext: CanvasRenderingContext2D): void {
 		const transform = renderingContext.getTransform();
 		const pixelsPerWorldUnit = Math.max(
 			Math.hypot(transform.a, transform.b),
 			Math.hypot(transform.c, transform.d),
 		);
-		this.setResolution(Math.max(1, Math.ceil(pixelsPerWorldUnit)));
+		const requestedResolution = Math.max(1, Math.ceil(pixelsPerWorldUnit));
+		if (!this.hasResolvedForCanvas) {
+			this.setResolution(requestedResolution);
+			this.hasResolvedForCanvas = true;
+			this.pendingResolution = requestedResolution;
+		} else if (requestedResolution === this.pixelsPerWorldUnit) {
+			this.pendingResolution = requestedResolution;
+			this.pendingResolutionElapsed = 0;
+		} else if (requestedResolution !== this.pendingResolution) {
+			this.pendingResolution = requestedResolution;
+			this.pendingResolutionElapsed = 0;
+		} else {
+			this.pendingResolutionElapsed += Time.unscaledDeltaTime;
+			if (this.pendingResolutionElapsed >= TileChunkBatch.RESOLUTION_SETTLE_SECONDS) {
+				this.setResolution(requestedResolution);
+				this.pendingResolutionElapsed = 0;
+			}
+		}
 		this.updateAnimationFrame();
 	}
 
