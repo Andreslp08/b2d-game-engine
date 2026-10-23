@@ -24,7 +24,7 @@ const config: ForgeConfig = {
       iconDirectory,
     ],
     icon: packageIcon,
-    appVersion: '1.0.0',
+    appVersion: '1.0.1',
   },
   rebuildConfig: {},
   makers: [
