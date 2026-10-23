@@ -18,6 +18,11 @@ export class PlayerLifeController extends ScriptComponent {
 	private grayscaleValue: number = 0;
 	private fov: number = 1;
 	private cameraShakeTimer: number = 0;
+	private damageShakeTimer = 0;
+	private isDamageShakeActive = false;
+	private readonly damageShakeDuration = 0.3;
+	private readonly damageShakeOscillations = 4; // Idas y vueltas de la cámara
+	private readonly damageShakeAmplitude = 2; // Rotación máxima
 	prevHealth = -1;
 	prevShield = -1;
 	private disableInputStartTime = 0;
@@ -27,11 +32,15 @@ export class PlayerLifeController extends ScriptComponent {
 
 	isDead = false;
 	onPlayerDie = new GameEvent<void>();
+	onPlayerDamaged = new GameEvent<number>();
 
 	onStart(): void {
 		this.grayscaleValue = 0;
 		this.fov = 1;
 		this.cameraShakeTimer = 0;
+		this.damageShakeTimer = 0;
+		this.isDamageShakeActive = false;
+		Engine.canvas.style.filter = "";
 	}
 
 	private changeCameraFOV(fov: number) {
@@ -62,6 +71,7 @@ export class PlayerLifeController extends ScriptComponent {
 		}
 
 		this.entity.getComponent(DamageFlashEffect)?.play();
+		this.onPlayerDamaged.emit(this.damageShakeDuration);
 
 		if (healthComponent && healthComponent.getHealth() <= 0) {
 			this.isDead = true;
@@ -73,6 +83,9 @@ export class PlayerLifeController extends ScriptComponent {
 			}
 			this.onPlayerDie.emit();
 			useGameStore.getState().setCurrentUI("arcade", "gameOverMenu");
+		} else {
+			this.damageShakeTimer = 0;
+			this.isDamageShakeActive = true;
 		}
 	}
 
@@ -119,6 +132,24 @@ export class PlayerLifeController extends ScriptComponent {
 
 		const scene = entity.getScene();
 		if (!scene) return;
+		if (!this.isDead) {
+			const healthRatio = health.getHealth() / health.getMaxHealth();
+			Engine.canvas.style.filter = healthRatio > 0 && healthRatio < 0.4 ? "grayscale(40%)" : "";
+		}
+		if (this.isDamageShakeActive && !this.isDead) {
+			this.damageShakeTimer += Time.unscaledDeltaTime;
+			const shakeProgress = this.damageShakeTimer / this.damageShakeDuration;
+			if (shakeProgress >= 1) {
+				this.isDamageShakeActive = false;
+				this.changeCameraRotation(0);
+			} else {
+				const oscillationAngle = shakeProgress * Math.PI * 2 * this.damageShakeOscillations;
+				const oscillation = Math.sin(oscillationAngle);
+				const remainingIntensity = 1 - shakeProgress;
+				const shake = oscillation * this.damageShakeAmplitude * remainingIntensity;
+				this.changeCameraRotation(shake);
+			}
+		}
 
 		if (health.getHealth() <= 0) {
 			const playerInput = entity.getComponent(PlayerInputController);
@@ -148,5 +179,7 @@ export class PlayerLifeController extends ScriptComponent {
 				this.changeCameraFOV(this.fov);
 			}
 		}
+
+		if (!this.isDead) this.handleDamageCoolDown();
 	}
 }
