@@ -22,6 +22,7 @@ export const ArcadeLevelsMenu = () => {
 	const arcadeLevels = useMemo(() => {
 		return ArcadeLevelManagerInstance.getLevelTypes().map((LevelType) => {
 			return {
+				id: LevelType.id,
 				...LevelType.displayInfo,
 				onClick: () => {
 					setClose(true);
@@ -57,7 +58,10 @@ export const ArcadeLevelsMenu = () => {
 					<div className="relative w-full h-full flex flex-col min-h-0 overflow-auto">
 						<DefaultMenuHeader />
 						<div className="general-menu-content !h-auto flex-1 min-h-0 flex flex-col">
-							<BackButton onClick={handleBack} text="Arcade" />
+							<BackButton
+								onClick={handleBack}
+								text="Arcade"
+							/>
 
 							<motion.div
 								key="gamemodes"
@@ -71,7 +75,8 @@ export const ArcadeLevelsMenu = () => {
 									return (
 										<button
 											key={level.displayName}
-											className={` relative w-full max-w-[400px] flex justify-center group transition-all duration-300 hover:scale-[1.02] hover:translate-y-1.5`}
+											id={`arcade-level-${level.id}`}
+											className={` relative w-full max-w-[400px] flex justify-center group transition-all duration-300 hover:scale-[1.02] hover:translate-y-1.5 focus-visible:scale-[1.02] focus-visible:translate-y-1.5`}
 											onClick={level.onClick}
 										>
 											<svg
@@ -90,7 +95,7 @@ export const ArcadeLevelsMenu = () => {
 													fill="url(#paint1_linear_2068_130)"
 												/>
 												<path
-													className="transition-all duration-300 opacity-[0.1] group-hover:scale-[0.95] origin-center"
+													className="transition-all duration-300 opacity-[0.1] group-hover:scale-[0.95] group-focus-visible:scale-[0.95] origin-center"
 													d="M132.143 158.797V172.918H146.264V158.797H132.143ZM154.736 158.797V172.918H168.857V158.797H154.736ZM177.33 158.797V172.918H191.451V158.797H177.33ZM132.143 181.391V203.043H146.264V181.391H132.143ZM154.736 181.391V203.043H168.857V181.391H154.736ZM177.33 181.391V203.043H191.451V181.391H177.33ZM132.143 211.516V233.168H146.264V211.516H132.143ZM154.736 211.516V233.168H168.857V211.516H154.736ZM177.33 211.516V233.168H191.451V211.516H177.33ZM259.232 214.579L214.986 239.863V248.231H259.232V214.579ZM132.143 241.641V263.293H146.264V241.641H132.143ZM154.736 241.641V263.293H168.857V241.641H154.736ZM177.33 241.641V263.293H191.451V241.641H177.33ZM214.986 256.703V308.481H259.232V256.703H214.986ZM48.3574 267.529V278.356H56.8301V267.529H48.3574ZM132.143 271.766V293.418H146.264V271.766H132.143ZM154.736 271.766V293.418H168.857V271.766H154.736ZM177.33 271.766V293.418H191.451V271.766H177.33ZM47.6806 286.828L44.3856 293.418H113.52L110.225 286.828H47.6806ZM41.7676 301.891V376.262H52.5938V365.436H67.6562V376.262H90.25V365.436H105.312V376.262H116.139V301.891H41.7676ZM132.143 301.891V323.543H146.264V301.891H132.143ZM154.736 301.891V323.543H168.857V301.891H154.736ZM177.33 301.891V323.543H191.451V301.891H177.33ZM52.5938 312.717H67.6562V320.248H52.5938V312.717ZM90.25 312.717H105.312V320.248H90.25V312.717ZM214.986 316.953V376.262H229.578V365.436H244.641V376.262H259.232V316.953H214.986ZM52.5938 327.779H67.6562V335.311H52.5938V327.779ZM90.25 327.779H105.312V335.311H90.25V327.779ZM132.143 332.016V353.668H146.264V332.016H132.143ZM154.736 332.016V353.668H168.857V332.016H154.736ZM177.33 332.016V353.668H191.451V332.016H177.33ZM52.5938 342.842H67.6562V350.373H52.5938V342.842ZM90.25 342.842H105.312V350.373H90.25V342.842ZM132.143 362.141V376.262H146.264V362.141H132.143ZM154.736 362.141V376.262H168.857V362.141H154.736ZM177.33 362.141V376.262H191.451V362.141H177.33Z"
 													fill="#FF5959"
 													fill-opacity="1"
@@ -136,10 +141,10 @@ export const ArcadeLevelsMenu = () => {
 											</svg>
 
 											<div className="absolute top-0 left-0 w-full flex flex-col items-center gap-2 z-1 p-5 mt-4">
-												<p className="uppercase text-base  md:text-xl transition-colors duration-300 group-hover:text-red-400">
+												<p className="uppercase text-base  md:text-xl transition-colors duration-300 group-hover:text-red-400 group-focus-visible:text-red-400">
 													{level.difficultyLevel}
 												</p>
-												<p className="heading-font-variant uppercase text-2xl md:text-3xl lg:text-5xl transition-colors duration-300 group-hover:text-red-400">
+												<p className="heading-font-variant uppercase text-2xl md:text-3xl lg:text-5xl transition-colors duration-300 group-hover:text-red-400 group-focus-visible:text-red-400">
 													{level.displayName}
 												</p>
 												{/* <p>{level.description}</p> */}

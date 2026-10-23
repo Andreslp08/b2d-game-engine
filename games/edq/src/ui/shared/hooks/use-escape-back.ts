@@ -21,7 +21,7 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
 	);
 };
 
-/** Runs a menu's back action when Escape is pressed. */
+/** Runs a menu's back action when Escape or the gamepad cancel button is pressed. */
 export const useEscapeBack = ({
 	onBack,
 	enabled = true,
@@ -43,16 +43,17 @@ export const useEscapeBack = ({
 			dispatchMode: "immediate",
 			actions: [{ action: GameplayAction.Back, phases: [InputActionPhase.Pressed] }],
 			onAction: (inputEvent) => {
+				const nativeEvent = inputEvent.nativeEvent;
 				if (
-					!(inputEvent.nativeEvent instanceof KeyboardEvent) ||
-					inputEvent.nativeEvent.defaultPrevented ||
-					isEditableTarget(inputEvent.nativeEvent.target)
-				) {
+					nativeEvent instanceof KeyboardEvent &&
+					(nativeEvent.defaultPrevented || isEditableTarget(nativeEvent.target))
+				)
 					return;
-				}
 
-				if (preventDefault) inputEvent.nativeEvent.preventDefault();
-				if (stopPropagation) inputEvent.nativeEvent.stopPropagation();
+				if (nativeEvent instanceof KeyboardEvent) {
+					if (preventDefault) nativeEvent.preventDefault();
+					if (stopPropagation) nativeEvent.stopPropagation();
+				}
 				onBackRef.current();
 			},
 		});

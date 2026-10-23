@@ -117,7 +117,7 @@ export const GameModeMenu = () => {
 									return (
 										<button
 											key={gameMode.id}
-											className={`${isComingSoon ? "cursor-not-allowed hover:grayscale " : ""} relative max-w-[400px] flex justify-center group transition-all duration-300 hover:shadow-[0_0_5px_5px_rgba(255,0,0,0.5)]`}
+											className={`${isComingSoon ? "cursor-not-allowed hover:grayscale " : ""} relative max-w-[400px] flex justify-center group transition-all duration-300 hover:shadow-[0_0_5px_5px_rgba(255,0,0,0.5)] focus-visible:shadow-[0_0_5px_5px_rgba(255,0,0,0.5)]`}
 											onClick={gameMode.onClick}
 											disabled={isComingSoon}
 										>
@@ -127,10 +127,10 @@ export const GameModeMenu = () => {
 												</p>
 											)}
 											<FramedPanel contentClassName="flex flex-col items-center gap-8">
-												<p className="heading-font-variant uppercase text-2xl md:text-3xl lg:text-5xl transition-colors duration-300 group-hover:text-red-400">
+												<p className="heading-font-variant uppercase text-2xl md:text-3xl lg:text-5xl transition-colors duration-300 group-hover:text-red-400 group-focus-visible:text-red-400">
 													{gameMode.title}
 												</p>
-												<div className="transition duration-300 ease-in-out group-hover:scale-[1.2]">
+												<div className="transition duration-300 ease-in-out group-hover:scale-[1.2] group-focus-visible:scale-[1.2]">
 													{gameMode.icon}
 												</div>
 												<p>{gameMode.description}</p>

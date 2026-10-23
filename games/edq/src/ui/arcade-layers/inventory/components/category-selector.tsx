@@ -7,7 +7,7 @@ type Props = {
 };
 export const CategorySelector = ({ currentCategory, setCurrentCategory }: Props) => {
 
-    const navigationButtonClass = 'w-5 lg:w-10 h-auto transition-all duration-300 ease-in-out hover:scale-110';
+    const navigationButtonClass = 'w-5 lg:w-10 h-auto transition-all duration-300 ease-in-out hover:scale-110 focus-visible:scale-110';
 	const categories: { label: string; category: UIInventoryCategory }[] = [
 		{ category: "items", label: "Items" },
 		{ category: "key_items", label: "Key Items" },

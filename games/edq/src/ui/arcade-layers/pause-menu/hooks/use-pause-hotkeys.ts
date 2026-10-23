@@ -23,17 +23,26 @@ export const usePauseHotkeys = ({
 			id: "arcade-pause-hotkey",
 			priority: InputContextPriority.Menu,
 			dispatchMode: "immediate",
-			actions: [{ action: GameplayAction.Back, phases: [InputActionPhase.Pressed] }],
-			onAction: () => {
+			actions: [
+				{ action: GameplayAction.Back, phases: [InputActionPhase.Pressed] },
+				{ action: GameplayAction.Pause, phases: [InputActionPhase.Pressed] },
+			],
+			onAction: (inputEvent) => {
 				if (isTransitionLocked) return;
-				onTogglePauseMenu();
+				if (
+					inputEvent.action === GameplayAction.Pause ||
+					inputEvent.device === "keyboard" ||
+					isPauseMenuVisible
+				) {
+					onTogglePauseMenu();
+				}
 			},
 		});
 
 		return () => {
 			releaseContext();
 		};
-	}, [isTransitionLocked, onTogglePauseMenu]);
+	}, [isPauseMenuVisible, isTransitionLocked, onTogglePauseMenu]);
 
 	useEffect(() => {
 		const handleVisibilityChange = () => {

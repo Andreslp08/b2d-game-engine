@@ -24,6 +24,7 @@ export const GameplayAction = {
 	QuickSlot4: "quick-slot-4",
 	QuickSlot5: "quick-slot-5",
 	Back: "back",
+	Pause: "pause",
 	InventoryToggle: "inventory-toggle",
 } as const;
 
@@ -107,7 +108,7 @@ const actions: InputAction[] = [
 		type: "button",
 		bindings: [
 			{ device: "keyboard", input: Key.R },
-			{ device: "gamepad", input: GamePadButton.button_1 },
+			{ device: "gamepad", input: GamePadButton.button_3 },
 		],
 	},
 	{
@@ -163,7 +164,14 @@ const actions: InputAction[] = [
 		type: "button",
 		bindings: [
 			{ device: "keyboard", input: Key.Escape },
-			{ device: "gamepad", input: GamePadButton.button_3 },
+			{ device: "gamepad", input: GamePadButton.button_1 },
+		],
+	},
+	{
+		name: GameplayAction.Pause,
+		type: "button",
+		bindings: [
+			{ device: "gamepad", input: GamePadButton.button_9 },
 		],
 	},
 	{

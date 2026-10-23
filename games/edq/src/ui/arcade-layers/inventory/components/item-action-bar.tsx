@@ -10,7 +10,7 @@ type Props = {
 };
 
 const actionButtonClassName =
-	"transition-color duration-300 text-white uppercase font-black lg:text-2xl [&:is(button:hover)]:text-[#FF8383]";
+	"transition-color duration-300 text-white uppercase font-black lg:text-2xl [&:is(button:hover,button:focus-visible)]:text-[#FF8383]";
 
 export const ItemActionBar = ({
 	item,
@@ -35,7 +35,7 @@ export const ItemActionBar = ({
 									return (
 										<button
 										key={code}
-											className={`${isActiveSlot ? "bg-white text-[#ba0000]" : "bg-[#ba0000] text-white"} rounded-full w-7 h-7 flex items-center justify-center text-center`}
+											className={`${isActiveSlot ? "bg-white text-[#ba0000]" : "bg-[#ba0000] text-white"} rounded-full w-7 h-7 flex items-center justify-center text-center transition-all duration-200 hover:scale-110 hover:bg-[#ff4d4d] hover:text-white focus-visible:scale-110 focus-visible:bg-[#ff4d4d] focus-visible:text-white`}
 											onClick={() => onAssignToQuickSlot(item.entryId, slot)}
 											type="button"
 										>

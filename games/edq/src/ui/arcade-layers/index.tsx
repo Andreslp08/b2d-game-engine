@@ -34,7 +34,10 @@ export const ArcadeLayer = () => {
 	const inventoryController = useInventoryMenuController();
 
 	return (
-		<div className="w-full h-full flex items-center justify-center pointer-events-none">
+		<div
+			className="w-full h-full flex items-center justify-center pointer-events-none"
+			data-gamepad-ui-layer={currentUI ? `${currentUI.scope}:${currentUI.layer}` : undefined}
+		>
 			<AnimatePresence
 				mode="wait"
 				onExitComplete={() => {

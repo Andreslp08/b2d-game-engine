@@ -55,7 +55,7 @@ export const ItemCard = ({  isActive,inventoryView, item, onClick }: Props) => {
 	};
 	return (
 		<button
-			className={`w-full h-full p-2 transition-all duration-300 rounded-md border-3 border-[rgba(255,255,255,0.07)]  ${isActive ? "bg-[rgba(255,255,255,0.5)]  border-b-[#f00]" : "bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.17)] "}`}
+			className={`w-full h-full p-2 transition-all duration-300 rounded-md border-3 border-[rgba(255,255,255,0.07)]  ${isActive ? "bg-[rgba(255,255,255,0.5)]  border-b-[#f00]" : "bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.17)] focus-visible:bg-[rgba(255,255,255,0.17)] "}`}
 			onClick={onClick}
 		>
 			<img

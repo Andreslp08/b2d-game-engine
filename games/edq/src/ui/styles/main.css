@@ -13,7 +13,6 @@
   button{
     cursor: pointer;
   }
-
   .body-font,
   html,
   body {
@@ -129,3 +128,8 @@
   border-radius: 20px;
   border: 2px solid #ff0000;
 }
+
+
+  *:focus-visible{
+    outline: none !important;
+  }

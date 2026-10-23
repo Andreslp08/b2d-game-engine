@@ -24,6 +24,7 @@ export const GeneralLayer = () => {
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.3 }}
 						className="flex justify-center items-center w-full h-full  text-white"
+						data-gamepad-ui-layer={`global:${activeLayer}`}
 					>
 						<ActiveView />
 					</motion.div>

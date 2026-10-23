@@ -6,10 +6,10 @@
   .default-button .shape{
     @apply absolute inset-0 flex w-full h-full pointer-events-none z-0 transform transition-all duration-300;
   }
-  .default-button:hover {
+  .default-button:hover, .default-button:focus-visible {
     @apply text-red-300 ;
   }
-  .default-button:hover .shape{
+  .default-button:hover, .default-button:focus-visible .shape{
     @apply scale-x-[1.1];
   }
 }
