@@ -7,6 +7,7 @@ import Vector2 from "@b2d-engine/core/math/vector2";
 import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { createSoldierBomb } from "../../prefabs/soldier-bomb";
+import { PlayerLifeController } from "../player/player-life-controller";
 
 type SoldierState = "patrol" | "chase" | "attack";
 
@@ -60,6 +61,7 @@ export class SoliderIA extends ScriptComponent {
 	onFixedUpdate(): void {
 		const player = this.entity.getScene()?.getEntityByTag<GameObject>("player");
 		if (!player) return;
+		if (player.getComponent(PlayerLifeController)?.isDead) return;
 
 		const transform = this.entity.getComponent(Transform);
 		const body = this.entity.getComponent(DynamicBody);

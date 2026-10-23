@@ -27,6 +27,7 @@ class ToxicWaterController extends ScriptComponent{
         this.player = entity;
         const playerLife =  this.player.getComponent(PlayerLifeController);
         if(!playerLife) return
+		if (playerLife.isDead) return
         this.damageStartTime = Time.time;
         playerLife.setDamage(this.damageAmount, "health-only");
     }
@@ -43,6 +44,7 @@ class ToxicWaterController extends ScriptComponent{
         if(!this.player) return
         const playerLife =  this.player.getComponent(PlayerLifeController);
         if(!playerLife) return
+		if (playerLife.isDead) return
         if(Time.time - this.damageStartTime >= this.delay){
             console.log('toxic water hurt')
             this.damageStartTime = Time.time;

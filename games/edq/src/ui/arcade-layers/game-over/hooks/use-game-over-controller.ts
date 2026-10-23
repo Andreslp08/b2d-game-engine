@@ -28,11 +28,11 @@ export const useGameOverController = () => {
 		} else {
 			MouseManager.setCursorRenderMode("custom");
 		}
-		const timer = setTimeout(() => {
-			if (!isGameOverVisible) return;
-			currentGameInstance.pause();
-		}, 3000);
-		return () => clearTimeout(timer);
+		// const timer = setTimeout(() => {
+		// 	if (!isGameOverVisible) return;
+		// 	currentGameInstance.pause();
+		// }, 3000);
+		// return () => clearTimeout(timer);
 	}, [isGameOverVisible]);
 
 	return { goToMainMenu, restart };

@@ -13,6 +13,7 @@ import { Sprite } from "@b2d-engine/core/graphics/sprites/components/sprite";
 import { MouseManager } from "@b2d-engine/core/input/mouse-manager";
 import { Cameras } from "@b2d-engine/core/graphics/cameras/camera-manager";
 import { OrthographicCamera } from "@b2d-engine/core/graphics/cameras/orthographic-camera";
+import { PlayerLifeController } from "./player-life-controller";
 
 export enum PlayerAnimationKey {
 	IDLE = "idle",
@@ -208,8 +209,26 @@ export class PlayerSpriteController extends ScriptComponent {
 		);
 	}
 
+	showDeathPose(): void {
+		const spriteAnimation = this.gameObject.getComponent(SpriteAnimation);
+		const idleSpritesheet = this.spritesheets[PlayerAnimationKey.IDLE];
+		if (!spriteAnimation || !idleSpritesheet) return;
+		const facingDirection = spriteAnimation.currentSprite?.getDirection().x ?? 1;
+
+		spriteAnimation.setAnimation(idleSpritesheet, false, Number.POSITIVE_INFINITY, false);
+		spriteAnimation.currentFrame = 0;
+		spriteAnimation.currentTime = 0;
+		spriteAnimation.currentSprite = idleSpritesheet.sprites[0];
+		spriteAnimation.currentSprite?.setAnchor(new Vector2(0, -0.5));
+		spriteAnimation.currentSprite?.setRotation(facingDirection >= 0 ? -90 : 90);
+	}
+
 	onFixedUpdate(): void {
 		if (!this.gameObject || !this.spritesheets) return;
+		if (this.gameObject.getComponent(PlayerLifeController)?.isDead) {
+			this.showDeathPose();
+			return;
+		}
 
 		const aimingController = this.gameObject.getComponent(AimingController);
 		if (!aimingController) return;

@@ -8,6 +8,9 @@ import { ShieldComponent } from "../shared/shield-component";
 import { DamageFlashEffect } from "../shared/damage-flash-effect";
 import { GameEvent } from "@b2d-engine/core/common/events/game-event";
 import { useGameStore } from "../../../store/store";
+import { PlayerSpriteController } from "./sprite-controller";
+import { GAME_FOV } from "../../config/constants";
+import { Engine } from "@b2d-engine/core";
 
 type DamageMode = "shield-first" | "health-only";
 
@@ -40,6 +43,8 @@ export class PlayerLifeController extends ScriptComponent {
 	}
 
 	setDamage(damage: number, mode: DamageMode = "shield-first") {
+		if (this.isDead) return;
+
 		const entity = this.getEntity();
 		if (!entity) return;
 
@@ -60,6 +65,12 @@ export class PlayerLifeController extends ScriptComponent {
 
 		if (healthComponent && healthComponent.getHealth() <= 0) {
 			this.isDead = true;
+			entity.getComponent(PlayerSpriteController)?.showDeathPose();
+			const playerInput = entity.getComponent(PlayerInputController);
+			if (playerInput && !this.controllerDisabledOnDeath) {
+				playerInput.disableAll();
+				this.controllerDisabledOnDeath = true;
+			}
 			this.onPlayerDie.emit();
 			useGameStore.getState().setCurrentUI("arcade", "gameOverMenu");
 		}
@@ -130,21 +141,12 @@ export class PlayerLifeController extends ScriptComponent {
 				Time.unscaledDeltaTime * 2,
 			);
 			this.grayscaleValue = Math.min(this.grayscaleValue, 100);
-			scene.setRenderFilters(`grayscale(${this.grayscaleValue}%)`);
+			Engine.canvas.style.filter = `grayscale(${this.grayscaleValue}%)`;
 
-			// Movimiento de cámara de lado a lado
-			if (this.grayscaleValue >= 90) {
-				// Lento al morir
-				const newTimeScale = MathUtil.lerp(Time.timeScale, 0, Time.unscaledDeltaTime * 2);
-				Time.timeScale = newTimeScale < 0.01 ? 0 : newTimeScale;
-			}
-
-			// FOV zoom suave
-			if (this.fov <= 3 && this.grayscaleValue >= 20) {
-				this.fov += 0.3 * Time.unscaledDeltaTime;
+			if (this.fov <=4 ) {
+				this.fov += 0.1 * Time.unscaledDeltaTime;
 				this.changeCameraFOV(this.fov);
 			}
 		}
-		this.handleDamageCoolDown();
 	}
 }

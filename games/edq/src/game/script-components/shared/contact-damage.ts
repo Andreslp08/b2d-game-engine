@@ -35,6 +35,7 @@ export class ContactDamage extends ScriptComponent {
 
 	onCollisionEnter(entity: Entity): void {
 		if (!this.isTarget(entity)) return;
+		if (entity.getComponent(PlayerLifeController)?.isDead) return;
 
 		this.applyDamage(entity);
 		if (this.knockback) this.applyKnockback(entity);

@@ -10,6 +10,7 @@ import Vector2 from "@b2d-engine/core/math/vector2";
 import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { KinematicBody } from "@b2d-engine/core/physics/components/kinematic-body";
 import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
+import { PlayerLifeController } from "../player/player-life-controller";
 
 export class SpinesBugController extends ScriptComponent {
 	spriteState: "IDLE" | "MOVE" | "ATTACK_SPINES_VISIBLE" | "ATTACK_SPINES_HIDDEN" = "IDLE";
@@ -88,6 +89,7 @@ export class SpinesBugController extends ScriptComponent {
 		if (!scene) return;
 		const player = this.entity.getScene().getEntityByTag<GameObject>("player");
 		if (!player) return;
+		if (player.getComponent(PlayerLifeController)?.isDead) return;
 		const distance = MathUtil.getDistanceBetweenEntities(this.entity, player);
 
 		const transform = this.entity.getComponent(Transform);

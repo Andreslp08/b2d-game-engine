@@ -7,6 +7,7 @@ import { DynamicBody } from "@b2d-engine/core/physics/components/dynamic-body";
 import { ScriptComponent } from "@b2d-engine/core/scripts/script-component";
 import { TailGunnerShotController } from "./tail-gunner-shot-controller";
 import { TailGunnerSpriteController, type TailGunnerSpriteState } from "./tail-gunner-sprite-controller";
+import { PlayerLifeController } from "../player/player-life-controller";
 
 type State = "idle" | "patrol" | "chase" | "attack";
 
@@ -101,6 +102,7 @@ export class TailAIController extends ScriptComponent {
 	executeIA(): void {
 		this.player = this.entity.getScene()?.getEntityByTag("player");
 		if (!this.player) return;
+		if (this.player.getComponent(PlayerLifeController)?.isDead) return;
 
 		const stateName = this.stateMachine.stateValue().name;
 		if (stateName === "attack") {

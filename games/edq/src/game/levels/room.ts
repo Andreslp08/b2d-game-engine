@@ -1,6 +1,7 @@
 import { Scene } from "@b2d-engine/core/scenes/scene";
 import  { Level } from "./level";
 import  { GameEvent } from "@b2d-engine/core/common/events/game-event";
+import { Engine } from "@b2d-engine/core";
 
 export type RoomConstructor = (new () => Room) & { readonly id: string };
 
@@ -37,6 +38,7 @@ export class Room extends Scene {
 	spawn(): void {}
 
 	enter(): void {
+		Engine.canvas.style.filter = `none`;
 		this.fade({
 			to: 1,
 			color: "#000",

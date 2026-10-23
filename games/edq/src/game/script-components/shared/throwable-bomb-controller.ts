@@ -49,7 +49,9 @@ export class ThrowableBombController extends ScriptComponent {
 		if (!entity.hasTag(this.config.targetTag)) return;
 
 		const playerLifeController = entity.getComponent(PlayerLifeController);
-		if (playerLifeController) playerLifeController.setDamage(this.config.damage);
+		if (playerLifeController && !playerLifeController.isDead) {
+			playerLifeController.setDamage(this.config.damage);
+		}
 		this.explode();
 	}
 
