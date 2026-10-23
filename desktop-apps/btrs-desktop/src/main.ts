@@ -42,7 +42,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       additionalArguments: [
-        `--edq-environment=${app.isPackaged ? 'production' : 'development'}`,
+        `--edq-environment=production`,
       ],
       contextIsolation: true,
       nodeIntegration: false,
