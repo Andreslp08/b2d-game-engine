@@ -9,12 +9,15 @@ import { CrossHairUI } from "./components/crosshair-ui";
 import { AimingController } from "../script-components/player/aiming-controller";
 import { WeaponController, WeaponHolder } from "../script-components/weapon/weapon";
 import { CurrentWeaponUI } from "./components/current-weapon-ui";
+import { DamageFrameUI } from "./components/damage-frame-ui";
+import { PlayerLifeController } from "../script-components/player/player-life-controller";
 
 class HudUI extends UIObject {
 	private _healthUI: SegmentBarUI;
 	private _shieldUI: SegmentBarUI;
 	private _crosshair: CrossHairUI;
 	private _currentWeaponUI: CurrentWeaponUI;
+	private _damageFrame: DamageFrameUI;
 	constructor() {
 		super();
 		const healthX = 10;
@@ -38,6 +41,9 @@ class HudUI extends UIObject {
 
 		this._currentWeaponUI = new CurrentWeaponUI();
 		this.addComponent(this._currentWeaponUI);
+
+		this._damageFrame = new DamageFrameUI();
+		this.addComponent(this._damageFrame);
 	}
 
 	attachTo(entity: GameObject) {
@@ -52,6 +58,7 @@ class HudUI extends UIObject {
 		if (healthComponent) {
 			this._healthUI.setValue(healthComponent.getHealth());
 			this._healthUI.setMaxValue(healthComponent.getMaxHealth());
+			this._damageFrame.setHealth(healthComponent.getHealth(), healthComponent.getMaxHealth());
 		}
 		if (shieldComponent) {
 			this._shieldUI.setValue(shieldComponent.getShield());
@@ -75,14 +82,26 @@ class HudUI extends UIObject {
 			this._crosshair.setNoAmmo(weaponController?.isOutOfAmmo() ?? false);
 		}
 	}
+
+	triggerDamageFrame(duration: number): void {
+		this._damageFrame.triggerDamageFlash(duration);
+	}
 }
 
 export class PlayerHud extends ScriptComponent {
 	private hudUI: HudUI;
+	private unsubscribeDamage?: () => void;
 
 	constructor() {
 		super();
 		this.hudUI = new HudUI();
+	}
+
+	onStart(): void {
+		const playerLife = this.entity.getComponent(PlayerLifeController);
+		this.unsubscribeDamage = playerLife?.onPlayerDamaged.subscribe((duration) => {
+			this.hudUI.triggerDamageFrame(duration);
+		});
 	}
 
 	onUpdate(): void {
@@ -92,5 +111,9 @@ export class PlayerHud extends ScriptComponent {
 			scene.addEntity(this.hudUI);
 		}
 		this.hudUI.attachTo(this.entity as GameObject);
+	}
+
+	onDestroy(): void {
+		this.unsubscribeDamage?.();
 	}
 }
