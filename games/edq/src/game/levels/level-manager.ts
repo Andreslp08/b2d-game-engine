@@ -58,7 +58,7 @@ export class LevelManager {
 		}
 
 		level.getActiveRoom()?.exit();
-		currentGameInstance.stop();
+		currentGameInstance.setScene(null);
 		const room = level.createRoom(roomId);
 		if (!room) return;
 
@@ -76,7 +76,7 @@ export class LevelManager {
 		if (!this.currentLevel) return;
 
 		this.currentLevel.getActiveRoom()?.exit();
-		currentGameInstance.stop();
+		currentGameInstance.setScene(null);
 		this.currentLevel.destroy();
 		this.currentLevel = null;
 	}

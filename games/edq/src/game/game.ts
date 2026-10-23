@@ -20,7 +20,9 @@ addEventListener("resize", () => {
 	Screen.getInstance().resize(new Vector2(window.innerWidth, window.innerHeight), aspectRatio);
 });
 
-export const preloadGame = () => {
+export const initGame = () => {
+	currentGameInstance.start();
+
 	const testLevel = () => {
 		setTimeout(() => {
 			ArcadeLevelManagerInstance.loadLevel(TestingLevel.id, Room2.id);
