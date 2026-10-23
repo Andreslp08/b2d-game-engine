@@ -95,6 +95,15 @@ export class Engine {
 	}
 
 	public start() {
+		if (Engine._isRunning) {
+			InputManager.clearAllQueues();
+			Engine.setPausedState(false);
+			Time.timeScale = 1;
+			this.accumulator = 0;
+			this.lastFrameTime = performance.now();
+			Time.setFixedUpdateAccumulator(0);
+			return;
+		}
 		InputManager.clearAllQueues();
 		Engine.setRunningState(true);
 		Engine.setPausedState(false);
@@ -171,6 +180,7 @@ export class Engine {
 			this.scene.destroy();
 		}
 		this.scene = scene;
+		if (!scene) Engine.showCanvasOverlay();
 	}
 
 	public getScene() {
@@ -217,8 +227,10 @@ export class Engine {
 	}
 
 	private loop(currentTime: number = 0): void {
+		if (!Engine._isRunning) return;
 		const elapsed = currentTime - this.lastFrameTime;
 		if (elapsed < this.frameInterval) {
+			if (!Engine._isRunning) return;
 			requestAnimationFrame = window.requestAnimationFrame(this.loop);
 			return;
 		}
@@ -235,6 +247,7 @@ export class Engine {
 			}
 			KeyBoardManager.endFrame();
 			MouseManager.endFrame();
+			if (!Engine._isRunning) return;
 			requestAnimationFrame = window.requestAnimationFrame(this.loop);
 			return;
 		}
@@ -245,10 +258,13 @@ export class Engine {
 		InputManager.updateAll();
 		const scene = this.scene;
 		if (scene) {
-			while (this.accumulator >= this.fixedDelta * Time.timeScale) {
-				scene.fixedUpdate?.();
-				Time.fixedUpdate(this.fixedDelta);
-				this.accumulator -= this.fixedDelta;
+			const scaledFixedDelta = this.fixedDelta * Time.timeScale;
+			if (scaledFixedDelta > 0) {
+				while (this.accumulator >= scaledFixedDelta) {
+					scene.fixedUpdate?.();
+					Time.fixedUpdate(this.fixedDelta);
+					this.accumulator -= this.fixedDelta;
+				}
 			}
 			Time.update(dt);
 			Time.setFixedUpdateAccumulator(this.accumulator);
@@ -263,6 +279,7 @@ export class Engine {
 
 		KeyBoardManager.endFrame();
 		MouseManager.endFrame();
+		if (!Engine._isRunning) return;
 		requestAnimationFrame = window.requestAnimationFrame(this.loop);
 	}
 }
